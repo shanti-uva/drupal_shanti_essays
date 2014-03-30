@@ -1,0 +1,77 @@
+/* shanti_essays.css */
+
+body .content {
+	margin: 0px;
+}
+
+body #content .section {
+	padding: 0px;
+}
+
+body #main {
+	width: 100%;
+	height: 100%;
+	margin-top: 0px;
+}
+
+body .node-book {
+	position: relative;	/* This fixes the IE7 overflow hidden bug */
+	clear: both;
+	float: left;
+	width: 100%;	/* width of whole page */
+	height: 100%; /* NEED TO VARY BY SCREEN */
+	overflow: hidden;	/* This chops off any overhanging divs */
+	box-sizing: border-box;
+}
+
+/* MODEL:
+shanti-essay-page-toc
+shanti-essay-page-content
+  shanti-essay-page-content-body
+  shanti-essay-page-content-body-footer
+    shanti-essay-page-links
+    shanti-essay-page-navigation
+shanti-essay-page-marginalia
+*/
+
+#shanti-essay-page-toc, #shanti-essay-page-content #shanti-essay-page-marginalia {
+	float: left;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	box-sizing: border-box;
+}
+
+#shanti-essay-page-toc {
+	float: left;
+	width: 20%;
+}
+
+#shanti-essay-page-content {
+	float: left;
+	width: 50%;
+}
+
+#shanti-essay-page-content-body {
+	min-height: 4.6in;
+	overflow: scroll;
+	padding-left: 1em;
+	width: 100%;
+}
+
+#shanti-essay-page-content-body-footer {
+	width: 100%;
+}
+
+#shanti-essay-page-marginalia {
+	float: left;
+	width: 30%;
+}
+
+#shanti-essay-page-toc:only-child,
+#shanti-essay-page-content:only-child,
+#shanti-essay-page-content-body:only-child,
+#shanti-essay-page-content-body-footer:only-child,
+#shanti-essay-page-marginalia:only-child {
+	width: 100%;
+}

@@ -1,0 +1,94 @@
+<?php 
+
+define('SHANTI_ESSAYS_PATH',drupal_get_path('module','shanti_essays'));
+
+function shanti_essays_menu() {
+  return array(
+    'shanti_essays/test' => array(
+      'page callback' => 'shanti_essays_test',
+      'type' => MENU_NORMAL_ITEM,
+      'access arguments' => array('view content'), 
+    )
+  );
+}
+
+function shanti_essays_test() {
+  return "BOO HOO";
+}
+
+function shanti_essays_help($path, $arg) {
+  if ($path == "admin/help#shanti_essays") {
+    return '<p>' . t('SHANTI Essays, my friend.') . '</p>';
+  }
+}
+
+// This may need to change to use hook_theme_registry_alter instead
+// (which is only executed when the theme cache is re-built)
+function shanti_essays_theme($existing, $type, $theme, $path) {
+  return array(
+    'node__book' => array(
+      'render element' => 'node',
+      'template' => 'templates/node--book',
+      'path' => SHANTI_ESSAYS_PATH,
+    ),
+    'book_navigation' => array(
+      'render element' => 'book',
+      'template' => 'templates/book-navigation',
+      'path' => SHANTI_ESSAYS_PATH,
+    ),
+    /*
+    'page__node__book' => array(
+      'render element' => 'page',
+      'template' => 'templates/page--node--book',
+      'path' => SHANTI_ESSAYS_PATH,
+    ),
+    */
+  );
+}
+
+/*
+function shanti_essays_page_alter(&$page) {}
+*/
+
+/*
+function shanti_essays_preprocess_html(&$vars) {
+  if ($vars['page']['content']['system_main']['nodes'][1]['#bundle'] == 'book') {
+    $vars['classes_array'][] = 'shanti-essay-page';
+  }
+  kpr($vars);
+}
+*/
+
+function shanti_essays_preprocess_page(&$vars) {
+  //if (!empty($vars['node']) && $vars['node']->type == 'book') {
+    //$vars['theme_hook_suggestions'][] = 'page__node__book';
+  //}
+}
+
+function shanti_essays_preprocess_node(&$vars) {
+  if ($vars['type'] == 'book') {
+    $book_node = node_load($vars['book']['bid']);
+    $vars['shanti_essays']['book_title'] = $book_node->title;
+    $vars['shanti_essays']['book_url']   = drupal_get_path_alias('/node/' . $vars['book']['bid']);
+    drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays.css');
+    $js_settings = array(
+      'book' => $vars['book'],
+      'book_title' => $vars['shanti_essays']['book_title'],
+    );
+    drupal_add_js(array('shantiEssays' => $js_settings),'setting');
+    drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays.js','file');
+    //$vars['theme_hook_suggestions'][] = 'node__book'; // Is this necessary? No. Or, only if using hook_theme_registry_alter
+    //kpr($vars);
+  }
+}
+
+
+function shanti_essays_preprocess_book_navigation(&$vars) {
+  
+} 
+
+
+function shanti_essays_enable() {
+  drupal_set_message($message = t('You do realize that you have just enable SHANTI Essays?'), $type = 'status');
+  drupal_theme_rebuild();
+}
