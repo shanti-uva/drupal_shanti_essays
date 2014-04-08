@@ -6,3 +6,4 @@ core = 7.x
 dependencies[] = book
 dependencies[] = book_made_simple
 dependencies[] = book_explorer
+dependencies[] = services

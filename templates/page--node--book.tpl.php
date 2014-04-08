@@ -234,7 +234,7 @@
         <?php print render($page['footer_fourthcolumn']); ?>
       </div> <!-- /#footer-columns -->
     <?php endif; ?>
-
+    
     <?php if ($page['footer']): ?>
       <div id="footer" class="clearfix">
         <?php print render($page['footer']); ?>

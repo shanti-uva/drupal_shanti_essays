@@ -1,14 +1,14 @@
 /* shanti_essays.css */
 
-body .content {
+_body .content {
 	margin: 0px;
 }
 
-body #content .section {
+_body #content .section {
 	padding: 0px;
 }
 
-body #main {
+_body #main {
 	width: 100%;
 	height: 100%;
 	margin-top: 0px;
@@ -31,10 +31,10 @@ shanti-essay-page-content
   shanti-essay-page-content-body-footer
     shanti-essay-page-links
     shanti-essay-page-navigation
-shanti-essay-page-marginalia
 */
 
-#shanti-essay-page-toc, #shanti-essay-page-content #shanti-essay-page-marginalia {
+#shanti-essay-page-toc, 
+#shanti-essay-page-content {
 	float: left;
 	width: 100%;
 	height: 100%;
@@ -42,36 +42,47 @@ shanti-essay-page-marginalia
 	box-sizing: border-box;
 }
 
+#shanti-essay-page-content {
+	width: 80%;
+}
+
 #shanti-essay-page-toc {
-	float: left;
 	width: 20%;
 }
 
-#shanti-essay-page-content {
-	float: left;
-	width: 50%;
-}
 
 #shanti-essay-page-content-body {
 	min-height: 4.6in;
 	overflow: scroll;
-	padding-left: 1em;
-	width: 100%;
+	padding: 0 1em 0 0;
+	font-size: 14pt;
 }
 
 #shanti-essay-page-content-body-footer {
 	width: 100%;
 }
 
-#shanti-essay-page-marginalia {
-	float: left;
-	width: 30%;
-}
-
+/*
 #shanti-essay-page-toc:only-child,
 #shanti-essay-page-content:only-child,
 #shanti-essay-page-content-body:only-child,
-#shanti-essay-page-content-body-footer:only-child,
-#shanti-essay-page-marginalia:only-child {
+#shanti-essay-page-content-body-footer:only-child {
 	width: 100%;
+}
+*/
+
+#shanti-essay-page-content-body img {
+	border:1px solid gray;
+	padding:3px;
+}
+
+#shanti-essay-page-content-body img.left {
+	float: left;
+	margin-right: 1em;
+}
+
+#shanti-essay-page-content-body img.right {
+	float: right;
+	margin-left: 1em;
+	
 }

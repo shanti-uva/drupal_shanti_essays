@@ -12,22 +12,18 @@ node
     shanti-essay-page-content-body
     shanti-essay-page-content-body-footer
       shanti-essay-page-links
-      shanti-essay-page-navigation
-  shanti-essay-page-marginalia
-  
+      shanti-essay-page-navigation 
 --> 
 
-
 <div id="shanti-essay-page-content">
-  <div id="shanti-essay-page-content-body"><?php print render($content['body']); ?></div>
-  <div id="shanti-essay-page-content-body-footer">
-    <!-- <div id="shanti-essay-page-links"><?php print render($content['links']); ?></div> -->
-    <div id="shanti-essay-page-navigation"><?php print render($content['book_navigation']); ?></div>    
+  <div id="shanti-essay-page-content-body">
+  <?php print render($content['links']); ?>
+  <?php print render($content['body']); ?>
   </div>
-</div>
-
-<div id="shanti-essay-page-marginalia">
-<p>MARGINALIA GOES HERE</p>
+  <div id="shanti-essay-page-content-body-footer">
+    <div id="shanti-essay-page-navigation"><?php print render($content['book_navigation']); ?></div>    
+    <div id="shanti-essay-page-links"><?php print render($content['links']); ?></div>
+  </div>
 </div>
 
 <div id="shanti-essay-page-toc">
@@ -36,7 +32,6 @@ node
 </div>
 
 
-<!--
   <?php print render($title_prefix); ?>
   <?php if (!$page): ?>
     <h2<?php print $title_attributes; ?>>
@@ -44,11 +39,10 @@ node
     </h2>
   <?php endif; ?>
   <?php print render($title_suffix); ?>
--->
 
 
   <div id="shanti-essay-page-extra">
-
+  
   <?php
     // Remove the "Add new comment" link on the teaser page or if the comment
     // form is being displayed on the same page.
@@ -59,7 +53,7 @@ node
     $links = render($content['links']);
     if ($links):
   ?>
-    <div class="link-wrapper">
+  <div class="link-wrapper">
       <?php print $links; ?>
     </div>
   <?php endif; ?>

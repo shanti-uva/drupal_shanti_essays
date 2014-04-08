@@ -8,12 +8,33 @@ function shanti_essays_menu() {
       'page callback' => 'shanti_essays_test',
       'type' => MENU_NORMAL_ITEM,
       'access arguments' => array('view content'), 
-    )
+    ),
+    'shanti_essays/json/%' => array(
+      'page callback' => 'shanti_essays_json',
+      'page arguments' => array(2),
+      'type' => MENU_NORMAL_ITEM,
+      'access arguments' => array('view content'),
+    ),
   );
 }
 
 function shanti_essays_test() {
-  return "BOO HOO";
+  // Get BID
+  $bid = 1; 
+  // Get menu name
+  $book_menu_name = book_menu_name($bid);
+  // Get top level item
+  //$foo = menu_tree_page_data($book_menu_name);
+  $foo = menu_load_links($book_menu_name);
+  kpr($foo[0]['p1']); // Seems like using a sledgehammer ... Will have to do for now
+  return "Testing ...";
+}
+
+function shanti_essays_json($bid) {
+  $toc = book_toc($bid,7);
+  kpr($toc);
+  $detail = "BID = $bid";
+  return $detail;
 }
 
 function shanti_essays_help($path, $arg) {
@@ -67,7 +88,14 @@ function shanti_essays_preprocess_page(&$vars) {
 
 function shanti_essays_preprocess_node(&$vars) {
   if ($vars['type'] == 'book') {
-    $book_node = node_load($vars['book']['bid']);
+    $bid = $vars['book']['bid'];
+    $book_node = node_load($bid);
+    
+    $book_menu_name = book_menu_name($bid);
+    $book_links = menu_load_links($book_menu_name);
+    $top_mlid = $book_links[0]['p1']; // Seems like using a sledgehammer ... Will have to do for now
+    $vars['shanti_essays']['top_mlid'] = $top_mlid;
+    
     $vars['shanti_essays']['book_title'] = $book_node->title;
     $vars['shanti_essays']['book_url']   = drupal_get_path_alias('/node/' . $vars['book']['bid']);
     drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays.css');
@@ -78,13 +106,13 @@ function shanti_essays_preprocess_node(&$vars) {
     drupal_add_js(array('shantiEssays' => $js_settings),'setting');
     drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays.js','file');
     //$vars['theme_hook_suggestions'][] = 'node__book'; // Is this necessary? No. Or, only if using hook_theme_registry_alter
-    //kpr($vars);
+    kpr($vars);
   }
 }
 
 
 function shanti_essays_preprocess_book_navigation(&$vars) {
-  
+  //kpr($vars); 
 } 
 
 
