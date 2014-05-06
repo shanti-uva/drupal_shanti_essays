@@ -43,12 +43,11 @@
   </div>
 </div>
 
-<div id="shanti-essay-page-toc">
+<div id="shanti-essay-page-toc" class="">
   <?php print "<a class='book-outline-title' href='". $shanti_essays['book_url'] ."'>" . $shanti_essays['book_title'] . "</a>"; // Should be put in a render array, I know. ?>
   <?php print render(book_explorer_block_view()); ?>
   <?php print render($content['links']['book']); ?>
 </div>
-
 
 <div>
   <?php print render($title_prefix); ?>
