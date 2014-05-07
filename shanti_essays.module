@@ -19,8 +19,8 @@ function shanti_essays_menu() {
     'shanti_essays/whole/%' => array(
       'page callback' => 'shanti_essays_whole',
       'page arguments' => array(2),
-      'access arguments' => array('access content'),
       'type' => MENU_CALLBACK,
+      'access arguments' => array('access content'),
     ),
     'node/%node/book_toc' => array(
       'title' => 'Contents',
@@ -30,22 +30,21 @@ function shanti_essays_menu() {
       'access arguments' => array('access content'),
       'weight' => 2,
     )
-
   );
 }
 
 function shanti_essays_show_toc($node) {
   $output = shanti_essays_get_toc($node);
-  dpm($output);
+  //dpm($output);
   return drupal_render($output);
 }
 
 function shanti_essays_get_toc($node) {
   $output = array();
   if ($node->type == 'book') {
-    $bid = $node->book['bid'];
-    $toc = book_toc($bid, 7);
-    $tree = menu_tree_all_data(book_menu_name($bid));
+    $bid    = $node->book['bid'];
+    $toc    = book_toc($bid, 7);
+    $tree   = menu_tree_all_data(book_menu_name($bid));
     $output = menu_tree_output($tree);
   } 
   return $output;  
@@ -56,46 +55,70 @@ function shanti_essays_test() {
 }
 
 function shanti_essays_whole($nid) {
+  $node = node_load($nid);
+  if (!$node) {
+    return MENU_NOT_FOUND;
+  }
+  if (!node_access('view', $node)) {
+    return MENU_ACCESS_DENIED;
+  }
   if (user_access('access content')) {
-    $node = node_load($nid);
     if (isset($node->book)) {
-      $tree = book_menu_subtree_data($node->book);  
-      $contents = book_export_traverse($tree, '_shanti_essays_whole_node');
-      return theme('shanti_essays_whole_html', 
-        array(
-          'title' => $node->title, 
-          'contents' => $contents, 
-          'depth' => $node->book['depth']
-        )
-      );
-    }
+      $tree     = book_menu_subtree_data($node->book);  
+      $contents = book_export_traverse($tree, 'shanti_essays_whole_node');
+      return theme('shanti_essays_whole_html', array('title' => $node->title, 'contents' => $contents, 'depth' => $node->book['depth']));
+    } 
     else {
       drupal_not_found();
     }
-  }
+  } 
   else {
     drupal_access_denied();
   }
-  
 }
 
-function _shanti_essays_whole_node($node, $children = '') {
-    $build = node_view($node, 'print');
-    unset($build['#theme']);
+function shanti_essays_entity_info_alter(&$info) {
+  // Add the 'Whole' view mode for nodes.
+  $info['node']['view modes'] += array(
+    'whole' => array(
+      'label' => t('Whole'),
+      'custom settings' => FALSE,
+    ),
+  );
+}
+
+function shanti_essays_whole_node($node, $children = '') {
+    $build = node_view($node, 'whole'); // DEPENDING ON THIS SEEMS DICEY
+    unset($build['#theme']); // Gets rid of theme set to 'node'
+    hide($build['group_content_access']);
+    hide($build['links']);
     // @todo Rendering should happen in the template using render().
     $node->rendered = drupal_render($build);
-    return theme('shanti_essays_whole_node_html', array('node' => $node, 'children' => $children)
-     );
+    return theme('shanti_essays_whole_node_html', array('node' => $node, 'children' => $children));
 }
 
 function template_preprocess_shanti_essays_whole_html (&$vars) {
+  //dpm($vars);
+  /*
   global $base_url, $language;
-  $vars['title'] = check_plain($vars['title']);
-  $vars['base_url'] = $base_url;
-  $vars['language'] = $language;
+  $vars['title']        = check_plain($vars['title']);
+  $vars['base_url']     = $base_url;
+  $vars['language']     = $language;
   $vars['language_rtl'] = ($language->direction == LANGUAGE_RTL);
-  $vars['head'] = drupal_get_html_head();
-  $vars['dir'] = $language->direction ? 'rtl' : 'ltr';  
+  $vars['head']         = drupal_get_html_head();
+  $vars['dir']          = $language->direction ? 'rtl' : 'ltr';
+   * */  
+  
+  // Add CSS and JS
+  drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
+  /*
+  $js_settings = array(
+    'book' => $vars['book'],
+    'book_title' => $vars['shanti_essays']['book_title'],
+  );
+  drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
+  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays.js', 'file');
+  */
 }
 
 function template_preprocess_shanti_essays_whole_node_html (&$vars) {
@@ -161,29 +184,24 @@ function shanti_essays_theme($existing, $type, $theme, $path) {
       'template' => 'templates/book-navigation',
       'path' => SHANTI_ESSAYS_PATH,
     ),
- 
     'page__node__book' => array(
       'render element' => 'page',
       'template' => 'templates/page--node',
       'path' => SHANTI_ESSAYS_PATH,
     ),
-    
     'shanti_essays_whole_html' => array(
       'variables' => array('title' => NULL, 'contents' => NULL, 'depth' => NULL),
       'template' => 'templates/shanti-essays-whole-html',
       'path' => SHANTI_ESSAYS_PATH,
     ),
-
     'shanti_essays_whole_node_html' => array(
       'variables' => array('node' => NULL, 'children' => NULL),
       'template' => 'templates/shanti-essays-whole-node-html',
       'path' => SHANTI_ESSAYS_PATH,
     ),
-    
   );
 }
 
-/*
 
 function shanti_essays_menu_alter(&$items) {}
 
@@ -191,13 +209,16 @@ function shanti_essays_page_alter(&$page) {}
 
 function shanti_essays_page_node_view_alter(&$build) {}
 
+function shanti_essays_preprocess_html(&$vars) {
+  //kpr($vars);
+  //unset($vars['page']['content']['system_main']);
+  
+}
 
-
-*/
-
-function shanti_essays_preprocess_html(&$vars) {}
-
-function shanti_essays_preprocess_page(&$vars) {}
+function shanti_essays_preprocess_page(&$vars) {
+  //kpr($vars);
+  //unset($vars['page']['header']);
+}
 
 function shanti_essays_preprocess_node(&$vars) {
   

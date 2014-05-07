@@ -17,11 +17,11 @@
  *
  * @ingroup themeable
  */
-?>
+?><!--<?php /* ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<?php print $language->language; ?>" xml:lang="<?php print $language->language; ?>" dir="<?php print $dir; ?>">
   <head>
-    <title><?php print $title; ?></title>
+    <title>FOO: <?php print $title; ?></title>
     <?php print $head; ?>
     <base href="<?php print $base_url; ?>" />
     <link type="text/css" rel="stylesheet" href="misc/print.css" />
@@ -30,6 +30,7 @@
     <?php endif; ?>
   </head>
   <body>
+  <?php */ ?>-->
     <?php
     /**
      * The given node is /embedded to its absolute depth in a top level
@@ -48,5 +49,7 @@
     <?php endfor; ?>
     <?php print $contents; ?>
     <?php print $div_close; ?>
+    <!--
   </body>
 </html>
+-->

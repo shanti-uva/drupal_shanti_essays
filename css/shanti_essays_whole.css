@@ -1,0 +1,89 @@
+
+/* Book Title */
+div.section-1 h1.book-heading {
+	font-size:18pt;
+	font-weight:bold;
+}
+
+/* Chapter Title */
+div.section-2 h1.book-heading {
+	font-size:16pt;
+	font-weight:bold;
+	padding-top:1em;
+}
+div.section-2 {
+	background-color: rgba(248,236,194,.25);
+	padding:1em 3em;
+	margin:1em 0;
+	box-shadow: 5px 5px 20px gray;
+	_background: url(http://freeseamlesstextures.com/images/11-fiber-paper-background-lrg.jpg);
+}
+
+div.field-name-field-book-content h1 {
+	font-weight:bold;
+}
+
+div.field-name-field-book-content h2 {
+	font-weight:bold;
+}
+
+div.field-name-field-book-content h3 {
+	font-weight:bold;
+}
+
+div.field-name-field-book-content h4 {}
+
+div.field-name-field-book-content h5 {}
+
+div.field-name-field-book-content h6 {}
+
+div.field-name-field-book-content h7 {}
+
+div.field-name-field-book-content * {
+	font-family:"Times New Roman";
+}
+
+div.field-name-field-book-content p {
+	font-size:14pt;
+	text-align:justify;
+}
+
+.bourdieu {
+	font-size:12pt;
+}
+
+.shanti-essays-pullquote-right {
+	width:40%;
+	font-family:sans-serif!important;
+	text-align:left;
+	font-size: 16pt;
+	font-weight:bold;
+	float:right;
+	border-top: 5px solid black;
+	border-bottom: 5px solid black;
+	padding:.5em 0;
+	margin-top: .5em;
+	margin-left: .5em;
+	margin-bottom:.5em;
+}
+
+.shanti-essays-pullquote-left {
+	width:40%;
+	font-family: sans-serif!important;
+	text-align:left;
+	font-size: 16pt;
+	font-weight:bold;
+	float:left;
+	border-top: 5px solid black;
+	border-bottom: 5px solid black;
+	padding:.5em 0;
+	margin-top: .5em;
+	margin-right: .5em;
+	margin-bottom:.5em;
+}
+
+.submitted {
+	border-top:1px solid gray;
+	margin-top:1em;
+	padding-top:1em;
+}
