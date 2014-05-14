@@ -119,8 +119,7 @@ function shanti_essays_whole_toc($node, $children = '') {
     $depth = $node->book['depth'];
     $prev = book_prev($node->book);
     if (isset($prev)) {
-      $class = 'level-'.$prev['depth'];
-      if ($depth > $prev['depth']) $output .= "<ul class='$class'>\n";
+      if ($depth > $prev['depth']) $output .= "<ul class='level-{$prev['depth']}'>\n";
       if ($depth < $prev['depth']) $output .= "</ul>\n";
     }
     $output .= "<li><a href='#node-$nid'>$title</a></li>\n";
@@ -133,6 +132,8 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
   $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
   drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole.js', 'file');
+  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/outliner.js', 'file');
+  
 }
 
 function template_preprocess_shanti_essays_whole_node_html (&$vars) {
@@ -199,8 +200,7 @@ function shanti_essays_theme($existing, $type, $theme, $path) {
       'template' => 'templates/page--node',
       'path' => SHANTI_ESSAYS_PATH,
     ),
-     * 
-     */
+    */
     'shanti_essays_whole_html' => array(
       ' variables' => array('title' => NULL, 'contents' => NULL, 'depth' => NULL),
       'template' => 'templates/shanti-essays-whole-html',
@@ -301,4 +301,3 @@ function shanti_essays_get_toc($node) {
 function shanti_essays_test() {
   return "Test.";
 }
-

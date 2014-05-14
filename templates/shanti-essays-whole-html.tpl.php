@@ -10,16 +10,19 @@
    */
   $div_close = '';
 ?>
+
   <div name='toc' id='toc'>
-    <button>Contents</button>
+    <h1>Contents</h1>
     <ul class='level-0'>
     <?php print $toc_block; ?>
     </ul>
   </div>
-
-  <?php for ($i = 1; $i < $depth; $i++): ?>
-  <div class="book section-<?php print $i; ?>">
-  <?php $div_close .= '</div>'; ?>
-  <?php endfor; ?>
+  
+  <?php //for ($i = 1; $i < $depth; $i++): ?>
+  <!--- <article class="book section-<?php //print $i; ?>"> -->
+  <?php //$div_close .= '</article>'; ?>
+  <?php //endfor; ?>
+  <!--  <article> -->
   <?php print $contents; ?>
-  <?php print $div_close; ?>
+  <!-- </article> -->
+  <?php //print $div_close; ?>

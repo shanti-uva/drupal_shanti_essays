@@ -4,18 +4,22 @@
 <?php //kpr($content['links']['book']); ?>
 
 <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
-
 <div id="shanti-essay-page-content">
   <div id="shanti-essay-page-content-body-header">
     <div id="shanti-essay-page-navigation"><?php print render($content['book_navigation']); ?></div>    
     <!-- <div id="shanti-essay-page-links"><?php print render($content['links']); ?></div> -->
   </div>
   <div id="shanti-essay-page-content-body">
-    <?php print render($content['field_book_content'][0]['#markup']); ?>
+    <?php
+      if (isset($content['field_book_content'])) {
+        print render($content['field_book_content'][0]['#markup']); 
+      } else {
+        print book_children($node->book);
+      } 
+    ?>
   </div>
   <div id="shanti-essay-page-content-body-footer">
     <div id="shanti-essay-page-extra">
-  
   <?php
     // Remove the "Add new comment" link on the teaser page or if the comment
     // form is being displayed on the same page.

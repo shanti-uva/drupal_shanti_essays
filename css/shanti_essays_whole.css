@@ -2,23 +2,27 @@
 #main {}
 
 /* Book Title */
-div.section-1 > h1.book-heading {
+div.section-1 > h1.book-heading,
+section.section-1 h1 {
 	font-size:18pt;
 	font-weight:bold;
 	text-align:center;
 }
 
 /* Chapter Title */
-div.section-2 h1.book-heading {
+div.section-2 h1.book-heading,
+section.section-2 h1 {
 	font-size:16pt;
 	font-weight:bold;
 	padding-top:1em;
 	border-top:1px solid gray;
+	text-align:left;
 }
 
-div.section-1 {
-	width: 600px;
-	float:left;
+div.section-1,
+section {
+	_width: 600px;
+	_float:left;
 }
 
 div.section-2 {
@@ -26,12 +30,8 @@ div.section-2 {
 	_padding:1em 3em;
 	_margin:1em 0;
 	_box-shadow: 5px 5px 20px gray;
-	width: 600px;
-	float:left;
-}
-
-#toc {
-	width: 240px;
+	_width: 600px;
+	_float:left;
 }
 
 button.action {
@@ -72,7 +72,7 @@ div.field-name-field-book-content p {
 	text-align:justify;
 }
 
-.bourdieu {
+aside, .bourdieu {
 	font-size:12pt;
 }
 
@@ -123,15 +123,48 @@ blockquote:after {
 }
 
 #toc {
-	float:right;
 	font-family:sans-serif;
-	padding:1em;
+	font-size:10pt;
+	position:fixed;
+	bottom:0px;
+	overflow:scroll;
+	width:250px;
+	height:100%;
+	top:0px;
+	left:0px;
+	background-color:rgba(0,0,0,.9);
+	float:left;
+	padding-top:2em;
+	padding-right:1em;
+	padding-bottom:1em;
+	padding-left:1em;
+	box-shadow:5px 5px 20px gray;
+}
+
+#toc > h1 {
+	color:white;
+}
+
+#page-wrapper {
+	margin-left:250px;
+}
+#toc li a:hover {
+	text-decoration:none;
+	color:white;
+} 
+
+#toc li a, 
+#toc li {
+	color:rgb(200,200,200);
+}
+#toc li {
+	padding:.25em 0;
 }
 
 #toc ul {
 	margin:0;
-	padding:0 0 0 1em;
-	list-style-type: square;
+	padding:0 0 0 .5em;
+	list-style-type: none;
 }
 
 #toc ul.level-0 {
@@ -146,7 +179,6 @@ blockquote:after {
 	list-style-type: upper-roman;
 }
 
-#toc ul li {}
 
 #navbar {
 	width:600px;
@@ -177,9 +209,11 @@ blockquote:after {
 }
 
 .action {
-	padding:.25em .5em;
-	margin: .25em;
-	border-radius:3px;
-	border:1px solid gray;
-	font-size:18pt;
+	_padding:.25em .5em;
+	_margin: .25em;
+	_border-radius:3px;
+	_border:1px solid gray;
+	_font-size:18pt;
 }
+
+
