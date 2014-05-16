@@ -17,6 +17,19 @@ Drupal.behaviors.shantiEssaysWhole = {
       $(sel).slideToggle("fast");
     });
     
+     $("#toc h1").toggle(
+      function(){
+        $('#toc').transition({ width: '10px'}, 'slow');   
+        $('#toc h1').transition({ color: 'darkgray'}, 'slow');   
+        $('#toc .level-0').hide();
+      },
+      function(){
+        $('#toc .level-0').show();
+        $('#toc').transition({ width: '250px'}, 'slow');
+        $('#toc h1').transition({ color: 'white'}, 'slow');   
+      }
+    );
+
     // TEST
     //target_id = $('.section-1').attr('id');
     //$('#content').prepend("<div id='left-toc' style='position:fixed;bottom:0px;overflow:hidden;width:200px;height:100%;top:0px;left:0;background-color:rgba(0,0,0,.5);float:left;'>BOO</div>");

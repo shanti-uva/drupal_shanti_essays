@@ -4,23 +4,11 @@ define('SHANTI_ESSAYS_PATH',drupal_get_path('module','shanti_essays'));
 
 function shanti_essays_menu() {
   return array(
-    'shanti_essays/test' => array(
-      'title' => 'SHANTI Essays Test Page',
-      'page callback' => 'shanti_essays_test',
-      'type' => MENU_NORMAL_ITEM,
-      'access arguments' => array('access content'), 
-    ),
     'shanti_essays/whole/%' => array(
       'page callback' => 'shanti_essays_whole',
       'page arguments' => array(2),
       'type' => MENU_CALLBACK,
       //'delivery callback' => 'shanti_essays_content_callback',
-      'access arguments' => array('access content'),
-    ),
-    'shanti_essays/reader/%' => array(
-      'page callback' => 'shanti_essays_reader',
-      'page arguments' => array(2),
-      'type' => MENU_CALLBACK,
       'access arguments' => array('access content'),
     ),
     'node/%node/book_toc' => array(
@@ -30,9 +18,20 @@ function shanti_essays_menu() {
       'type' => MENU_LOCAL_TASK,
       'access arguments' => array('access content'),
       'weight' => 2,
-    )
+    ),
+    'shanti_essays/test' => array(
+      'title' => 'SHANTI Essays Test Page',
+      'page callback' => 'shanti_essays_test',
+      'type' => MENU_NORMAL_ITEM,
+      'access arguments' => array('access content'), 
+    ),
   );
 }
+
+function shanti_essays_test() {
+  return "This is a test.";
+}
+
 
 // Not used for now -- shows raw page with no attached assets (i.e. css, js, etc.)
 function shanti_essays_content_callback($page_callback_result) {
@@ -42,24 +41,6 @@ function shanti_essays_content_callback($page_callback_result) {
     print $page_callback_result;
   }
   drupal_page_footer();
-}
-
-function shanti_essays_reader($nid) {
-  
-  // Do stuff
-  $node = node_load($nid);
-  $toc1 = shanti_essays_get_toc($node);
-  $toc2 = render($toc1);
-  dpm($toc1);
-  dpm($toc2);
-
-  // Add stuff
-  drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
-  
-  // Build the content
-  $output = '';  
-  $output .= "<p>$nid</p>\n";
-  return $output;
 }
 
 function shanti_essays_whole($nid) {
@@ -99,20 +80,15 @@ function shanti_essays_entity_info_alter(&$info) {
 }
 
 function shanti_essays_whole_node($node, $children = '') {
-    $build = node_view($node, 'whole'); // DEPENDING ON THIS SEEMS DICEY
-    unset($build['#theme']); // Gets rid of theme set to 'node'
+    $build = node_view($node, 'whole'); 
+    unset($build['#theme']); 
     hide($build['group_content_access']);
     hide($build['links']);
-    // @todo Rendering should happen in the template using render().
     $node->rendered = drupal_render($build);
-    // The following line is old school. Nowadays, theme directives are added to the
-    // render array as the #theme key (property)
     return theme('shanti_essays_whole_node_html', array('node' => $node, 'children' => $children));
 }
 
 function shanti_essays_whole_toc($node, $children = '') {
-    // Should go into a render array but ...
-    // Also, should this be a block?
     $output = '';
     $nid = $node->nid;
     $title = check_plain($node->title);
@@ -132,7 +108,7 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
   $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
   drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole.js', 'file');
-  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/outliner.js', 'file');
+  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.transit.min.js', 'file');
   
 }
 
@@ -298,6 +274,3 @@ function shanti_essays_get_toc($node) {
   return $output;  
 }
 
-function shanti_essays_test() {
-  return "Test.";
-}

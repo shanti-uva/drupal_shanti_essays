@@ -18,7 +18,7 @@
  * @ingroup themeable
  */
 ?>
-<section id="node-<?php print $node->nid; ?>" class="book-section section-<?php print $depth; ?>">
+<article id="node-<?php print $node->nid; ?>" class="book-section section-<?php print $depth; ?>">
   
   <h1 class="book-heading"><?php print $title; ?></h1>
   
@@ -34,4 +34,4 @@
   
   <?php print $children; ?>
   
-</section>
+</article>

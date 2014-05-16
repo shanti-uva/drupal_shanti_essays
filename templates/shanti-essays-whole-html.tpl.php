@@ -11,18 +11,14 @@
   $div_close = '';
 ?>
 
+  <div name="toc-tab" id="toc-tab"></div>
   <div name='toc' id='toc'>
-    <h1>Contents</h1>
+    <h1>CONTENTS</h1>
     <ul class='level-0'>
     <?php print $toc_block; ?>
     </ul>
   </div>
   
-  <?php //for ($i = 1; $i < $depth; $i++): ?>
-  <!--- <article class="book section-<?php //print $i; ?>"> -->
-  <?php //$div_close .= '</article>'; ?>
-  <?php //endfor; ?>
-  <!--  <article> -->
+  <section>
   <?php print $contents; ?>
-  <!-- </article> -->
-  <?php //print $div_close; ?>
+  </section>
