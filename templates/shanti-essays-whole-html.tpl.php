@@ -1,24 +1,20 @@
-<?php
-  /**
-   * The given node is /embedded to its absolute depth in a top level
-   * section/. For example, a child node with depth 2 in the hierarchy is
-   * contained in (otherwise empty) &lt;div&gt; elements corresponding to
-   * depth 0 and depth 1. This is intended to support WYSIWYG output - e.g.,
-   * level 3 sections always look like level 3 sections, no matter their
-   * depth relative to the node selected to be exported as printer-friendly
-   * HTML.
-   */
-  $div_close = '';
-?>
-
-  <div name="toc-tab" id="toc-tab"></div>
-  <div name='toc' id='toc'>
-    <h1>CONTENTS</h1>
-    <ul class='level-0'>
-    <?php print $toc_block; ?>
-    </ul>
-  </div>
+<div name='toc' id='toc'>
   
-  <section>
+  <div>
+  <span class="toc-action"><i id="toc-collapse-toggle" class="fa fa-caret-square-o-left fa-lg"></i></span>
+  <span class="toc-action"><a id="toc-edit" href="/node/<?php print $book_id; ?>/reorder"><i class="fa fa-lg fa-book"></i></a></span>
+  </div>
+  <br />
+  
+  <h1>CONTENTS</h1>
+  <ul class='level-0'>
+  <?php print $toc_block; ?>
+  </ul>
+  
+  <div id='log'></div>
+  
+</div>
+
+<section id="book-content">
   <?php print $contents; ?>
-  </section>
+</section>
