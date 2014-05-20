@@ -14,6 +14,10 @@ Drupal.behaviors.shantiEssaysWhole = {
     */
  
     // Toggle Sidebar
+
+    var toc_close_width = '10px';   var pgw_close_left = '50px'; // Compare to CSS
+    var toc_open_width = '220px';   var pgw_open_left = '260px'; // Compare to CSS
+
     $('#toc-collapse-toggle').toggle(
       function(){
         $('#toc').transition({ width: '10px'}, 'slow');   
@@ -34,15 +38,13 @@ Drupal.behaviors.shantiEssaysWhole = {
     );
     
     // Some mobile stuff
-    /*
-    var isPad = navigator.userAgent.match(/(iPad|Nexus)/i) != null;
+    var isPad = navigator.userAgent.match(/(iPad|Nexus|iPhone|Android)/i) != null;
     if (isPad) {
       $('#toc *').css('font-size',"110%");
     }
-    */
 
     // Diagnostics
-    //$("#log").html(navigator.userAgent);
+    $("#log").html(navigator.userAgent);
     /*
     var ww = $(window).width();
     var wh = $(window).height();
@@ -51,8 +53,8 @@ Drupal.behaviors.shantiEssaysWhole = {
       ww = $(window).width();
       wh = $(window).height();
       $('#log').html('<br />W: ' + ww + '<br/>H: ' + wh + '<br/>');  
-    }
-    */
+    } 
+    */  
     
     /*
     elements = ['#page-wrapper','#page','#main-wrapper','#main','#content','.section'];
@@ -62,6 +64,18 @@ Drupal.behaviors.shantiEssaysWhole = {
       $('#log table').append('<tr><td>' + path + '</td><td>' + $(path).width() + "</td></tr>")
     }
     */
+   
+   // Show context
+   $('article').bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
+     var id = $(this).attr('id');
+     var href = '#'+id;
+     var sel = "#toc a[href='"+href+"']";
+     if (isInView) {
+       $(sel).css('border-bottom','1px dotted lightgreen');
+     } else {
+       $(sel).css('border-bottom','none');
+     }
+   });
   }
   
 };
