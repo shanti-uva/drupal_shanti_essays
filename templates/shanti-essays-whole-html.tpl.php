@@ -1,19 +1,19 @@
-<div name='toc' id='toc'>
+<nav name='toc' id='toc' class='open'>
   
-  <div>
-  <span class="toc-action"><i id="toc-collapse-toggle" class="fa fa-caret-square-o-left fa-lg"></i></span>
-  <span class="toc-action"><a id="toc-edit" href="/node/<?php print $book_id; ?>/reorder"><i class="fa fa-lg fa-book"></i></a></span>
+  <div id='toc-menu'>
+    <span class="toc-action" id="toc-collapse-toggle"><i class="fa fa-chevron-left fa-2x"></i></span>
+    <span class="toc-action" id="toc-collapse-toggle-h"><i class="fa fa-bars fa-2x"></i></span>
+    <span class="toc-action" id="toc-edit"><a href="/node/<?php print $book_id; ?>"><i class="fa fa-2x fa-book"></i></a></span>
+    <span class="toc-action" id="toc-go-home"><a href="/"><i class="fa fa-home fa-2x"></i></a></span>
   </div>
-  <br />
   
-  <h1>CONTENTS</h1>
+  <!-- <h1>CONTENTS</h1> -->
   <ul class='level-0'>
   <?php print $toc_block; ?>
   </ul>
-  
   <div id='log'></div>
   
-</div>
+</nav>
 
 <section id="book-content">
   <?php print $contents; ?>

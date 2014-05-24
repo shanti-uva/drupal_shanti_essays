@@ -1,6 +1,7 @@
 <?php 
 
 define('SHANTI_ESSAYS_PATH',drupal_get_path('module','shanti_essays'));
+define('SHANTI_ESSAYS_Q', $GLOBALS['_GET']['q']);
 
 function shanti_essays_menu() {
   return array(
@@ -32,6 +33,7 @@ function shanti_essays_test() {
   return "This is a test.";
 }
 
+// Need to learn more about how to customize this before using
 function shanti_essays_content_callback($page_callback_result) {
   drupal_page_header();
   if (isset($page_callback_result) && is_null(drupal_get_http_header('Content-Type'))) {
@@ -41,6 +43,11 @@ function shanti_essays_content_callback($page_callback_result) {
   drupal_page_footer();
 }
 
+/**
+ * The function creates a single page out of all the nodes that compose a
+ * book. It also generates a table of contents and then passes these to
+ * two templates, very much as the default book print function works.
+ */
 function shanti_essays_whole($nid) {
   $node = node_load($nid);
   if (!$node) {
@@ -66,6 +73,10 @@ function shanti_essays_whole($nid) {
   }
 }
 
+/**
+ * This exists to conform to the model of how the book print function works.
+ * Not sure if it is necceary to specify a new view mode but what the heck.
+ */
 function shanti_essays_entity_info_alter(&$info) {
   $info['node']['view modes'] += array(
     'whole' => array(
@@ -75,6 +86,10 @@ function shanti_essays_entity_info_alter(&$info) {
   );
 }
 
+/**
+ * I believe this is where you need to intervene in order to make changes to how
+ * node content, specifically each field, is to be rendered in the Reader.
+ */
 function shanti_essays_whole_node($node, $children = '') {
   $build = node_view($node, 'whole'); 
   unset($build['#theme']); 
@@ -84,6 +99,11 @@ function shanti_essays_whole_node($node, $children = '') {
   return theme('shanti_essays_whole_node_html', array('node' => $node, 'children' => $children));
 }
 
+/**
+ * Generates a table of contents for use one the Whole page. Seemed
+ * more efficient to roll your own here, but I am open to working 
+ * with an existing render array to do this. Or something.
+ */
 function shanti_essays_whole_toc($node, $children = '') {
     $output = '';
     $nid = $node->nid;
@@ -91,8 +111,13 @@ function shanti_essays_whole_toc($node, $children = '') {
     $depth = $node->book['depth'];
     $prev = book_prev($node->book);
     if (isset($prev)) {
-      if ($depth > $prev['depth']) $output .= "<ul class='level-{$prev['depth']}'>\n";
-      if ($depth < $prev['depth']) $output .= "</ul>\n";
+      $x = $depth - $prev['depth'];
+      if ($x > 0) $output .= "<ul class='level-{$prev['depth']}'>\n"; // $x should never be > 1
+      elseif ($x < 0) {
+        for ($i = 0; $i > $x; $i--) {
+          $output .= "</ul>\n"; 
+        }
+      }
     }
     $output .= "<li><a href='#node-$nid'>$title</a></li>\n";
     $output .= $children;
@@ -106,7 +131,6 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole.js', 'file');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.transit.min.js', 'file');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.inview.min.js', 'file');
-  
 }
 
 function template_preprocess_shanti_essays_whole_node_html (&$vars) {
@@ -187,33 +211,19 @@ function shanti_essays_theme($existing, $type, $theme, $path) {
       'template' => 'templates/shanti-essays-whole-node-html',
       'path' => SHANTI_ESSAYS_PATH,
     ),
-    'region__content' => array(
-      'render element' => 'page',
-      'template' => 'templates/region--content',
-      'path' => SHANTI_ESSAYS_PATH,      
-    ),
-    'block__system__main' => array(
-      'render element' => 'page',
-      'template' => 'templates/block--system--main',
-      'path' => SHANTI_ESSAYS_PATH,    
-    )
   );
 }
 
 /*
 function shanti_essays_menu_alter(&$items) {}
 function shanti_essays_page_alter(&$page) {}
+function shanti_essays_page_build(&$page) {} 
 function shanti_essays_page_node_view_alter(&$build) {}
 function shanti_essays_preprocess_html(&$vars) {}
 function shanti_essays_preprocess_page(&$vars) {}
 function shanti_essays_preprocess_book_navigation(&$vars) {} 
+function shanti_essays_preprocess_region(&$vars) {}
 */
-
-function shanti_essays_page_alter(&$page) {
-}
-
-function shanti_essays_page_build(&$page) {
-}
 
 function shanti_essays_css_alter (&$css) {
   if (preg_match("/^shanti_essays\/whole/", $GLOBALS['_GET']['q'])) {
@@ -227,20 +237,16 @@ function shanti_essays_css_alter (&$css) {
 }
 
 function shanti_essays_preprocess_html(&$vars) {
-  if (preg_match("/^shanti_essays\/whole/", $GLOBALS['_GET']['q'])) {
+  if (preg_match("/^shanti_essays\/whole/", SHANTI_ESSAYS_Q)) {
     $vars['theme_hook_suggestions'][] = 'html__book';
   }
 }
 
 function shanti_essays_preprocess_page(&$vars, $hook) {
-  if (preg_match("/^shanti_essays\/whole/", $GLOBALS['_GET']['q'])) {
+  if (preg_match("/^shanti_essays\/whole/", SHANTI_ESSAYS_Q)) {
     $vars['theme_hook_suggestions'][] = 'page__node__book';
-    //$vars['theme_hook_suggestions'][] = 'region__content';
-    //$vars['theme_hook_suggestions'][] = 'block__system__main';
   }
 }
-
-//function shanti_essays_preprocess_region(&$vars) {}
 
 function shanti_essays_preprocess_node(&$vars) {
     

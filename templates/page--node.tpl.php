@@ -85,19 +85,19 @@
  * @see html.tpl.php
  */
 ?>
-<div id="page-wrapper">
+<div id="page-wrapper" class="open">
 
   <?php if ($messages): ?>
   <div id="messages">
-    <?php //print $messages; ?>
+    <?php print $messages; ?>
   </div> 
   <?php endif; ?>
 
   <div id="main" class="clearfix">
 
-    <?php if ($breadcrumb): ?>
-    <div id="breadcrumb"><?php print $breadcrumb; ?></div>
-    <?php endif; ?>
+    <?php // if ($breadcrumb): ?>
+    <!-- <div id="breadcrumb"><?php print $breadcrumb; ?></div> -->
+    <?php //endif; ?>
 
     <div id="content" class="column">
   
@@ -122,6 +122,7 @@
         <?php print render($action_links); ?>
       </ul>
       <?php endif; ?>
+      
       <!-- START CONTENT -->
       <?php print render($page['content']); ?>
       <!-- END CONTENT -->
