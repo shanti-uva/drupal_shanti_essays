@@ -1,18 +1,16 @@
-@media screen and (max-width: 768px) {
+/* @media screen and (max-width: 768px) {
 	
 	#toc-collapse-toggle,
 	#toc-edit
 	{
 		display:none;
-	} 
+	}
 	
-	/* HORIZ CLOSED */
 	#page-wrapper {
-		position:	relative;
-		
+		position:	relative;	
 		top:				40px;
-		bottom:		0px;
 		left:			0px;
+		_bottom:		0px;
 		_float:			left;	
 		margin: 0;
 		padding-top: 40px;
@@ -21,7 +19,6 @@
 		height:100%;
 	}
 
-	/* HORIZ CLOSED */	
 	#toc {
 		position:fixed;
 		font-family: 			sans-serif;
@@ -43,7 +40,6 @@
 		padding-bottom: 	1em;
 			
 	}
-	
 }
 
 @media screen and (min-width: 769px) {
@@ -52,7 +48,6 @@
 		display:none;
 	} 
 
-	/* VERTICAL OPEN */	
 	#page-wrapper {
 		
 		position:	relative;
@@ -69,7 +64,6 @@
 		max-width: 6in;
 	}
 
-	/* VERTICAL OPEN */		
 	#toc {
 		position:fixed;
 		float:left;
@@ -80,7 +74,7 @@
 	
 		bottom: 0px;
 		top: 		0px;
-		left: 		0px;
+		left: 	0px;
 		height: 100%;
 		width: 	220px;
 		
@@ -92,8 +86,28 @@
 		padding-bottom: 	1em;
 			
 	}
-
 }
+*/
+
+/* EXPERIMENT START */
+
+#toc { 
+	display:none; 
+	position:fixed; 
+	float:left; 
+	overflow:auto; 
+	background-color: rgba(50,50,50,.9); 
+	box-shadow: 5px 5px 20px gray; 
+}
+
+#page-wrapper { 
+	display:none; 
+	position:relative; 
+	float:left; 
+	max-width:6in; 
+}
+
+/* EXPERIMENT END */
 
 a {
 	text-decoration:none;
@@ -104,7 +118,6 @@ a {
 	font-size:12pt;
 }
 
-
 #header {
 	display:none;
 }
@@ -113,18 +126,11 @@ a {
 	display:none;
 }
 
-
-#toc-menu {
-	padding-bottom: 1em;
-	margin-bottom: 1em;
-	display:block;
-}
-
-#toc > h1 {
-	color:white;
-	font-size:12pt;
-	word-wrap:break-word;
-	letter-spacing: .25em;
+#main.mobile #toc-menu .toc-action {
+	padding: 0 1em;
+	_padding-bottom: 1em;
+	_margin-bottom: 1em;
+	_display:block;
 }
 
 .toc-action a {
@@ -140,17 +146,18 @@ a {
 
 #toc li a:hover {
 	border-bottom:1px solid #c8c8c8;
-	
 } 
 
 #toc li a, 
 #toc li {
 	color:#c8c8c8;
 	line-height:1.4;
+	padding:.25em 0;
+	font-size:12pt;
 }
 
-#toc li {
-	padding:.25em 0;
+#main.mobile #toc li a {
+	font-size:200%;
 }
 
 #toc ul {
@@ -168,13 +175,17 @@ a {
 }
 
 #toc ul.level-1 {
-	list-style-type: decimal;
+	list-style-type: none;
+}
+
+#toc ul.level-2 {
+	list-style-type: none;
 }
 
 #log {
 	color:palegreen;
 	font-family:monospace;
-	font-sizse:10pt;
+	font-size:10pt;
 	border-top:lightgray;
 	padding-top:1em;
 	margin-top:1em;
@@ -249,6 +260,11 @@ div.field-name-field-book-content * {
 
 div.field-name-field-book-content p {
 	font-size:14pt;
+	text-align:justify;
+}
+
+#main.mobile div.field-name-field-book-content p {
+	font-size:18pt;
 	text-align:justify;
 }
 

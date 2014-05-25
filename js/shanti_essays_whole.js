@@ -3,54 +3,63 @@
 Drupal.behaviors.shantiEssaysWhole = {
   attach: function (context, settings) {
  
-    /*
-    ww = $(window).width();
-    if (ww > 768) tocOpenVert();
-    else tocCloseHoriz();
-    */
-    
-    /// STATES ///
-    var state = '';
+    /// STATES (for #toc and #page-wrapper) ///
     
     var states = {
       '#toc': {
-        'closed_v': {
-          'width':          '20px',
-          'height':         '100%',
-          'padding-left':   '.25em'
-        },
         'open_v': {
+        	'top':						'0px',
+        	'left':						'0px',
+					'bottom':					'0px',
           'width':          '220px',
           'height':         '100%',
-          'padding-left':   '1em',
-          'padding-top':    '1em'         
+          'padding':   			'.5em',
+        },
+        'closed_v': {
+        	'top':						'0px',
+        	'left':						'0px',
+					'bottom':					'0px',
+          'width':          '30px',
+          'height':         '100%',
+          'padding':   			'1em',
+          'margin':					'0px'
         },
         'closed_h': {
           'top':            '0px',
-          'height':         '40px',
+					'left':						'0px',
+					'bottom':					'0px',
           'width':          '100%',
-          'padding-top':    '1em',
-          'padding-left':   '1em'
+          'height':         '60px',
+					'padding':				'.5em',
+          'margin':					'0px'
         },
         'open_h': {
+          'top':            '0px',
+					'left':						'0px',
+					'bottom':					'0px',
           'width':          '100%',
           'height':         '100%',
-          'top':            '0px',
           'padding-left':   '1em',
           'padding-top':    '1em'                   
-        },
-        'push_out': {
-          'margin-left':    '-250px'
-        },
-        'pull_in': {
-          'margin-left':    '0px'
-        }
-        
+        }        
       },
       '#page-wrapper': {
+        'open_v': {
+          'top': 						'0px',
+          'left': 					'250px',
+          'bottom': 				'0px',
+					'width':					'100%',
+					'height':					'100%',
+          'margin-right':   '250px',
+          'padding-right':  '2em',
+          'padding-left':   '2em'
+        },
         'closed_v': {
           'top':            '0px',
           'left':           '60px',
+          'bottom':         '0px',
+					'width':					'100%',
+					'height':					'100%',
           'margin-right':   '60px',
           'padding-right':  '1.5em',
           'padding-left':   '1.5em'          
@@ -58,154 +67,147 @@ Drupal.behaviors.shantiEssaysWhole = {
         'closed_h': {
           'top':            '60px',
           'left':           '0px',
+					'bottom':					'0px',
+					'width':					'auto',
+					'height':					'100%',
           'margin-right':   '0px',
           'padding-right':  '1em',
-          'padding-left':   '1em'
-        },
-        'open_v': {
-          'top': '0px',
-          'left': '250px',
-          'margin-right':   '250px',
-          'padding-right':  '2em',
-          'padding-left':   '2em'
+          'padding-left':   '1em',
+          'border-color':		'red'
         },
         'open_h': {
           'top':            '60px',
           'left':           '0px',
+          'bottom': 				'0px',
+					'width':					'auto',
+					'height':					'100%',
           'margin-right':   '0px',
           'padding-right':  '1em',
           'padding-left':   '1em'          
-        },
-        'push_out': {
-          'left':           '0px'
-        },
-        'pull_in': {
-          'left':           '250px'          
         }
       }
     };
     
     //// TRANSITIONS (which employ STATES) ////
-    
+
+		var state = ''; // Current state of the two elements
+
     function tocCloseHoriz(){
-      $('#toc').transition(states['#toc'].closed_h, 'slow');
-      $('#page-wrapper').transition(states['#page-wrapper'].closed_h, 'slow');      
-      $('#toc h1').transition({ color: 'darkgray'}, 'slow');   
-      $('.toc-action a, .toc-action').transition({ color: 'darkgray'}, 'slow');   
-      $('#toc .level-0').hide();
-      $('#toc-edit').hide();
-      $('#toc-collapse-toggle-h i').removeClass( "fa-chevron-up" );
-      $('#toc-collapse-toggle-h i').addClass( "fa-bars" ).transition({ color: 'darkgray'}, 'slow');
+      $('#toc', context).transition(states['#toc'].closed_h, 'slow');
+      $('#page-wrapper', context).transition(states['#page-wrapper'].closed_h, 'slow');      
+      $('.toc-action a, .toc-action', context).transition({ color: 'darkgray'}, 'slow');   
+      $('#toc .level-0', context).hide();
+      $('#toc-collapse-toggle-h i', context).removeClass( "fa-chevron-up" );
+      $('#toc-collapse-toggle-h i', context).addClass( "fa-bars" );
+      $('#toc-collapse-toggle-h i', context).transition({ color: 'darkgray'}, 'slow');
       state = 'closed_h';   
     }
     
     function tocOpenHoriz(){
-      $('#toc').transition(states['#toc'].open_h, 'slow');   
-      $('#page-wrapper').transition(states['#page-wrapper'].open_h, 'slow');   
-      $('#toc h1').transition({ color: '#c8c8c8'}, 'slow');   
-      $('.toc-action a, .toc-action').transition({ color: '#c8c8c8'}, 'slow');   
-      $('#toc .level-0').show();
-      $('#toc-collapse-toggle-h i').removeClass( "fa-bars" );
-      $('#toc-collapse-toggle-h i').addClass( "fa-chevron-up" ).transition({ color: '#c8c8c8'}, 'slow');
+      $('#toc', context).transition(states['#toc'].open_h, 'slow');   
+      $('#page-wrapper', context).transition(states['#page-wrapper'].open_h, 'slow');   
+      $('.toc-action a, .toc-action', context).transition({ color: '#c8c8c8'}, 'slow');   
+      $('#toc .level-0', context).show();
+      $('#toc-collapse-toggle-h i', context).removeClass( "fa-bars" );
+      $('#toc-collapse-toggle-h i', context).addClass( "fa-chevron-up" );
+      $('#toc-collapse-toggle-h i', context).transition({ color: '#c8c8c8'}, 'slow');
       state = 'open_h';
     }
     
     function tocCloseVert(){
-      $('#toc').transition(states['#toc'].closed_v, 'slow');
-      $('#page-wrapper').transition(states['#page-wrapper'].closed_v, 'slow');
-      $('#toc h1').transition({ color: 'darkgray'}, 'slow');   
-      $('.toc-action a, .toc-action').transition({ color: 'darkgray'}, 'slow');   
-      $('#toc .level-0').hide();
-      $('#toc-collapse-toggle i').removeClass( "fa-chevron-left" ).addClass( "fa-chevron-right" ).transition({ color: 'darkgray', 'padding-left': '5px'}, 'slow');
+      $('#toc', context).transition(states['#toc'].closed_v, 'slow');
+      $('#page-wrapper', context).transition(states['#page-wrapper'].closed_v, 'slow');
+      $('.toc-action a, .toc-action', context).transition({ color: 'darkgray'}, 'slow');   
+      $('#toc .level-0', context).hide();
+      $('#toc-collapse-toggle i', context).removeClass( "fa-chevron-left" ).addClass( "fa-chevron-right" ).transition({ color: 'darkgray', 'padding-left': '5px'}, 'slow');
       state = 'closed_v';   
     }
     
     function tocOpenVert(){
-      $('#toc').transition(states['#toc'].open_v, 'slow');   
-      $('#page-wrapper').transition(states['#page-wrapper'].open_v, 'slow');   
-      $('#toc h1').transition({ color: '#c8c8c8'}, 'slow');   
-      $('.toc-action a, .toc-action').transition({ color: '#c8c8c8'}, 'slow');   
-      $('#toc .level-0').show();
-      $('#toc-collapse-toggle i').removeClass( "fa-chevron-right" ).addClass( "fa-chevron-left" ).transition({ color: '#c8c8c8', 'padding-left': '0px'}, 'slow');
+      $('#toc', context).transition(states['#toc'].open_v, 'slow');   
+      $('#page-wrapper', context).transition(states['#page-wrapper'].open_v, 'slow');   
+      $('.toc-action a, .toc-action', context).transition({ color: '#c8c8c8'}, 'slow');   
+      $('#toc .level-0', context).show();
+      $('#toc-collapse-toggle i', context).removeClass( "fa-chevron-right" ).addClass( "fa-chevron-left" ).transition({ color: '#c8c8c8', 'padding-left': '0px'}, 'slow');
       state ='open_v';
     }
     
-    function tocPushOut() {
-      $('#toc').transition(states['#toc'].push_out, 'slow');
-      $('#page-wrapper').transition(states['#page-wrapper'].push_out, 'slow');
-    }
-    
-    function tocPullIn() {
-      $('#toc').transition(states['#toc'].pull_in, 'slow');      
-      $('#page-wrapper').transition(states['#page-wrapper'].pull_in, 'slow');
-    }
-    
+    function isMobile(){
+   		if (window.innerWidth <= 800 && window.innerHeight <= 600) {return true;}
+     	else {return false;}
+		}
     
     /// EVENTS (which trigger TRANSITIONS) ///
     
+    // Init
+    var mobile = false;
+    $(document, context).ready(function(){
+    	$('#toc', context).css('display','block');
+    	$('#page-wrapper', context).css('display','block');
+    	mobile = isMobile();
+    	if (!mobile) {
+    		$('#toc-collapse-toggle-h', context).hide();
+				var ww = $(window).width();
+				if (ww <= 800) { tocCloseVert(); }
+				else { tocOpenVert(); }
+    	}
+    	else { 
+    		$('#main', context).addClass('mobile');
+    		$('#toc-collapse-toggle', context).hide();
+    		$('#toc-edit', context).hide();
+    		$('.toc-action i', context).removeClass('fa-2x').addClass('fa-3x');
+    		tocCloseHoriz(); 
+    	}
+    });
     
-    $('#toc-collapse-toggle').toggle(
+    /*
+    $('#toc-collapse-toggle', context).toggle(
       function(){tocCloseVert();}, 
       function(){tocOpenVert();}
     );
+    */
     
-    $('#toc-collapse-toggle-h').toggle(
+    $('#toc-collapse-toggle', context).click(function(){
+    	if (state == 'closed_v') { tocOpenVert(); }
+    	else { tocCloseVert(); }
+    });
+
+		/*    
+    $('#toc-collapse-toggle-h', context).toggle(
       function(){tocOpenHoriz();},
       function(){tocCloseHoriz();} 
     );
-
-    $('#toc a').click(
-      function(){
-        window.location = $(this).attr('href');
-        ww = $(window).width();
-        if (ww <= 768) {
-          tocCloseHoriz();
-          $('html, body').transition({scrollDown: '40px'}, 800);
-        }
-      }
-    );
-     
-    /*
-    $(window).resize(function(){
-      if ($(this).width() <= 768) tocCloseHoriz();
-      else if ($(this).width() > 768) tocOpenVert();
-    });
     */
-   
+    
+		$('#toc-collapse-toggle-h', context).click(function(){
+    	if (state == 'closed_h') { tocOpenHoriz(); }
+    	else { tocCloseHoriz(); }
+    });
 
 
-
-    // Some mobile stuff
-    var isPad = navigator.userAgent.match(/(iPad|Nexus|iPhone|Android)/i) != null;
-    if (isPad) {
-      $('#toc *').css('font-size',"110%");
-    }
-
-    // Diagnostics
-    /*
-        
-    $("#log").html(navigator.userAgent);
-
-    var ww = $(window).width();
-    var wh = $(window).height();
-    $('#log').html('<br />W: ' + ww + '<br/>H: ' + wh + '<br/>');  
-    window.onresize = function (e){
-      ww = $(window).width();
-      wh = $(window).height();
-      $('#log').html('<br />W: ' + ww + '<br/>H: ' + wh + '<br/>');  
-    } 
-    */  
-   
-   // Show visible articles on TOC
-   $('article').bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
-     var toc_target = "#toc a[href='#"+ $(this).attr('id') +"']";
-     if (isInView) {
-       $(toc_target).css('color','orange'); // The new black
-     } else {
-       $(toc_target).css('color','#C8C8C8'); // rgb(200,200,200)
-     }
-   });
-   
+    // Show visible articles on TOC
+    $('article').bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
+      var toc_target = "#toc a[href='#"+ $(this).attr('id') +"']";
+      if (isInView) {
+        $(toc_target).css('color','orange'); // The new black
+      } 
+      else {
+        $(toc_target).css('color','#C8C8C8'); // rgb(200,200,200)
+      }
+    });
+    
+    $(window).resize(function(){
+    	var ww = $(window).width();
+			if (!mobile && ww < 800 && state == 'open_v') { 
+				tocCloseVert();
+    	}
+    });
+  
+    $('#toc a', context).click(function(){
+			window.location = $(this).attr('href');
+			if (mobile) { tocCloseHoriz(); }
+    });
+ 
    // Toggle Pages
    /*
    $('.head-toggle').click(function(e){
@@ -223,3 +225,4 @@ Drupal.behaviors.shantiEssaysWhole = {
 
   
 })(jQuery);
+

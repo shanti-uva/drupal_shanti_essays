@@ -6,8 +6,7 @@
     <span class="toc-action" id="toc-edit"><a href="/node/<?php print $book_id; ?>"><i class="fa fa-2x fa-book"></i></a></span>
     <span class="toc-action" id="toc-go-home"><a href="/"><i class="fa fa-home fa-2x"></i></a></span>
   </div>
-  
-  <!-- <h1>CONTENTS</h1> -->
+
   <ul class='level-0'>
   <?php print $toc_block; ?>
   </ul>

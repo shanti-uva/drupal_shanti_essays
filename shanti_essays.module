@@ -163,7 +163,8 @@ function _shanti_essays_pullquote_filter_process($text, $filter, $format) {
   for ($i = 0; $i < count($text_lines); $i++) {
     if (preg_match("/^h([1-7])/",$text_lines[$i],$matches)) {
       $text_lines[$i] = "<a id='h1_{$i}'></a><".$text_lines[$i]; 
-    } elseif ($i > 0) {
+    } 
+    elseif ($i > 0) {
       $text_lines[$i] = "<".$text_lines[$i];
     }
   }
