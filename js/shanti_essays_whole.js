@@ -7,10 +7,10 @@ Drupal.behaviors.shantiEssaysWhole = {
   	/// DEFAULTS ///
   
   	var dims = {
-  		wbreak: 800,
-  		hbreak: 400,
-  		tocopenw: 300,
-  		tocclosew: 20
+  		wbreak: 			800,
+  		hbreak: 			400,
+  		toc_open_w: 	300,
+  		toc_close_w: 	20
   	};
   	
   	var colors = {};
@@ -24,7 +24,7 @@ Drupal.behaviors.shantiEssaysWhole = {
         	'top':						'0px',
         	'left':						'0px',
 					'bottom':					'0px',
-          'width':          dims.tocopenw + 'px',
+          'width':          dims.toc_open_w + 'px',
           'height':         '100%',
           'padding':   			'1em .5em 0 .5em',
           'margin':					'0px'
@@ -33,25 +33,29 @@ Drupal.behaviors.shantiEssaysWhole = {
         	'top':						'0px',
         	'left':						'0px',
 					'bottom':					'0px',
-          'width':          dims.tocclosew + 'px',
+          'width':          dims.toc_close_w + 'px',
           'height':         '100%',
           'padding':   			'1em .5em 0 .5em',
           'margin':					'0px'
         },
         'open_v_r': {
+					'position':				'fixed', // bc resizable()
         	'top':						'0px',
         	'right':					'0px',
 					'bottom':					'0px',
-          'width':          dims.tocopenw + 'px',
-          'height':         '100%',
+					'left':						'auto',
+          'width':          dims.toc_open_w + 'px',
+          'height':        '100%',
           'padding':   			'1em .5em 0 .5em',
           'margin':					'0px'
         },
         'closed_v_r': {
+        	'position':				'fixed', // bc resizable()
         	'top':						'0px',
         	'right':					'0px',
 					'bottom':					'0px',
-          'width':          dims.tocclosew + 'px',
+          'left':						'auto',
+          'width':          dims.toc_close_w + 'px',
           'height':         '100%',
           'padding':   			'1em .5em 0 .5em',
           'margin':					'0px'
@@ -59,6 +63,7 @@ Drupal.behaviors.shantiEssaysWhole = {
         'closed_h': {
           'top':            '0px',
 					'left':						'0px',
+					'right':					'0px',
 					'bottom':					'0px',
           'width':          '100%',
           'height':         '40px',
@@ -68,6 +73,7 @@ Drupal.behaviors.shantiEssaysWhole = {
         'open_h': {
           'top':            '0px',
 					'left':						'0px',
+					'right':					'0px',
 					'bottom':					'0px',
           'width':          '100%',
           'height':         '100%',
@@ -78,49 +84,55 @@ Drupal.behaviors.shantiEssaysWhole = {
       '#book-content': {
         'open_v': {
           'top': 						'0px',
-          'left': 					dims.tocopenw + 'px',
+          'left': 					dims.toc_open_w + 'px',
           'bottom': 				'0px',
 					'width':					'auto',
 					'height':					'100%',
           'padding':  			'0 2em',
           'margin-left':		'1em',   // WHY??
-          'margin-right':   dims.tocopenw + 'px'
+          'margin-right':   dims.toc_open_w + 'px'
         },
         'closed_v': {
           'top':            '0px',
-          'left':           dims.tocclosew + 'px',
+          'left':           dims.toc_close_w + 'px',
           'bottom':         '0px',
 					'width':					'auto',
 					'height':					'100%',
           'padding':				'0 1em',
           'margin-left':		'0px', // WHY?
-					'margin-right':   dims.tocclosew + 'px'
+					'margin-right':   dims.toc_close_w + 'px'
         },
         'open_v_r': {
+        	//'position':			'relative', // bc resizable()
           'top': 						'0px',
-          'right': 					dims.tocopenw + 'px',
+          //'right': 					dims.toc_open_w + 'px',
+          'right': 					dims.toc_close_w + 'px',
           'bottom': 				'0px',
-					'width':					'auto',
+          'width':					'auto',
 					'height':					'100%',
-          'padding':  			'0 2em',
+          //'padding':  			'0 2em',
+          'padding':  			'0 1	em',
           'margin-right':		'1em',   // WHY??
-          'margin-left':    dims.tocopenw + 'px'
+          //'margin-left':    dims.toc_open_w + 'px', // Not needed if position:fixed
+          'margin-left':    dims.toc_close_w + 'px', // Not needed if position:fixed
         },
         'closed_v_r': {
+        	//'position':				'relative', // bc resizable()
           'top':            '0px',
-          'right':          dims.tocclosew + 'px',
+          'right':          dims.toc_close_w + 'px',
           'bottom':         '0px',
 					'width':					'auto',
 					'height':					'100%',
           'padding':				'0 1em',
           'margin-right':		'1em', // WHY?
-					'margin-left':    dims.tocclosew + 'px'
+					'margin-left':    dims.toc_close_w + 'px',
         },
         'closed_h': {
           'top':            '60px',
           'left':           '0px',
+					'right':					'0px',
 					'bottom':					'0px',
-					'width':					'auto',
+					'width':					'100%',
 					'height':					'100%',
           'padding-left':   '1em',
           'padding-right':  '1em',
@@ -129,8 +141,9 @@ Drupal.behaviors.shantiEssaysWhole = {
         'open_h': {
           'top':            '60px',
           'left':           '0px',
+					'right':					'0px',
           'bottom': 				'0px',
-					'width':					'auto',
+					'width':					'100%',
 					'height':					'100%',
           'margin-right':   '0px',
           'padding-right':  '1em',
@@ -144,7 +157,7 @@ Drupal.behaviors.shantiEssaysWhole = {
 		var state = ''; // Current state of the two elements
 
     function tocCloseVert(){
-    	var top = $(window).scrollTop();
+    	//var top = $(window).scrollTop();
       $('#toc', context).transition(states['#toc'].closed_v, 'slow');
       $('#book-content', context).transition(states['#book-content'].closed_v, 'slow');
       $('.toc-action a, .toc-action', context).transition({ color: 'darkgray'}, 'slow');   
@@ -163,25 +176,30 @@ Drupal.behaviors.shantiEssaysWhole = {
     }
     
     function tocCloseVertRight(){
-    	var top = $(window).scrollTop();
+			$('#toc').resizable('disable');
+			$('#toc').draggable('disable');
       $('#toc', context).transition(states['#toc'].closed_v_r, 'slow');
       $('#book-content', context).transition(states['#book-content'].closed_v_r, 'slow');
       $('.toc-action a, .toc-action', context).transition({ color: 'darkgray'}, 'slow');   
       $('#toc .level-0', context).hide();
+      $('.toc-action.openonly').hide();
       $('#toc-collapse-toggle i', context).removeClass( "fa-chevron-right" ).addClass( "fa-chevron-left" ).transition({ color: 'darkgray', 'padding-left': '0px'}, 'slow');
       state = 'closed_v_r';   
     }
     
     function tocOpenVertRight(){
+			$('#toc').resizable('enable');
+			$('#toc').draggable('enable');
       $('#toc', context).transition(states['#toc'].open_v_r, 'slow');   
       $('#book-content', context).transition(states['#book-content'].open_v_r, 'slow');   
-      //$('#toc-menu').css('position','fixed');      
       $('#toc-menu').css('text-align','right');
+      //$('#toc-menu').css('position','fixed');      
       //$('#toc-menu').css('right','0px');
       //$('#toc-menu').css('padding-right','1em');
       //$('#toc-menu').css('width','100%');
       //$('#toc-menu').css('background-color', 'rgba(50,50,50,.9)');
       //$('#toc .level-0').css('margin-top','30px');
+      $('.toc-action.openonly').show();
       $('.toc-action a, .toc-action', context).transition({ color: '#c8c8c8'}, 'slow');   
       $('#toc .level-0', context).show();
       $('#toc-collapse-toggle i', context).removeClass( "fa-chevron-left" ).addClass( "fa-chevron-right" ).transition({ color: '#c8c8c8', 'padding-left': '0px'}, 'slow');
@@ -214,7 +232,7 @@ Drupal.behaviors.shantiEssaysWhole = {
    		if (window.innerWidth <= dims.wbreak && window.innerHeight <= dims.hbreak) {return true;}
      	else {return false;}
 		}
-    
+				
     /// EVENTS (which trigger TRANSITIONS) ///
     
     // Init
@@ -224,6 +242,21 @@ Drupal.behaviors.shantiEssaysWhole = {
     	if (!mobile) {
     		$('#toc-collapse-toggle-h', context).hide();
 				var ww = $(window).width();
+				$('#toc').draggable({
+					axis:'x',
+					//start: function (e,ui) {$('#toc').css("right", "0"); },
+					//drag: function (e,ui) {$('#toc').css("right", "0");},
+					//stop: function (e,ui) {$('#toc').css("right", "0"); }					
+				});
+				$('#toc').resizable({ 
+					handles: "w", 
+					containment: "document", 
+					minWidth: 100,
+					grid: [0,5],
+					//start: function (e,ui) {$('#toc').css("position", "fixed"); },
+					//resize: function (e,ui) {},
+					//stop: function(e, ui) {$('#toc').css("position", "fixed"); }
+				});
 				if (ww <= dims.wbreak) { tocCloseVertRight(); }
 				else { tocOpenVertRight(); }
     	}
@@ -251,7 +284,7 @@ Drupal.behaviors.shantiEssaysWhole = {
 
     // Show visible articles on TOC
     
-    $('article').bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
+    $('article', context).bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
       var toc_target = "#toc a[href='#"+ $(this).attr('id') +"']";
       if (isInView) {
         $(toc_target).css('color','orange'); // The new black
@@ -260,8 +293,9 @@ Drupal.behaviors.shantiEssaysWhole = {
         $(toc_target).css('color','#C8C8C8'); // rgb(200,200,200)
       }
     });
-    
+        
     // Collapse vertical menu on non-mobiles on window width shrink
+    /*
     $(window).resize(function(){
     	var ww = $(window).width();
     	if (!mobile && (state == 'open_v_r' || state == 'open_v')) {
@@ -274,17 +308,18 @@ Drupal.behaviors.shantiEssaysWhole = {
 				}
 			}
     });
+    */
   
   	// Close menu after clicking on link when in mobile mode
-  	
     $('#toc .level-0 a', context).click(function(e){
 			e.preventDefault(); 
     	var target = $(this).attr('href');
 			var y = $(target).position().top;
 			window.scrollTo(0, y);
+			//mobile ? tocCloseHoriz() : tocCloseVertRight();
 			mobile ? tocCloseHoriz() : 0;
 	  });
- 
+ 		
    // Toggle Pages
    /*
    $('.head-toggle').click(function(e){

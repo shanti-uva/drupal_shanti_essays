@@ -128,6 +128,8 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
   $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
   drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
+  drupal_add_library('system', 'ui.resizable');
+  drupal_add_library('system', 'ui.draggable');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole.js', 'file');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.transit.min.js', 'file');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.inview.min.js', 'file');
