@@ -146,14 +146,14 @@ function shanti_essays_help($path, $arg) {
 }
 
 function shanti_essays_filter_info() {
-  $filters = array();
-  $filters['shanti_essays_pullquote'] = array(
-    'title'             => t('Pull Quotes'),
-    'description'       => t('Makes a copy of the selection and puts it into a pull quote.'),
-    'process callback'  => '_shanti_essays_pullquote_filter_process',
-    'tips callback'     => '_shanti_essays_pullquote_filter_tips',
+	return array(
+		'shanti_essays_pullquote' => array(
+    	'title'             => t('Pull Quotes'),
+    	'description'       => t('Makes a copy of the selection and puts it into a pull quote.'),
+    	'process callback'  => '_shanti_essays_pullquote_filter_process',
+    	'tips callback'     => '_shanti_essays_pullquote_filter_tips',
+    )
   );
-  return $filters;
 }
 
 function _shanti_essays_pullquote_filter_process($text, $filter, $format) {
@@ -273,9 +273,11 @@ function shanti_essays_preprocess_node(&$vars) {
       );
       $vars['content']['links']['book']['#links']['shanti_essays_view_whole'] = array(
         'title'       => 'View in Reader',
-        'href'        => "shanti_essays/whole/$nid",
-        'attributes'  => array('title' => 'View in experimental Reader')
+        'href'        => "shanti_essays/whole/$bid",
+        'fragment'		=> "node-$nid",
+        'attributes'  => array('title' => 'View book in experimental Reader')
       );
+      
       // And modify the existing one
       if ($bid == $nid) {
         unset($vars['content']['links']['book']['#links']['book_made_simple_book']);

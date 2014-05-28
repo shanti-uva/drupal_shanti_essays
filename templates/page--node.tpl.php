@@ -85,28 +85,15 @@
  * @see html.tpl.php
  */
 ?>
-<div id="page-wrapper" class="open">
 
-  <?php if ($messages): ?>
-  <div id="messages">
-    <?php print $messages; ?>
-  </div> 
-  <?php endif; ?>
+<?php if ($messages): ?>
+<div id="messages"><?php print $messages; ?></div> 
+<?php endif; ?>
 
-  <div id="main" class="clearfix">
-  
-		<?php if ($page['highlighted']): ?>
-		<div id="highlighted"><?php print render($page['highlighted']); ?></div>
-		<?php endif; ?>
+<?php if ($page['highlighted']): ?>
+<div id="highlighted"><?php print render($page['highlighted']); ?></div>
+<?php endif; ?>
 
-		<a id="main-content"></a>
-		
-		<div id="content">
-      
-      <!-- START CONTENT -->
-      <?php print render($page['content']); ?>
-      <!-- END CONTENT -->
-
-    </div> <!-- #content -->
-  </div> <!-- #main -->
-</div> <!-- #page-wrapper -->
+<div id="content">
+<?php print render($page['content']); ?>
+</div>

@@ -1,9 +1,11 @@
 <article id="node-<?php print $node->nid; ?>" class="book-section section-<?php print $depth; ?>">
-  
+
   <h1 class="book-heading"><?php print $title; ?>
-    <a style="float:right;color:darkgray;" href="/node/<?php print $node->nid; ?>/edit?destination=shanti_essays/whole/<?php print $node->book['bid']; ?>#node-<?php print $node->nid; ?>">
+  	<?php if ($user->roles[2] == 'authenticated user'): ?>
+    <a style="float:right;color:#464646;" href="/node/<?php print $node->nid; ?>/edit?destination=shanti_essays/whole/<?php print $node->book['bid']; ?>#node-<?php print $node->nid; ?>">
       <i class="fa fa-pencil-square"></i>
     </a>
+    <?php endif; ?>
   </h1>
   
   <div class="book-edit-menu">
@@ -13,7 +15,7 @@
   </div>
   
   <div class="book-content">
-  <?php print $content; ?>
+  	<?php print $content; ?>
   </div>
   
   <?php print $children; ?>

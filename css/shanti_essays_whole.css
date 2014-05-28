@@ -1,100 +1,5 @@
-/* @media screen and (max-width: 768px) {
-	
-	#toc-collapse-toggle,
-	#toc-edit
-	{
-		display:none;
-	}
-	
-	#page-wrapper {
-		position:	relative;	
-		top:				40px;
-		left:			0px;
-		_bottom:		0px;
-		_float:			left;	
-		margin: 0;
-		padding-top: 40px;
-		padding-right:	1em;
-		padding-left:	1em;
-		height:100%;
-	}
 
-	#toc {
-		position:fixed;
-		font-family: 			sans-serif;
-		font-size: 				14pt;
-		background-color: rgba(50,50,50,.9);	
-		box-shadow: 5px 5px 20px gray;
-	
-		bottom: 0px;
-		top: 		0px;
-		left: 		0px;
-		height: 40px;
-		width: 	100%;
-		
-		overflow:auto;
-			
-		padding-left: 		1em;
-		padding-top: 		1em;
-		padding-right: 	1em;
-		padding-bottom: 	1em;
-			
-	}
-}
-
-@media screen and (min-width: 769px) {
-	
-	#toc-collapse-toggle-h {
-		display:none;
-	} 
-
-	#page-wrapper {
-		
-		position:	relative;
-		top:				0px;
-		bottom:		0px;
-		left:			260px;
-		float:			left;
-		
-		margin-right: 260px;
-		
-		padding-right:	2em;
-		padding-left:	2em;
-		height:100%;
-		max-width: 6in;
-	}
-
-	#toc {
-		position:fixed;
-		float:left;
-		font-family: 			sans-serif;
-		font-size: 				12pt;
-		background-color: rgba(50,50,50,.9);	
-		box-shadow: 5px 5px 20px gray;
-	
-		bottom: 0px;
-		top: 		0px;
-		left: 	0px;
-		height: 100%;
-		width: 	220px;
-		
-		overflow:auto;
-			
-		padding-left: 		1em;
-		padding-top: 		1em;
-		padding-right: 	1em;
-		padding-bottom: 	1em;
-			
-	}
-}
-*/
-
-#_content {
-	position:absolute;
-	left:0;
-	right:0;
-	height:100%;
-	width:100%;
+#content {
 	padding:0;
 	margin:0;
 }
@@ -106,37 +11,23 @@
 	overflow:auto; 
 	background-color: rgba(50,50,50,.9); 
 	box-shadow: 0px 0px 10px gray; 
+	z-index: 10;
 }
 
-#page-wrapper { 
+#book-content { 
 	display:none; /* init */
 	position:relative; 
 	float:left; 
-	max-width:6in; 
+	overflow:auto; 
+	z-index: -1;
 }
 
 a {
 	text-decoration:none;
 }
 
-#breadcrumb a {
-	font-family: sans-serif;
-	font-size:12pt;
-}
-
-#header {
-	display:none;
-}
-
-#message {
-	display:none;
-}
-
-#main.mobile #toc-menu .toc-action {
+#content.mobile #toc-menu .toc-action {
 	padding: 0 1em;
-	_padding-bottom: 1em;
-	_margin-bottom: 1em;
-	_display:block;
 }
 
 .toc-action a {
@@ -160,10 +51,11 @@ a {
 	line-height:1.4;
 	padding:.25em 0;
 	font-size:12pt;
+	font-family: Helvetica, Universal, Arial, sans-serif;
 }
 
-#main.mobile #toc li a {
-	font-size:200%;
+#content.mobile #toc li a {
+	font-size:16pt;
 	font-family: sans-serif;
 }
 
@@ -198,7 +90,7 @@ a {
 	margin-top:1em;
 }
 
-.mobile h1.book-heading {}
+#content.mobile h1.book-heading {}
 
 /* Book Title */
 div.section-1 > h1.book-heading,
@@ -228,6 +120,16 @@ article.section-3 > h1 {
 	text-align:left;
 }
 
+/* Section Title */
+div.section-3 h1.book-heading,
+article.section-4 > h1 {
+	font-size:14pt;
+	font-weight:bold;
+	padding-top:1em;
+	border-top:1px solid gray;
+	text-align:left;
+}
+
 div.section-1, article {}
 
 div.section-2 {
@@ -239,8 +141,9 @@ button.action {
 }
 
 .book-edit-menu {
-	margin-bottom: 1em;
-	text-align:right;
+	display:none;
+	_margin-bottom: 1em;
+	_text-align:right;
 }
 
 div.field-name-field-book-content h1 {
@@ -264,7 +167,7 @@ div.field-name-field-book-content h6 {}
 div.field-name-field-book-content h7 {}
 
 div.field-name-field-book-content * {
-	font-family:"Garamond","Times New Roman",sans-serif;
+	font-family: "Baskerville","Garamond","Times New Roman",sans-serif;
 }
 
 div.field-name-field-book-content p {
@@ -272,13 +175,17 @@ div.field-name-field-book-content p {
 	text-align:justify;
 }
 
-#main.mobile div.field-name-field-book-content p {
+#content.mobile div.field-name-field-book-content p {
 	font-size:18pt;
 	text-align:justify;
 }
 
 aside, .bourdieu {
 	font-size:12pt;
+}
+
+#content.mobile aside, #content.mobile .bourdieu {
+	font-size:16pt;
 }
 
 .shanti-essays-pullquote-right {
