@@ -12,6 +12,13 @@ function shanti_essays_menu() {
       //'delivery callback' => 'shanti_essays_content_callback',
       'access arguments' => array('access content'),
     ),
+    'shanti_essays/pubreader/%' => array(
+      'page callback' => 'shanti_essays_pubreader',
+      'page arguments' => array(2),
+      'type' => MENU_CALLBACK,
+      'delivery callback' => 'shanti_essays_pubreader_callback',
+      'access arguments' => array('access content'),
+    ),
     'node/%node/book_toc' => array(
       'title' => 'Contents',
       'page callback' => 'shanti_essays_show_toc',
@@ -57,6 +64,18 @@ function shanti_essays_content_callback($page_callback_result) {
   drupal_page_footer();
 }
 
+function shanti_essays_pubreader_callback($page_callback_result) {
+  drupal_page_header();
+  if (isset($page_callback_result) && is_null(drupal_get_http_header('Content-Type'))) {
+  	// Clear out and then restock css and js files
+  	$html = "";
+  	$html .= $page_callback_result;
+ 		//$html .= drupal_get_js();
+  	print $html;
+  }
+  drupal_page_footer();
+}
+
 /**
  * The function creates a single page out of all the nodes that compose a
  * book. It also generates a table of contents and then passes these to
@@ -77,6 +96,34 @@ function shanti_essays_whole($nid) {
       $toc_block    = book_export_traverse($tree, 'shanti_essays_whole_toc');
       $book_id      = $node->book['bid'];
       return theme('shanti_essays_whole_html', array('title' => $node->title, 'book_id' => $book_id, 'contents' => $contents, 'toc_block' => $toc_block, 'depth' => $node->book['depth']));
+    } 
+    else {
+      drupal_not_found();
+    }
+  } 
+  else {
+    drupal_access_denied();
+  }
+}
+
+/**
+ * The function creates a single page out of all the nodes that compose a
+ * book. It also generates a table of contents and then passes these to
+ * two templates, very much as the default book print function works.
+ */
+function shanti_essays_pubreader($nid) {
+  $node = node_load($nid);
+  if (!$node) {
+    return MENU_NOT_FOUND;
+  }
+  if (!node_access('view', $node)) {
+    return MENU_ACCESS_DENIED;
+  }
+  if (user_access('access content')) {
+    if (isset($node->book)) {
+      $tree         = book_menu_subtree_data($node->book);
+      $contents     = book_export_traverse($tree, 'shanti_essays_pubreader_node');            
+      return theme('shanti_essays_pubreader_html', array('title' => $node->title, 'book_id' => $node->book['bid'], 'contents' => $contents, 'depth' => $node->book['depth']));
     } 
     else {
       drupal_not_found();
@@ -111,6 +158,15 @@ function shanti_essays_whole_node($node, $children = '') {
   hide($build['links']);
   $node->rendered = drupal_render($build);
   return theme('shanti_essays_whole_node_html', array('node' => $node, 'children' => $children));
+}
+
+function shanti_essays_pubreader_node($node, $children = '') {
+  $build = node_view($node, 'whole'); 
+  unset($build['#theme']); 
+  hide($build['group_content_access']);
+  hide($build['links']);
+  $node->rendered = drupal_render($build);
+  return theme('shanti_essays_pubreader_node_html', array('node' => $node, 'children' => $children));
 }
 
 /**
@@ -150,6 +206,16 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
 }
 
 function template_preprocess_shanti_essays_whole_node_html (&$vars) {
+  $vars['depth']    = $vars['node']->book['depth'];
+  $vars['title']    = check_plain($vars['node']->title);
+  $vars['content']  = $vars['node']->rendered;
+}
+
+function template_preprocess_shanti_essays_pubreader_html(&$vars) {
+  $vars['pubreader_path'] = "/" . SHANTI_ESSAYS_PATH . "/pubreader";
+}
+
+function template_preprocess_shanti_essays_pubreader_node_html (&$vars) {
   $vars['depth']    = $vars['node']->book['depth'];
   $vars['title']    = check_plain($vars['node']->title);
   $vars['content']  = $vars['node']->rendered;
@@ -219,13 +285,23 @@ function shanti_essays_theme($existing, $type, $theme, $path) {
       'path' => SHANTI_ESSAYS_PATH,
     ),
     'shanti_essays_whole_html' => array(
-      ' variables' => array('title' => NULL, 'contents' => NULL, 'depth' => NULL),
+      'variables' => array('title' => NULL, 'contents' => NULL, 'depth' => NULL),
       'template' => 'templates/shanti-essays-whole-html',
       'path' => SHANTI_ESSAYS_PATH,
     ),
     'shanti_essays_whole_node_html' => array(
       'variables' => array('node' => NULL, 'children' => NULL),
       'template' => 'templates/shanti-essays-whole-node-html',
+      'path' => SHANTI_ESSAYS_PATH,
+    ),
+    'shanti_essays_pubreader_html' => array(
+      'variables' => array('title' => NULL, 'contents' => NULL, 'depth' => NULL),
+      'template' => 'templates/shanti-essays-pubreader-html',
+      'path' => SHANTI_ESSAYS_PATH,
+    ),
+    'shanti_essays_pubreader_node_html' => array(
+      'variables' => array('node' => NULL, 'children' => NULL),
+      'template' => 'templates/shanti-essays-pubreader-node-html',
       'path' => SHANTI_ESSAYS_PATH,
     ),
   );
@@ -252,6 +328,21 @@ function shanti_essays_css_alter (&$css) {
       if (preg_match("/$theme_key/",$k)) {
         unset($css[$k]);
       }
+    }
+  }   
+  elseif (preg_match("/^shanti_essays\/pubreader/", $GLOBALS['_GET']['q'])) {
+    foreach ($css as $k => $v) {
+      unset($css[$k]);
+    }
+  }
+}
+
+function shanti_essays_js_alter (&$js) {
+
+	// Does not work ...
+  if (preg_match("/^shanti_essays\/pubreader/", $GLOBALS['_GET']['q'])) {
+    foreach ($js as $k => $v) {
+      unset($js[$k]);
     }
   }
 }
