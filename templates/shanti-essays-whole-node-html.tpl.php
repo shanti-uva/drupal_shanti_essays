@@ -14,9 +14,7 @@
     <?php //print li("<i class='fa fa-pencil'></a>",url("node/{$node->nid}/edit",array('absolute' => TRUE, 'query' => array('destination' => "shanti_essays/whole/{$node->book['bid']}"), 'fragment' => "node-{$node->nid}")),array('attributes' => array('class' => 'action'))); ?>
   </div>
   
-  <div class="book-content">
-  	<?php print $content; ?>
-  </div>
+  <?php print $content; ?>
   
   <?php print $children; ?>
   

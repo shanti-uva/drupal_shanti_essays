@@ -33,12 +33,26 @@ function shanti_essays_test() {
   return "This is a test.";
 }
 
-// Need to learn more about how to customize this before using
 function shanti_essays_content_callback($page_callback_result) {
   drupal_page_header();
   if (isset($page_callback_result) && is_null(drupal_get_http_header('Content-Type'))) {
     drupal_add_http_header('Content-Type', 'text/html; charset=utf-8');
-    print $page_callback_result;
+  	$content = is_string($page_callback_result) ? $page_callback_result : drupal_render($page_callback_result);
+  	$html = "";
+		$html .= "<html>\n";
+  	$html .= "<head>\n";
+ 		$html .= "<title>SHANTI Essay Reader</title>\n";
+ 		$html .= "<meta name=\"viewport\" content=\"width=device-width, user-scalable=no\" />\n";
+ 		$html .= drupal_get_css();
+ 		$html .= drupal_get_js();
+ 		$html .= "</head>\n";
+ 		$html .= "<body>\n";
+ 		$html .= "<div id='content'>\n";
+ 		$html .= $content;
+ 		$html .= "</div><!-- #content -->\n";
+ 		$html .= "</body>\n";
+ 		$html .= "</html>\n";
+ 		print $html;
   }
   drupal_page_footer();
 }
@@ -228,6 +242,9 @@ function shanti_essays_preprocess_book_navigation(&$vars) {}
 function shanti_essays_preprocess_region(&$vars) {}
 */
 
+
+// This DOES apply even when using your own delivery callback
+// May want to add this in the callback itself 
 function shanti_essays_css_alter (&$css) {
   if (preg_match("/^shanti_essays\/whole/", $GLOBALS['_GET']['q'])) {
     global $theme_key;
