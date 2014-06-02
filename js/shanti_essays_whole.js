@@ -1,92 +1,91 @@
 (function($){
   
 Drupal.behaviors.shantiEssaysWhole = {
-  attach: function (context, settings) {
   
+  attach: function (context, settings) {
   
   	/// DEFAULTS ///
   
   	var dims = {
-  		wbreak: 			800,
-  		hbreak: 			400,
-  		toc_open_w: 	300,
+  		wbreak:       800,
+  		hbreak:       400,
+  		toc_open_w:   300, 
   		toc_close_w: 	20
   	};
   	
   	var colors = {
-  		toc_bg:					'rgba(50,50,50,.9)',
-  		toc_btn_open:		'#c8c8c8',
-  		toc_btn_close:	'darkgray'
+  		toc_bg:					'rgba(50,50,50,.85)',
+  		toc_btn_open:   '#c8c8c8',
+  		toc_btn_close:  'darkgray'
   	};
   	
     /// STATES (for #toc and #book-content) ///
     /// *_v = vertical (non-mobile), *_h = horizontal (mobile)
     
-    var states = {
+  var states = {
     
       '#toc': {
         'open_v': {
-        	'top':						'0px',
-        	'left':						'0px',
-					'bottom':					'0px',
+          'top':						  '0px',
+          'left':						'0px',
+  				  'bottom':					'0px',
           'width':          dims.toc_open_w + 'px',
           'height':         '100%',
           'padding':   			'1em .5em 0 .5em',
           'margin':					'0px'
         },
         'closed_v': {
-        	'top':						'0px',
-        	'left':						'0px',
-					'bottom':					'0px',
+          'top':						  '0px',
+          'left':						'0px',
+  				  'bottom':					'0px',
           'width':          dims.toc_close_w + 'px',
           'height':         '100%',
           'padding':   			'1em .5em 0 .5em',
           'margin':					'0px'
         },
         'open_v_r': {
-					'position':				'fixed', // bc resizable()
-        	'top':						'0px',
-        	'right':					'0px',
-					'bottom':					'0px',
-					'left':						'auto',
+  				'position':				'fixed', // bc resizable()
+          'top':						  '0px',
+          'right':					  '0px',
+  				  'bottom':					'0px',
+  				  'left':						'auto',
           'width':          dims.toc_open_w + 'px',
-          'height':         '100%',
-          'padding':   			'0em .5em 0em 0em',
-          'margin':					'0px',
+          'height':           '100%',
+          'padding':   			 '0em .5em 0em 0em',
+          'margin':					 '0px',
           'background-color': colors.toc_bg
         },
         'closed_v_r': {
-        	'position':				'fixed', // bc resizable()
-        	'top':						'0px',
-        	'right':					'0px',
-					'bottom':					'0px',
-          'left':						'auto',
-          'width':          dims.toc_close_w + 'px',
-          'height':         '100%',
-          'padding':   			'1em .5em 0 .5em',
-          'margin':					'0px',
-					'background-color': colors.toc_bg
-
+          'position':				 'fixed', // bc resizable()
+          'top':						   '0px',
+          'right':					   '0px',
+  				  'bottom':					 '0px',
+          'left':						 'auto',
+          'width':            dims.toc_close_w + 'px',
+          'height':           '100%',
+          'padding':   			  '1em .5em 0 .5em',
+          'margin':					  '0px',
+  				  'background-color': colors.toc_bg
         },
         'closed_h': {
           'top':            '0px',
 					'left':						'0px',
-					'right':					'0px',
+					'right':					  '0px',
 					'bottom':					'0px',
           'width':          '100%',
-          'height':         '40px',
-					'padding':				'.5em',
+          'height':         '20px',
+					'padding':				 '.5em',
           'margin':					'0px',
           'background-color': colors.toc_bg
         },
         'open_h': {
           'top':            '0px',
 					'left':						'0px',
-					'right':					'0px',
+					'right':					  '0px',
 					'bottom':					'0px',
           'width':          '100%',
           'height':         '100%',
-          'padding':				'1em 0 0 1em',
+          'padding':				  '1em 0 0 1em',
           'margin':					'0px',
           'background-color': colors.toc_bg
         }        
@@ -114,31 +113,20 @@ Drupal.behaviors.shantiEssaysWhole = {
 					'margin-right':   dims.toc_close_w + 'px'
         },
         'open_v_r': {
-        	'position':			'relative', // bc resizable()
+        	'position':				'relative', // bc resizable()
           'top': 						'0px',
-          //'right': 					dims.toc_open_w + 'px',
-          //'right': 					dims.toc_close_w + 'px',
           'bottom': 				'0px',
           'width':					'auto',
 					'height':					'100%',
-          //'padding':  			'0 2em',
           'padding':				'0 3em 0 1em', // 36 = 16 (ie 1em) + dim.toc_close_w
-          //'margin-right':		'1em',   // WHY??
-          //'margin-left':    dims.toc_open_w + 'px', // Not needed if position:fixed
-          //'margin-left':    dims.toc_close_w + 'px', // Not needed if position:fixed
-          //'margin':					'0 auto'
         },
         'closed_v_r': {
         	'position':				'relative', // bc resizable()
           'top':            '0px',
-          //'right':          dims.toc_close_w + 'px',
           'bottom':         '0px',
 					'width':					'auto',
 					'height':					'100%',
           'padding':				'0 3em 0 1em', // 36 = 16 (ie 1em) + dim.toc_close_w
-          //'margin-right':		'1em', // WHY?
-					//'margin-left':    dims.toc_close_w + 'px',
-          //'margin':					'0 auto'
         },
         'closed_h': {
           'top':            '60px',
@@ -149,7 +137,7 @@ Drupal.behaviors.shantiEssaysWhole = {
 					'height':					'100%',
           'padding-left':   '1em',
           'padding-right':  '1em',
-          'margin-right':   '0px',
+          'margin-right':   '0px'
         },
         'open_h': {
           'top':            '60px',
@@ -165,43 +153,43 @@ Drupal.behaviors.shantiEssaysWhole = {
       },
       
       '#toc-bar': {
-      	'open_v_r': {
-      		'display': 'block',
-      		'height':		window.height,
-          'background-color': 'none'
-      	},
-      	'closed_v_r': {
-      		'display': 'none'
-      	},
-      	'open_h': {
-					'display': 'none'
-      	},
-      	'closed_h': {
-      		'display': 'none'      	
-      	},
+        	'open_v_r': {
+        		'display': 'block',
+        		'height':	document.height,
+          	'background-color': 'none',
+        	},
+        	'closed_v_r': {
+        		'display': 'none'
+        	},
+        	'open_h': {
+  					'display': 'none'
+        	},
+        	'closed_h': {
+        		'display': 'none'      	
+        	},
       },
       
 			'#toc-menu': {
-      	'open_v_r': {
-      		'position': 'fixed',
-      		'top': '0px',
-      		'right': '0px',
-      		'padding': '.5em 0 0 1em',
-      		'background-color': 'black'
-      	},
-      	'closed_v_r': {
-      		'position': 'relative',
-      		'display': 'inline',
-      		'padding': '0px',
-      		'background-color': 'rgba(0,0,0,0)'
-      	},
-      	'open_h': {
-					
-      	},
-      	'closed_h': {
-      	},
+        	'open_v_r': {
+        		'position': 'fixed',
+        		'top': '0px',
+        		'right': '0px',
+        		'padding': '.5em 0 0 1em',
+        		'background-color': 'black'
+        	},
+        	'closed_v_r': {
+        		'position': 'relative',
+        		'display': 'inline',
+        		'padding': '0px',
+        		'background-color': 'rgba(0,0,0,0)'
+        	},
+        	'open_h': {
+  					
+        	},
+        	'closed_h': {
+        	
+        	},
       }
-
       
     };
     
@@ -210,150 +198,172 @@ Drupal.behaviors.shantiEssaysWhole = {
 		var state = ''; // Current state of the two elements
 
     function tocCloseVert(){
-      $('#toc', context).transition(states['#toc'].closed_v, 'slow');
-      $('#book-content', context).transition(states['#book-content'].closed_v, 'slow');
-      $('.toc-action a, .toc-action', context).transition({ color: 'darkgray'}, 'slow');   
-      $('#toc .level-0', context).hide();
-      $('#toc-collapse-toggle i', context).removeClass( "fa-chevron-left" ).addClass( "fa-chevron-right" ).transition({ color: 'darkgray', 'padding-left': '0px'}, 'slow');
+      $('#toc').transition(states['#toc'].closed_v, 'slow');
+      $('#book-content').transition(states['#book-content'].closed_v, 'slow');
+      $('.toc-action a, .toc-action').transition({ color: 'darkgray'}, 'slow');   
+      $('#toc .level-0').hide();
+      $('#toc-collapse-toggle i').removeClass( "fa-chevron-left" ).addClass( "fa-chevron-right" ).transition({ color: 'darkgray', 'padding-left': '0px'}, 'slow');
       state = 'closed_v';   
     }
     
     function tocOpenVert(){
-      $('#toc', context).transition(states['#toc'].open_v, 'slow');   
-      $('#book-content', context).transition(states['#book-content'].open_v, 'slow');   
-      $('.toc-action a, .toc-action', context).transition({ color: '#c8c8c8'}, 'slow');   
-      $('#toc .level-0', context).show();
-      $('#toc-collapse-toggle i', context).removeClass( "fa-chevron-right" ).addClass( "fa-chevron-left" ).transition({ color: '#c8c8c8', 'padding-left': '0px'}, 'slow');
+      $('#toc').transition(states['#toc'].open_v, 'slow');   
+      $('#book-content').transition(states['#book-content'].open_v, 'slow');   
+      $('.toc-action a, .toc-action').transition({ color: '#c8c8c8'}, 'slow');   
+      $('#toc .level-0').show();
+      $('#toc-collapse-toggle i').removeClass( "fa-chevron-right" ).addClass( "fa-chevron-left" ).transition({ color: '#c8c8c8', 'padding-left': '0px'}, 'slow');
       state ='open_v';
     }
     
     function tocCloseVertRight(){
-      $('#toc', context).transition(states['#toc'].closed_v_r, 'slow');
+      $('#toc-menu').hide(); // This is just to make the icons dance less
+      $('#toc').transition(states['#toc'].closed_v_r, 'slow');
       $('#toc-bar').transition(states['#toc-bar'].closed_v_r, 'slow');
-      $('#toc-menu').transition(states['#toc-menu'].closed_v_r, 'slow');
-      $('#book-content', context).transition(states['#book-content'].closed_v_r, 'slow');
-      $('.toc-action a, .toc-action', context).transition({ color: 'darkgray'}, 'slow');   
-      $('#toc .level-0', context).hide();
+      $('#toc-menu').transition(states['#toc-menu'].closed_v_r, 'fast');
+      $('#book-content').transition(states['#book-content'].closed_v_r, 'slow');
       $('.toc-action.openonly').hide();
-      $('#toc-collapse-toggle i', context).removeClass( "fa-chevron-right" ).addClass( "fa-chevron-left" ).transition({ color: 'darkgray', 'padding-left': '0px'}, 'slow');
+      $('.toc-action a, .toc-action').transition({ color: 'darkgray'}, 'slow');   
+      $('#toc .level-0').hide();
+      $('#toc-collapse-toggle i').removeClass( "fa-chevron-right" ).addClass( "fa-chevron-left" ).transition({ color: 'darkgray', 'padding-left': '0px'}, 'slow');
       state = 'closed_v_r';   
     }
     
     function tocOpenVertRight(){
-      $('#toc', context).transition(states['#toc'].open_v_r, 'slow');   
+      $('#toc').transition(states['#toc'].open_v_r, 'slow');   
       $('#toc-bar').transition(states['#toc-bar'].open_v_r, 'slow');
       $('#toc-menu').transition(states['#toc-menu'].open_v_r, 'slow');
-      $('#book-content', context).transition(states['#book-content'].open_v_r, 'slow');   
-      $('#toc-menu').css('text-align','right');      
+      $('#book-content').transition(states['#book-content'].open_v_r, 'slow');   
       $('.toc-action.openonly').show();
-      $('.toc-action a, .toc-action', context).transition({ color: colors.toc_btn_open}, 'slow');   
-      $('#toc .level-0', context).show();
-      $('#toc-collapse-toggle i', context).removeClass( "fa-chevron-left" ).addClass( "fa-chevron-right" ).transition({ color: '#c8c8c8', 'padding-left': '0px'}, 'slow');
+      $('.toc-action a, .toc-action').transition({ color: colors.toc_btn_open }, 'slow');   
+      $('#toc .level-0').show();
+      $('#toc-collapse-toggle i').removeClass( "fa-chevron-left" ).addClass( "fa-chevron-right" ).transition({ color: '#c8c8c8', 'padding-left': '0px' }, 'slow');
+      adjustTocWidth();
       state ='open_v_r';
     }
 
     function tocCloseHoriz(){
-      $('#toc', context).transition(states['#toc'].closed_h, 'slow');
-      $('#book-content', context).transition(states['#book-content'].closed_h, 'slow');      
-      $('#toc-bar').transition(states['#toc-bar'].closed_v_r, 'slow');
-      $('.toc-action a, .toc-action', context).transition({ color: 	colors.toc_btn_close}, 'slow');   
-      $('#toc .level-0', context).hide();
-      $('#toc-collapse-toggle-h i', context).removeClass( "fa-chevron-up" );
-      $('#toc-collapse-toggle-h i', context).addClass( "fa-bars" );
-      $('#toc-collapse-toggle-h i', context).transition({ color: 'darkgray'}, 'slow');
-      state = 'closed_h';   
+      $('#toc').transition(states['#toc'].closed_h, 'slow');
+      $('#book-content').transition(states['#book-content'].closed_h, 'slow');      
+      $('.toc-action a, .toc-action').transition({ color: 	colors.toc_btn_close }, 'slow');   
+      $('#toc .level-0').hide();
+      $('#toc-collapse-toggle-h i').removeClass( "fa-chevron-up" ).addClass( "fa-bars" );
+      $('#toc-collapse-toggle-h i').transition({ color: colors.toc_btn_close }, 'slow');
+      state = 'closed_h';
     }
     
     function tocOpenHoriz(){
-      $('#toc', context).transition(states['#toc'].open_h, 'slow');   
-      $('#book-content', context).transition(states['#book-content'].open_h, 'slow');   
-      $('#toc-bar').transition(states['#toc-bar'].closed_v_r, 'slow');
-      $('.toc-action a, .toc-action', context).transition({ color: '#c8c8c8'}, 'slow');   
-      $('#toc .level-0', context).show();
-      $('#toc-collapse-toggle-h i', context).removeClass( "fa-bars" );
-      $('#toc-collapse-toggle-h i', context).addClass( "fa-chevron-up" );
-      $('#toc-collapse-toggle-h i', context).transition({ color: '#c8c8c8'}, 'slow');
+      $('#toc').transition(states['#toc'].open_h, 'slow');   
+      $('#book-content').transition(states['#book-content'].open_h, 'slow');   
+      $('.toc-action a, .toc-action').transition({ color: colors.toc_btn_open}, 'slow');   
+      $('#toc .level-0').show();
+      $('#toc-collapse-toggle-h i').removeClass( "fa-bars" ).addClass( "fa-chevron-up" );
+      $('#toc-collapse-toggle-h i').transition({ color: colors.toc_btn_open }, 'slow');
       state = 'open_h';
     }
         
-    function isMobile(){
-   		if (window.innerWidth <= dims.wbreak && window.innerHeight <= dims.hbreak) {return true;}
-     	else {return false;}
+    function getDeviceType(){
+   		if (window.innerWidth <= dims.wbreak && window.innerHeight <= dims.hbreak) {
+   		  return 'mobile';
+   		}
+   		else {
+   		  return 'not mobile';
+   		} 
+		}
+		
+		function adjustTocWidth(){
+      if (window.innerWidth > $('#book-content').outerWidth() 
+       && window.innerWidth > dims.wbreak) {
+        $('#toc').width(window.innerWidth - $('#book-content').outerWidth());
+      }
+      $('#toc-adjust-width').hide();
 		}
 				
     /// EVENTS (which trigger TRANSITIONS) ///
     
     // Init
-    var mobile = false;
-    $(document, context).ready(function(){
-    	mobile = isMobile();
-    	if (!mobile) {
-    		$('#toc-collapse-toggle-h', context).hide();
-				var ww = $(window).width();
-				if (ww <= dims.wbreak) { tocCloseVertRight(); }
-				else { tocOpenVertRight(); }
-    	}
-    	else { 
-    		$('#content', context).addClass('mobile');
-    		$('#toc-collapse-toggle', context).hide();
-    		$('#toc-edit', context).hide();
-    		$('.toc-action i', context).removeClass('fa-2x').addClass('fa-3x');
-    		tocCloseHoriz(); 
-    	}
-    	$('#toc', context).css('display','block');
-    	$('#book-content', context).css('display','block');
-    });
+    var device_type = '';
+    //$(document).ready(function(){
+      	device_type = getDeviceType();
+      	$('#log').html(window.innerWidth);
+      	if (device_type == 'not mobile') {
+      		$('#toc-collapse-toggle-h').hide();
+  				if (window.innerWidth <= dims.wbreak) { 
+  				  tocCloseVertRight(); 
+  				}
+  				else { 
+  					tocOpenVertRight(); 
+  				}
+      	}
+      	else { 
+      		$('#reader').addClass('mobile');
+      		$('#toc-collapse-toggle').hide();
+        $('#toc-adjust-width').hide();
+        $('#toc-bar').hide();
+      		$('#toc-edit').hide();
+      		//$('.toc-action i').removeClass('fa-2x').addClass('fa-3x');
+      		tocCloseHoriz(); 
+      	}
+      	$('#toc').css('display','block');
+      	$('#book-content').css('display','block');
+    //});
     
     // TOC Toggles
     
-    // Modify to handle 
-    $('#toc-collapse-toggle', context).click(function(){
-    	state == 'closed_v_r' ? tocOpenVertRight() : tocCloseVertRight();
+    $('#toc-collapse-toggle').click(function(){
+    	 state == 'closed_v_r' ? tocOpenVertRight() : tocCloseVertRight();
     });
     
-		$('#toc-collapse-toggle-h', context).click(function(){
-    	state == 'closed_h' ? tocOpenHoriz() : tocCloseHoriz(); 
+		$('#toc-collapse-toggle-h').click(function(){
+    	 state == 'closed_h' ? tocOpenHoriz() : tocCloseHoriz(); 
     });
 
     // Show visible articles on TOC
-    
-    $('article', context).bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
+    $('div.book-section').bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
       var toc_target = "#toc a[href='#"+ $(this).attr('id') +"']";
       if (isInView) {
         $(toc_target).css('color','orange'); // The new black
       } 
       else {
-        $(toc_target).css('color','#C8C8C8'); // rgb(200,200,200)
+        $(toc_target).css('color', colors.toc_btn_open); // rgb(200,200,200)
       }
+    });
+   
+    // Adjust TOC width manually
+    $('#toc-adjust-width').click(function(){
+      adjustTocWidth();
     });
         
     // Collapse vertical menu on non-mobiles on window width shrink
-    /*
-    $(window).resize(function(){
-    	var ww = $(window).width();
-    	if (!mobile && (state == 'open_v_r' || state == 'open_v')) {
-				if (ww <= dims.wbreak) {
+    $(window).resize(function(e){
+      console.log(state);
+    	  if (state == 'open_v_r') {
+				if (window.innerWidth <= dims.wbreak) {
 					tocCloseVertRight();
 				} 
-				// Does not work
-				if (ww > dims.wbreak) {
-					tocOpenVertRight();
+				else {
+					adjustTocWidth();
 				}
+			} else if (state == 'closed_v_r') {
+          //tocOpenVertRight();
 			}
     });
-    */
-
-		//
-  	// Close menu after clicking on link when in mobile mode
-    $('#toc .level-0 a', context).click(function(e){
+    
+  	  // Close menu after clicking on link when in mobile mode
+    $('#toc .level-0 a').click(function(e){
 			e.preventDefault(); 
-    	var target = $(this).attr('href');
+      	var target = $(this).attr('href');
 			var y = $(target).position().top;
 			window.scrollTo(0, y);
-			//mobile ? tocCloseHoriz() : tocCloseVertRight();
-			mobile ? tocCloseHoriz() : 0;
+			if (device_type == 'mobile') {
+        tocCloseHoriz();			  
+			}
 	  });
- 		//
+
+	  $('#book-content a').click(function(e){
+      e.preventDefault();
+      var href = $(this).attr('href');
+	  	  window.location = href;
+	  });
  		
    // Toggle Pages
    /*
@@ -366,19 +376,36 @@ Drupal.behaviors.shantiEssaysWhole = {
    */
    
 		// Home-made resize functions (bc JQuery is buggy on divs with absolute pos)   
-		
 		$('#toc-bar').mousedown(function(e){
 			e.preventDefault();
-			var w = window.innerWidth;
 			$(document).mousemove(function(e){
-				$('#toc').css("width",(w - e.clientX));
-			})
+				$('#toc').width(window.innerWidth - e.clientX);
+			});
 		});
 		
-		$(document).mouseup(function(e){
+		$(document).mouseup(function(e){	
 			$(document).unbind('mousemove');
+			var a = window.innerWidth;
+			var b = $('#book-content').outerWidth();
+			var c = a - b; // right margin
+			var d = $('#toc').width();
+      
+      // Right margin is greater than TOC
+      if (c > d && state == 'open_v_r'){
+        $('#toc-adjust-width i').removeClass('fa-caret-square-o-right').addClass('fa-caret-square-o-left');
+        $('#toc-adjust-width').show(); 
+        
+      // TOC overlaps page content   
+      } else if (d > c && state == 'open_v_r' && a >= dims.wbreak){   
+        $('#toc-adjust-width i').removeClass('fa-caret-square-o-left').addClass('fa-caret-square-o-right');
+        $('#toc-adjust-width').show();      
+
+      } else {
+        $('#toc-adjust-width').hide();      
+      }
+      
 		});
-		
+
   }
   
 };

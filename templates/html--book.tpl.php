@@ -43,7 +43,7 @@
  * @ingroup themeable
  */
   
-?><!DOCTYPE html>
+?><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html 
   lang="<?php print $language->language; ?>" 
   dir="<?php print $language->dir; ?>"
@@ -56,9 +56,6 @@
   <?php print $scripts; ?>
 </head>
 <body class="<?php print $classes; ?>" <?php print $attributes;?>>
-  <div id="skip-link">
-    <a href="#main-content" class="element-invisible element-focusable"><?php print t('Skip to main content'); ?></a>
-  </div>
   <?php print $page; ?>
 </body>
 </html>

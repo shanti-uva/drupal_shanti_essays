@@ -1,0 +1,73 @@
+body {}
+
+#header {
+	display:block;
+	position:fixed;
+	top:0;
+	left:0;
+	right:0;
+	height:36px;
+	background-color:black;
+	color:white;
+}
+
+#sidebar {
+	display:block;
+	position:fixed;
+	top:36px;
+	right:0;
+	width:200px;
+	height:100%;
+	margin: 0 0 0 1em;
+	padding: 0 1em 1em 0;
+	overflow:auto;
+	box-shadow: 0px 0px 10px gray;
+	background-color:rgba(50,50,50,.9); 
+}
+
+#sidebar a {
+	color:white;
+	text-decoration:none;
+}
+
+
+#sidebar-dragbar {
+	position: relative;
+	cursor: col-resize;
+	height: 100%;
+	width: 1em;
+	left:	0px;
+	top: 0px;
+	bottom: 0px;
+	float: left;
+	margin: 0 .5em 0 0;
+}
+
+#sidebar-toc {
+	position:relative;
+}
+
+#sidebar-toc ul {
+	padding:0;
+	margin: 0 0 0 1em;
+	list-style-type: none;
+}
+
+#book-content {
+	position:relative;
+	top:36px;
+	left:0;
+	width:600px;
+	padding: 1em 2em 1em 1em;
+	margin: 0;
+	overflow:scroll;
+}
+
+.book-node p {
+	text-align:justify;
+	font-family:"Comic Sans MS";	
+}
+
+#footer {
+	
+}

@@ -94,6 +94,6 @@
 <div id="highlighted"><?php print render($page['highlighted']); ?></div>
 <?php endif; ?>
 
-<div id="content">
+<div id="reader">
 <?php print render($page['content']); ?>
 </div>

@@ -1,6 +1,6 @@
 
 /* Not sure if these settings are necessary */
-#content {
+#reader {
 	display:fixed;
 	left:0;
 	right:0;
@@ -16,7 +16,7 @@
 	display:none; /* init */
 	position:fixed!important; 
 	overflow:auto; 
-	z-index: 10;
+	z-index: 1000;
 	box-shadow: 0px 0px 10px gray; 
 }
 
@@ -24,7 +24,7 @@
 	display:none; /* init */
 	position:relative; 
 	overflow:auto; 
-	z-index: -1;
+	z-index: 1;
 	max-width:6in;
 }
 
@@ -38,11 +38,11 @@
 	cursor: col-resize;
 	height: 100%;
 	width: 1em;
-	left:							0px;
-	top:							0px;
-	bottom:						0px;
-	float:						left;
-	margin:						0 .5em 0 0;
+	left:	0px;
+	top: 0px;
+	bottom: 0px;
+	float: left;
+	margin: 0 .5em 0 0;
 }
 
 #toc-menu {}
@@ -54,12 +54,20 @@
 	color: #c8c8c8;
 }
 
-#content.mobile #toc-menu .toc-action {
+#reader.mobile #toc-menu .toc-action {
 	padding: 0 1em;
 }
 
 #toc-menu .toc-action a {
 	color: #c8c8c8;
+}
+
+#toc-menu .toc-action {
+	cursor:hand;
+}
+
+#reader.mobile #toc-adjust-width {
+	display:none;
 }
 
 a {
@@ -72,14 +80,14 @@ a {
 
 #toc li a, 
 #toc li {
-	color:#c8c8c8;
-	line-height:1.4;
-	padding:.25em 0;
-	font-size:12pt;
+	color: #c8c8c8;
+	line-height: 1.4;
+	padding: .25em 0;
+	font-size: 14pt;
 	font-family: Helvetica, Universal, Arial, sans-serif;
 }
 
-#content.mobile #toc li a {
+#reader.mobile #toc li a {
 	font-size:16pt;
 	font-family: sans-serif;
 }
@@ -116,19 +124,17 @@ a {
 	margin-top:1em;
 }
 
-#content.mobile h1.book-heading {}
+#reader.mobile h1.book-heading {}
 
 /* Book Title */
-div.section-1 > h1.book-heading,
-article.section-1 > h1 {
+div.section-1 > h1 {
 	font-size:18pt;
 	font-weight:bold;
 	text-align:center;
 }
 
 /* Chapter Title */
-div.section-2 h1.book-heading,
-article.section-2 > h1 {
+div.section-2 > h1 {
 	font-size:16pt;
 	font-weight:bold;
 	padding-top:1em;
@@ -137,8 +143,7 @@ article.section-2 > h1 {
 }
 
 /* Section Title */
-div.section-3 h1.book-heading,
-article.section-3 > h1 {
+div.section-3 > h1 {
 	font-size:16pt;
 	font-weight:bold;
 	padding-top:1em;
@@ -147,8 +152,7 @@ article.section-3 > h1 {
 }
 
 /* Section Title */
-div.section-3 h1.book-heading,
-article.section-4 > h1 {
+div.section-4 > h1 {
 	font-size:14pt;
 	font-weight:bold;
 	padding-top:1em;
@@ -156,11 +160,7 @@ article.section-4 > h1 {
 	text-align:left;
 }
 
-div.section-1, article {}
-
-div.section-2 {
-	background-color: rgba(248,236,194,.25);
-}
+div.section-2 {}
 
 button.action {
 	font-size:125%;
@@ -168,10 +168,9 @@ button.action {
 
 .book-edit-menu {
 	display:none;
-	_margin-bottom: 1em;
-	_text-align:right;
 }
 
+/* Headers within book contents */
 div.field-name-field-book-content h1 {
 	font-weight:bold;
 }
@@ -198,19 +197,22 @@ div.field-name-field-book-content * {
 
 div.field-name-field-book-content p {
 	font-size:14pt;
+	line-height: 21pt;
 	text-align:justify;
 }
 
-#content.mobile div.field-name-field-book-content p {
+#reader.mobile div.field-name-field-book-content p {
 	font-size:18pt;
 	text-align:justify;
 }
 
 aside, .bourdieu {
-	font-size:12pt;
+	font-family: "Baskerville","Garamond","Times New Roman",sans-serif;
+	font-size:13pt;
+	line-height: 18pt;
 }
 
-#content.mobile aside, #content.mobile .bourdieu {
+#reader.mobile aside, #reader.mobile .bourdieu {
 	font-size:16pt;
 }
 

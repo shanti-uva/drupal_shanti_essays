@@ -43,8 +43,11 @@
                 <div id="jr-tb1">
                   <a id="jr-pmc-sw" href="/" class="btn link wsprkl"
                     title="SHANTI Essays Home">
-                    <img src="<?php print $pubreader_path; ?>/img/pmc.logo.svg" alt="pmc logo" />
+                    <img src="<?php print $pubreader_path; ?>/img/shanti_logo-icon.png" alt="pmc logo" />
+                    SHANTI Essays
                   </a>
+                  
+                  <!--
                   <a id="jr-links-sw" class="btn wsprkl hidden " title="Links">
                     <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 100 100"
                       preserveaspectratio="none">
@@ -53,6 +56,8 @@
                         > </path>
                     </svg>
                   </a>
+                  -->
+                  <!--
                   <a id="jr-alt-sw" class="btn wsprkl hidden"
                     title="Alternative formats of the Article">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="250 150 300 300"
@@ -88,12 +93,14 @@
                       </g>
                     </svg>
                   </a>
+                  -->
                 </div>
                 <div class="jr-rhead f1">
                   <div class="t">
                     <?php print $title; ?>
                   </div>
                   <div class="j">
+                    CITATION GOES HERE
                     <?php //print $citation; ?>
                   </div>
                 </div>
@@ -242,10 +249,14 @@
                 </div>
                 <div class="lol">
                   <a id="jr-helpobj-sw" data-path="<?php print $pubreader_path; ?>/" data-href="<?php print $pubreader_path; ?>/img/help.xml" href="">Help with
-                    PubReader</a><a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC14900/?report=classic" class="">Switch to
-                      classic view</a><a
-                        href="mailto:pubmedcentral@ncbi.nlm.nih.gov?subject=PubReader%20feedback">Feedback /
-                        suggestions</a><a id="jr-about-sw" data-path="<?php print $pubreader_path; ?>/" data-href="<?php print $pubreader_path; ?>/img/about.xml"
+                    PubReader</a>
+                  <!--
+                  <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC14900/?report=classic" class="">Switch to
+                      classic view</a>
+                  <a href="mailto:pubmedcentral@ncbi.nlm.nih.gov?subject=PubReader%20feedback">Feedback /
+                        suggestions</a>
+                  -->
+                  <a id="jr-about-sw" data-path="<?php print $pubreader_path; ?>/" data-href="<?php print $pubreader_path; ?>/img/about.xml"
                           href="">About PubReader</a>
                 </div>
               </div>
