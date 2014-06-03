@@ -10,6 +10,11 @@ function shanti_essays_menu() {
       'type' => MENU_CALLBACK,
       'access arguments' => array('access content'),
     ),
+    'shanti_essays/reader' => array(
+      'page callback' => 'shanti_essays_default',
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access content'),
+    ),
     'shanti_essays/reader/%' => array(
       'page callback' => 'shanti_essays_reader',
       'page arguments' => array(2),
@@ -26,28 +31,9 @@ function shanti_essays_menu() {
       'page callback' => 'shanti_essays_whole',
       'page arguments' => array(2),
       'type' => MENU_CALLBACK,
-      //'delivery callback' => 'shanti_essays_whole_callback',
       'access arguments' => array('access content'),
-    ),
-    'node/%node/book_toc' => array(
-      'title' => 'Contents',
-      'page callback' => 'shanti_essays_show_toc',
-      'page arguments' => array(1),
-      'type' => MENU_LOCAL_TASK,
-      'access arguments' => array('access content'),
-      'weight' => 2,
-    ),
-    'shanti_essays/test' => array(
-      'title' => 'SHANTI Essays Test Page',
-      'page callback' => 'shanti_essays_test',
-      'type' => MENU_NORMAL_ITEM,
-      'access arguments' => array('access content'), 
     ),
   );
-}
-
-function shanti_essays_test() {
-  return "This is a test.";
 }
 
 function shanti_essays_reader_callback($page_callback_result) {
@@ -72,32 +58,8 @@ function shanti_essays_reader_callback($page_callback_result) {
   drupal_page_footer();  
 }
   
-function shanti_essays_whole_callback($page_callback_result) {
-  drupal_page_header();
-  if (isset($page_callback_result) && is_null(drupal_get_http_header('Content-Type'))) {
-    drupal_add_http_header('Content-Type', 'text/html; charset=utf-8');
-  	  $content = is_string($page_callback_result) ? $page_callback_result : drupal_render($page_callback_result);
-  	  $html = "";
-		$html .= "<html>\n";
-    	$html .= "<head>\n";
- 		$html .= "<title>SHANTI Essay Reader</title>\n";
- 		$html .= "<meta name=\"viewport\" content=\"width=device-width, user-scalable=no\" />\n";
- 		$html .= drupal_get_css();
- 		$html .= drupal_get_js();
- 		$html .= "</head>\n";
- 		$html .= "<body>\n";
- 		$html .= "<div id='content'>\n";
- 		$html .= $content;
- 		$html .= "</div><!-- #content -->\n";
- 		$html .= "</body>\n";
- 		$html .= "</html>\n";
- 		print $html;
-  }
-  drupal_page_footer();
-}
-
 function shanti_essays_default(){
-  return "SHANTI Essays. It's what's for dinner.";
+  drupal_goto("");
 }
 
 /**
@@ -467,20 +429,4 @@ function shanti_essays_preprocess_node(&$vars) {
 function shanti_essays_enable() {
   drupal_set_message($message = t('SHANTI Essays activated.'), $type = 'status');
   drupal_theme_rebuild();
-}
-
-function shanti_essays_show_toc($node) {
-  $output = shanti_essays_get_toc($node);
-  return drupal_render($output);
-}
-
-function shanti_essays_get_toc($node) {
-  $output = array();
-  if ($node->type == 'book') {
-    $bid    = $node->book['bid'];
-    $toc    = book_toc($bid, 7);
-    $tree   = menu_tree_all_data(book_menu_name($bid));
-    $output = menu_tree_output($tree);
-  } 
-  return $output;  
 }
