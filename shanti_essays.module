@@ -29,13 +29,6 @@ function shanti_essays_menu() {
       //'delivery callback' => 'shanti_essays_whole_callback',
       'access arguments' => array('access content'),
     ),
-    'shanti_essays/pubreader/%' => array(
-      'page callback' => 'shanti_essays_pubreader',
-      'page arguments' => array(2),
-      'type' => MENU_CALLBACK,
-      'delivery callback' => 'shanti_essays_pubreader_callback',
-      'access arguments' => array('access content'),
-    ),
     'node/%node/book_toc' => array(
       'title' => 'Contents',
       'page callback' => 'shanti_essays_show_toc',
@@ -99,14 +92,6 @@ function shanti_essays_whole_callback($page_callback_result) {
  		$html .= "</body>\n";
  		$html .= "</html>\n";
  		print $html;
-  }
-  drupal_page_footer();
-}
-
-function shanti_essays_pubreader_callback($page_callback_result) {
-  drupal_page_header();
-  if (isset($page_callback_result) && is_null(drupal_get_http_header('Content-Type'))) {
-      print  $page_callback_result;
   }
   drupal_page_footer();
 }
@@ -177,33 +162,6 @@ function shanti_essays_whole($nid) {
 }
 
 /**
- * The function creates a single page out of all the nodes that compose a
- * book. 
- */
-function shanti_essays_pubreader($nid) {
-  $node = node_load($nid);
-  if (!$node) {
-    return MENU_NOT_FOUND;
-  }
-  if (!node_access('view', $node)) {
-    return MENU_ACCESS_DENIED;
-  }
-  if (user_access('access content')) {
-    if (isset($node->book)) {
-      $tree         = book_menu_subtree_data($node->book);
-      $contents     = book_export_traverse($tree, 'shanti_essays_pubreader_node');            
-      return theme('shanti_essays_pubreader_html', array('title' => $node->title, 'book_id' => $node->book['bid'], 'contents' => $contents, 'depth' => $node->book['depth']));
-    } 
-    else {
-      drupal_not_found();
-    }
-  } 
-  else {
-    drupal_access_denied();
-  }
-}
-
-/**
  * This exists to conform to the model of how the book print function works.
  * Not sure if it is necceary to specify a new view mode but what the heck.
  */
@@ -236,15 +194,6 @@ function shanti_essays_whole_node($node, $children = '') {
   hide($build['links']);
   $node->rendered = drupal_render($build);
   return theme('shanti_essays_whole_node_html', array('node' => $node, 'children' => $children));
-}
-
-function shanti_essays_pubreader_node($node, $children = '') {
-  $build = node_view($node, 'whole'); 
-  unset($build['#theme']); 
-  hide($build['group_content_access']);
-  hide($build['links']);
-  $node->rendered = drupal_render($build);
-  return theme('shanti_essays_pubreader_node_html', array('node' => $node, 'children' => $children));
 }
 
 /**
@@ -297,16 +246,6 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
 }
 
 function template_preprocess_shanti_essays_whole_node_html(&$vars) {
-  $vars['depth']    = $vars['node']->book['depth'];
-  $vars['title']    = check_plain($vars['node']->title);
-  $vars['content']  = $vars['node']->rendered;
-}
-
-function template_preprocess_shanti_essays_pubreader_html(&$vars) {
-  $vars['pubreader_path'] = "/" . SHANTI_ESSAYS_PATH . "/pubreader";
-}
-
-function template_preprocess_shanti_essays_pubreader_node_html(&$vars) {
   $vars['depth']    = $vars['node']->book['depth'];
   $vars['title']    = check_plain($vars['node']->title);
   $vars['content']  = $vars['node']->rendered;
@@ -431,12 +370,7 @@ function shanti_essays_css_alter (&$css) {
         unset($css[$k]);
       }
     }
-  } /*   
-  elseif (preg_match("/^shanti_essays\/pubreader/", SHANTI_ESSAYS_Q)) {
-    foreach ($css as $k => $v) {
-      unset($css[$k]);
-    }
-  }*/
+  }
   elseif (preg_match("/^shanti_essays\/reader/", SHANTI_ESSAYS_Q)) {
     $css_ok = array('shanti_essays_reader\.css','jquery');
     $css_pat = implode('|',$css_ok);
@@ -448,13 +382,7 @@ function shanti_essays_css_alter (&$css) {
 
 // Seems incredibly inefficient
 function shanti_essays_js_alter (&$js) {
-  /*
-  if (preg_match("/^shanti_essays\/pubreader/", SHANTI_ESSAYS_Q)) {
-    foreach ($js as $k => $v) {
-      unset($js[$k]);
-    }
-  }
-  else*/if (preg_match("/^shanti_essays\/reader/", SHANTI_ESSAYS_Q)) {
+  if (preg_match("/^shanti_essays\/reader/", SHANTI_ESSAYS_Q)) {
     $js_ok = array('shanti_essays_reader','misc');
     $js_pat = implode('|',$js_ok);
     foreach ($js as $k => $v) {

@@ -1,62 +1,49 @@
 (function($){
   
+/// DEFAULTS ///
+ 
+var dims = {
+  wbreak:       800,
+  hbreak:       400,
+  toc_open_w:   300, 
+  toc_close_w:  20
+};
+  
+var colors = {
+  toc_bg:         'rgba(50,50,50,.85)',
+  toc_btn_open:   '#c8c8c8',
+  toc_btn_close:  'darkgray'
+};
+
+var device_type = '';
+var state = ''; 
+    
 Drupal.behaviors.shantiEssaysWhole = {
   
   attach: function (context, settings) {
   
-  	/// DEFAULTS ///
   
-  	var dims = {
-  		wbreak:       800,
-  		hbreak:       400,
-  		toc_open_w:   300, 
-  		toc_close_w: 	20
-  	};
   	
-  	var colors = {
-  		toc_bg:					'rgba(50,50,50,.85)',
-  		toc_btn_open:   '#c8c8c8',
-  		toc_btn_close:  'darkgray'
-  	};
-  	
-    /// STATES (for #toc and #book-content) ///
-    /// *_v = vertical (non-mobile), *_h = horizontal (mobile)
+  /// STATES (for #toc and #book-content) ///
+  /// *_v = vertical (non-mobile), *_h = horizontal (mobile)
     
   var states = {
     
       '#toc': {
-        'open_v': {
-          'top':						  '0px',
-          'left':						'0px',
-  				  'bottom':					'0px',
-          'width':          dims.toc_open_w + 'px',
-          'height':         '100%',
-          'padding':   			'1em .5em 0 .5em',
-          'margin':					'0px'
-        },
-        'closed_v': {
-          'top':						  '0px',
-          'left':						'0px',
-  				  'bottom':					'0px',
-          'width':          dims.toc_close_w + 'px',
-          'height':         '100%',
-          'padding':   			'1em .5em 0 .5em',
-          'margin':					'0px'
-        },
         'open_v_r': {
-  				'position':				'fixed', // bc resizable()
+  				  'position':				'fixed', 
           'top':						  '0px',
           'right':					  '0px',
   				  'bottom':					'0px',
   				  'left':						'auto',
-          'width':          dims.toc_open_w + 'px',
+          'width':            dims.toc_open_w + 'px',
           'height':           '100%',
           'padding':   			 '0em .5em 0em 0em',
           'margin':					 '0px',
           'background-color': colors.toc_bg
         },
         'closed_v_r': {
-          'position':				 'fixed', // bc resizable()
+          'position':				 'fixed', 
           'top':						   '0px',
           'right':					   '0px',
   				  'bottom':					 '0px',
@@ -92,41 +79,21 @@ Drupal.behaviors.shantiEssaysWhole = {
       },
       
       '#book-content': {
-        'open_v': {
-          'top': 						'0px',
-          'left': 					dims.toc_open_w + 'px',
-          'bottom': 				'0px',
-					'width':					'auto',
-					'height':					'100%',
-          'padding':  			'0 2em',
-          'margin-left':		'1em',   // WHY??
-          'margin-right':   dims.toc_open_w + 'px'
-        },
-        'closed_v': {
-          'top':            '0px',
-          'left':           dims.toc_close_w + 'px',
-          'bottom':         '0px',
-					'width':					'auto',
-					'height':					'100%',
-          'padding':				'0 1em',
-          'margin-left':		'0px', // WHY?
-					'margin-right':   dims.toc_close_w + 'px'
-        },
         'open_v_r': {
-        	'position':				'relative', // bc resizable()
+        	'position':				'relative', 
           'top': 						'0px',
           'bottom': 				'0px',
           'width':					'auto',
 					'height':					'100%',
-          'padding':				'0 3em 0 1em', // 36 = 16 (ie 1em) + dim.toc_close_w
+          'padding':				'0 3em 0 1em', 
         },
         'closed_v_r': {
-        	'position':				'relative', // bc resizable()
+        	'position':				'relative', 
           'top':            '0px',
           'bottom':         '0px',
 					'width':					'auto',
 					'height':					'100%',
-          'padding':				'0 3em 0 1em', // 36 = 16 (ie 1em) + dim.toc_close_w
+          'padding':				'0 3em 0 1em', 
         },
         'closed_h': {
           'top':            '60px',
@@ -194,29 +161,8 @@ Drupal.behaviors.shantiEssaysWhole = {
     };
     
     //// TRANSITIONS (which employ STATES) ////
-
-		var state = ''; // Current state of the two elements
-
-    function tocCloseVert(){
-      $('#toc').transition(states['#toc'].closed_v, 'slow');
-      $('#book-content').transition(states['#book-content'].closed_v, 'slow');
-      $('.toc-action a, .toc-action').transition({ color: 'darkgray'}, 'slow');   
-      $('#toc .level-0').hide();
-      $('#toc-collapse-toggle i').removeClass( "fa-chevron-left" ).addClass( "fa-chevron-right" ).transition({ color: 'darkgray', 'padding-left': '0px'}, 'slow');
-      state = 'closed_v';   
-    }
-    
-    function tocOpenVert(){
-      $('#toc').transition(states['#toc'].open_v, 'slow');   
-      $('#book-content').transition(states['#book-content'].open_v, 'slow');   
-      $('.toc-action a, .toc-action').transition({ color: '#c8c8c8'}, 'slow');   
-      $('#toc .level-0').show();
-      $('#toc-collapse-toggle i').removeClass( "fa-chevron-right" ).addClass( "fa-chevron-left" ).transition({ color: '#c8c8c8', 'padding-left': '0px'}, 'slow');
-      state ='open_v';
-    }
     
     function tocCloseVertRight(){
-      $('#toc-menu').hide(); // This is just to make the icons dance less
       $('#toc').transition(states['#toc'].closed_v_r, 'slow');
       $('#toc-bar').transition(states['#toc-bar'].closed_v_r, 'slow');
       $('#toc-menu').transition(states['#toc-menu'].closed_v_r, 'fast');
@@ -281,38 +227,32 @@ Drupal.behaviors.shantiEssaysWhole = {
     /// EVENTS (which trigger TRANSITIONS) ///
     
     // Init
-    var device_type = '';
-    //$(document).ready(function(){
-      	device_type = getDeviceType();
-      	$('#log').html(window.innerWidth);
-      	if (device_type == 'not mobile') {
-      		$('#toc-collapse-toggle-h').hide();
-  				if (window.innerWidth <= dims.wbreak) { 
-  				  tocCloseVertRight(); 
-  				}
-  				else { 
-  					tocOpenVertRight(); 
-  				}
-      	}
-      	else { 
-      		$('#reader').addClass('mobile');
-      		$('#toc-collapse-toggle').hide();
-        $('#toc-adjust-width').hide();
-        $('#toc-bar').hide();
-      		$('#toc-edit').hide();
-      		//$('.toc-action i').removeClass('fa-2x').addClass('fa-3x');
-      		tocCloseHoriz(); 
-      	}
-      	$('#toc').css('display','block');
-      	$('#book-content').css('display','block');
-    //});
+    	device_type = getDeviceType();
+    	$('#log').html(window.innerWidth);
+    	if (device_type == 'not mobile') {
+    		$('#toc-collapse-toggle-h').hide();
+				if (window.innerWidth <= dims.wbreak) { 
+				  tocCloseVertRight(); 
+				}
+				else { 
+					tocOpenVertRight(); 
+				}
+    	}
+    	else { 
+    		$('#reader').addClass('mobile');
+    		$('#toc-collapse-toggle').hide();
+      $('#toc-adjust-width').hide();
+      $('#toc-bar').hide();
+    		$('#toc-edit').hide();
+    		tocCloseHoriz(); 
+    	}
+    	$('#toc').css('display','block');
+    	$('#book-content').css('display','block');
     
     // TOC Toggles
-    
     $('#toc-collapse-toggle').click(function(){
     	 state == 'closed_v_r' ? tocOpenVertRight() : tocCloseVertRight();
     });
-    
 		$('#toc-collapse-toggle-h').click(function(){
     	 state == 'closed_h' ? tocOpenHoriz() : tocCloseHoriz(); 
     });
@@ -334,8 +274,8 @@ Drupal.behaviors.shantiEssaysWhole = {
     });
         
     // Collapse vertical menu on non-mobiles on window width shrink
+    
     $(window).resize(function(e){
-      console.log(state);
     	  if (state == 'open_v_r') {
 				if (window.innerWidth <= dims.wbreak) {
 					tocCloseVertRight();
@@ -343,12 +283,14 @@ Drupal.behaviors.shantiEssaysWhole = {
 				else {
 					adjustTocWidth();
 				}
-			} else if (state == 'closed_v_r') {
+			} 
+			else if (state == 'closed_v_r') {
           //tocOpenVertRight();
 			}
     });
     
   	  // Close menu after clicking on link when in mobile mode
+  	  
     $('#toc .level-0 a').click(function(e){
 			e.preventDefault(); 
       	var target = $(this).attr('href');
@@ -358,24 +300,10 @@ Drupal.behaviors.shantiEssaysWhole = {
         tocCloseHoriz();			  
 			}
 	  });
-
-	  $('#book-content a').click(function(e){
-      e.preventDefault();
-      var href = $(this).attr('href');
-	  	  window.location = href;
-	  });
- 		
-   // Toggle Pages
-   /*
-   $('.head-toggle').click(function(e){
-    var label = $(this).text();
-    var id    = $(this).parent().parent().attr("id");
-    var sel   = '#' + id + ' .book-content'; 
-    $(sel).slideToggle("fast");
-   });
-   */
-   
+     		   
+		
 		// Home-made resize functions (bc JQuery is buggy on divs with absolute pos)   
+		
 		$('#toc-bar').mousedown(function(e){
 			e.preventDefault();
 			$(document).mousemove(function(e){
@@ -384,7 +312,9 @@ Drupal.behaviors.shantiEssaysWhole = {
 		});
 		
 		$(document).mouseup(function(e){	
+		  			
 			$(document).unbind('mousemove');
+			
 			var a = window.innerWidth;
 			var b = $('#book-content').outerWidth();
 			var c = a - b; // right margin
@@ -392,15 +322,22 @@ Drupal.behaviors.shantiEssaysWhole = {
       
       // Right margin is greater than TOC
       if (c > d && state == 'open_v_r'){
-        $('#toc-adjust-width i').removeClass('fa-caret-square-o-right').addClass('fa-caret-square-o-left');
-        $('#toc-adjust-width').show(); 
-        
-      // TOC overlaps page content   
-      } else if (d > c && state == 'open_v_r' && a >= dims.wbreak){   
+        if (d < $('#toc-menu').width()) {
+          tocCloseVertRight(); 
+        }
+        else {
+          $('#toc-adjust-width i').removeClass('fa-caret-square-o-right').addClass('fa-caret-square-o-left');
+          $('#toc-adjust-width').show();       
+        }
+   
+      } 
+      // TOC overlaps page content
+      else if (d > c && state == 'open_v_r' && a >= dims.wbreak){   
         $('#toc-adjust-width i').removeClass('fa-caret-square-o-left').addClass('fa-caret-square-o-right');
         $('#toc-adjust-width').show();      
 
-      } else {
+      } 
+      else {
         $('#toc-adjust-width').hide();      
       }
       
