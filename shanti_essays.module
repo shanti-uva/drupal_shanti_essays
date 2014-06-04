@@ -200,6 +200,7 @@ function template_preprocess_shanti_essays_reader_node_html(&$vars) {
 
 function template_preprocess_shanti_essays_whole_html(&$vars) {
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
+  drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css');
   $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
   drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole.js', 'file');
@@ -416,6 +417,7 @@ function shanti_essays_preprocess_node(&$vars) {
     
     // Add CSS and JS
     drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays.css');
+    drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css');
     $js_settings = array(
       'book' => $vars['book'],
       'book_title' => $vars['shanti_essays']['book_title'],

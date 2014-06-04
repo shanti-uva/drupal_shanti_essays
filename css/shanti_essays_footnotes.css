@@ -1,0 +1,31 @@
+/* FOOTNOTES */
+
+ul.footnotes {
+	padding-left:.5em!important;
+}
+
+li.footnote {
+	margin-left:.5em!important;	
+}
+
+#reader .footnotes {
+	margin:0px;
+}
+
+#reader .footnote {
+	font-size: 12pt;
+	padding-top: .25em;
+	padding-bottom: .25em;
+	padding-left: .25em;
+	border-radius:5px;
+}
+
+#reader .see-footnote:target, 
+#reader .footnotes .footnote:target {
+	background-color:#FFFCD3;
+	box-shadow:2px 2px 5px gray;
+}
+
+a.see-footnote {}
+
+a.footnote-label {}
