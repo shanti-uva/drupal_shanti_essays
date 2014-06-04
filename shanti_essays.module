@@ -178,7 +178,7 @@ function shanti_essays_whole_toc($node, $children = '') {
         }
       }
     }
-    $output .= "<li><a href='#node-$nid'>$title</a></li>\n";
+    $output .= "<li id='toc-item-node-$nid'><a href='#node-$nid'>$title</a></li>\n";
     $output .= $children;
     return $output;
 }

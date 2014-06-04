@@ -223,10 +223,31 @@ Drupal.behaviors.shantiEssaysWhole = {
       }
       $('#toc-adjust-width').hide();
 		}
+		
+		function addTocChildren() {
+		  $('#toc li', context).each(function(){
+		    $(this).append("<ul class='internal-headers'></ul>");
+		  });
+		}
+		
+		function addInternalHeadersToToc() {
+		  $('#book-content .book-section', context).each(function(){
+		    var section_id = $(this).attr('id');
+		    $('> .field-name-field-book-content > .field-items > .field-item > h1, > .field-name-field-book-content > .field-items > .field-item > h2, > .field-name-field-book-content > .field-items > .field-item > h3', this).each(function(){
+		      $('#toc-item-' + section_id + ' .internal-headers').append("<li class='toc-item-internal-header'>"+ $(this).html() +"</li>");
+		    });
+		  });		    
+		}
+		  
+		
 				
     /// EVENTS (which trigger TRANSITIONS) ///
     
     // Init
+    
+    addTocChildren();
+    addInternalHeadersToToc();
+    
     	device_type = getDeviceType();
     	if (device_type == 'not mobile') {
     		$('#toc-collapse-toggle-h').hide();
