@@ -231,10 +231,14 @@ Drupal.behaviors.shantiEssaysWhole = {
 		}
 		
 		function addInternalHeadersToToc() {
+      var header_id_index = 0;
 		  $('#book-content .book-section', context).each(function(){
 		    var section_id = $(this).attr('id');
 		    $('> .field-name-field-book-content > .field-items > .field-item > h1, > .field-name-field-book-content > .field-items > .field-item > h2, > .field-name-field-book-content > .field-items > .field-item > h3', this).each(function(){
-		      $('#toc-item-' + section_id + ' .internal-headers').append("<li class='toc-item-internal-header'>"+ $(this).html() +"</li>");
+	        header_id_index++;
+	        header_id = "book-content-header-" + header_id_index;
+	        $(this).before("<a id='"+header_id+"'></a>");
+		      $('#toc-item-' + section_id + ' .internal-headers').append("<li class='toc-item-internal-header'><a href='#"+header_id+"'>"+ $(this).html() +"</a></li>");
 		    });
 		  });		    
 		}
@@ -278,16 +282,29 @@ Drupal.behaviors.shantiEssaysWhole = {
     });
 
     // Show visible articles on TOC
-    $('div.book-section').bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
+    $('div.book-section', context).bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
       var toc_target = "#toc a[href='#"+ $(this).attr('id') +"']";
       if (isInView) {
-        $(toc_target).css('color','orange'); // The new black
+        $(toc_target).css('color','orange');
       } 
       else {
-        $(toc_target).css('color', colors.toc_btn_open); // rgb(200,200,200)
+        $(toc_target).css('color', colors.toc_btn_open);
       }
     });
    
+    /*
+    // Show visible internal headers on TOC
+    $('.field-item > h1, .field-item > h2, .field-item > h3', context).bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
+      var toc_target = "#toc a[href='#"+ $(this).prev('a').attr('id') +"']";
+      if (isInView) {
+        $(toc_target).css('color','lightgreen'); // The new black
+      } 
+      else {
+        $(toc_target).css('color', colors.toc_btn_open);
+      }
+    });
+    */
+
     // Adjust TOC width manually
     $('#toc-adjust-width').click(function(){
       adjustTocWidth();

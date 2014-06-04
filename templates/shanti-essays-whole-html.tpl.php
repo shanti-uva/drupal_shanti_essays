@@ -13,6 +13,7 @@
   <ul class='level-0'>
   <?php print $toc_block; ?>
   </ul>
+  
   <div id='log'></div>
 
 </div>
