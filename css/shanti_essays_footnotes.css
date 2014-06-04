@@ -2,6 +2,7 @@
 
 ul.footnotes {
 	padding-left:.5em!important;
+	padding-top:1em;
 }
 
 li.footnote {
@@ -20,7 +21,11 @@ li.footnote {
 	border-radius:5px;
 }
 
-#reader .see-footnote:target, 
+#reader .see-footnote:target {
+	background-color:rgba(100,100,100,.1);
+	border:none;
+}
+
 #reader .footnotes .footnote:target {
 	background-color:#FFFCD3;
 	box-shadow:2px 2px 5px gray;

@@ -16,7 +16,7 @@
 	display:none; /* init */
 	position:fixed!important; 
 	overflow:auto; 
-	z-index: 1000;
+	z-index: 10;
 	box-shadow: 0px 0px 10px gray; 
 }
 
@@ -24,7 +24,7 @@
 	display:none; /* init */
 	position:relative; 
 	overflow:auto; 
-	z-index: 1;
+	_z-index: 1;
 	max-width:6in;
 }
 
@@ -167,7 +167,17 @@ button.action {
 }
 
 .book-edit-menu {
-	display:none;
+	position:relative;
+	top:-36px;
+	right:0px;
+	display:block;
+}
+
+.book-edit-menu a {
+	float: right;
+	position: absolute;
+	top: 0px;
+	right: 0px;
 }
 
 /* Headers within book contents */

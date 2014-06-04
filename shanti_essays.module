@@ -193,6 +193,9 @@ function template_preprocess_shanti_essays_reader_html(&$vars) {
 }
 
 function template_preprocess_shanti_essays_reader_node_html(&$vars) {
+  // Create a rendered array of links here and add to theme definition as well.
+  // Something like:
+  // $vars['links'] = drupal_render($node_links);
   $vars['depth']    = $vars['node']->book['depth'];
   $vars['title']    = check_plain($vars['node']->title);
   $vars['content']  = $vars['node']->rendered;
@@ -295,16 +298,6 @@ function shanti_essays_theme($existing, $type, $theme, $path) {
     'shanti_essays_whole_node_html' => array(
       'variables' => array('node' => NULL, 'children' => NULL),
       'template' => 'templates/shanti-essays-whole-node-html',
-      'path' => SHANTI_ESSAYS_PATH,
-    ),
-    'shanti_essays_pubreader_html' => array(
-      'variables' => array('title' => NULL, 'contents' => NULL, 'depth' => NULL),
-      'template' => 'templates/shanti-essays-pubreader-html',
-      'path' => SHANTI_ESSAYS_PATH,
-    ),
-    'shanti_essays_pubreader_node_html' => array(
-      'variables' => array('node' => NULL, 'children' => NULL),
-      'template' => 'templates/shanti-essays-pubreader-node-html',
       'path' => SHANTI_ESSAYS_PATH,
     ),
   );

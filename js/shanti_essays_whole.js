@@ -228,7 +228,6 @@ Drupal.behaviors.shantiEssaysWhole = {
     
     // Init
     	device_type = getDeviceType();
-    	$('#log').html(window.innerWidth);
     	if (device_type == 'not mobile') {
     		$('#toc-collapse-toggle-h').hide();
 				if (window.innerWidth <= dims.wbreak) { 
