@@ -11,8 +11,8 @@ var dims = {
   
 var colors = {
   toc_bg:         'rgba(50,50,50,.85)',
-  toc_btn_open:   '#c8c8c8',
-  toc_btn_close:  'darkgray'
+  toc_btn_open:   'rgba(200,200,200,1)', // #c8c8c8
+  toc_btn_close:  'rgba(169,169,169,1)', // #a9a9a9 darkgray
 };
 
 var device_type = '';
@@ -25,7 +25,8 @@ Drupal.behaviors.shantiEssaysWhole = {
   
   	
   /// STATES (for #toc and #book-content) ///
-  /// *_v = vertical (non-mobile), *_h = horizontal (mobile)
+  /// *_v_r = vertical right (non-mobile), *_h = horizontal (mobile)
+  /// open_* = TOC is open, closed_* = TOC is closed
     
   var states = {
     
@@ -80,38 +81,37 @@ Drupal.behaviors.shantiEssaysWhole = {
       
       '#book-content': {
         'open_v_r': {
-        	'position':				'relative', 
+        	  'position':				'relative', 
           'top': 						'0px',
-          'bottom': 				'0px',
-          'width':					'auto',
+          'bottom': 				  '0px',
+          'width':					  'auto',
 					'height':					'100%',
-          'padding':				'0 3em 0 1em', 
+          'padding':				  '0 3em 0 1em', 
         },
         'closed_v_r': {
-        	'position':				'relative', 
+        	  'position':				'relative', 
           'top':            '0px',
           'bottom':         '0px',
-					'width':					'auto',
+					'width':					  'auto',
 					'height':					'100%',
-          'padding':				'0 3em 0 1em', 
+          'padding':				  '0 3em 0 1em', 
         },
         'closed_h': {
           'top':            '60px',
           'left':           '0px',
-					'right':					'0px',
+					'right':					  '0px',
 					'bottom':					'0px',
-					'width':					'100%',
+					'width':					  '100%',
 					'height':					'100%',
           'padding-left':   '1em',
           'padding-right':  '1em',
           'margin-right':   '0px'
         },
         'open_h': {
-          'top':            '60px',
           'left':           '0px',
-					'right':					'0px',
-          'bottom': 				'0px',
-					'width':					'100%',
+					'right':					  '0px',
+          'bottom': 				  '0px',
+					'width':					  '100%',
 					'height':					'100%',
           'margin-right':   '0px',
           'padding-right':  '1em',
@@ -224,32 +224,41 @@ Drupal.behaviors.shantiEssaysWhole = {
       $('#toc-adjust-width').hide();
 		}
 		
-		function addTocChildren() {
-		  $('#toc li', context).each(function(){
-		    $(this).append("<ul class='internal-headers'></ul>");
-		  });
-		}
-		
 		function addInternalHeadersToToc() {
+      $('#toc li', context).each(function(){
+        $(this).append("<ul class='internal-headers'></ul>");
+      });
       var header_id_index = 0;
 		  $('#book-content .book-section', context).each(function(){
 		    var section_id = $(this).attr('id');
 		    $('> .field-name-field-book-content > .field-items > .field-item > h1, > .field-name-field-book-content > .field-items > .field-item > h2, > .field-name-field-book-content > .field-items > .field-item > h3', this).each(function(){
+		      var tagName = $(this).attr('tagName');
 	        header_id_index++;
 	        header_id = "book-content-header-" + header_id_index;
 	        $(this).before("<a id='"+header_id+"'></a>");
-		      $('#toc-item-' + section_id + ' .internal-headers').append("<li class='toc-item-internal-header'><a href='#"+header_id+"'>"+ $(this).html() +"</a></li>");
+		      $('#toc-item-' + section_id + ' .internal-headers').append("<li class='toc-item-internal-header "+tagName+"'><a href='#"+header_id+"'>"+ $(this).html() +"</a></li>");
 		    });
 		  });		    
 		}
-		  
 		
-				
+		// Make sure images are not too wide for mobile
+		function adjustImages(){
+		  $('#book-content img', context).each(function(){
+		    var w1 = $(this).width();
+		    var w2 = window.innerWidth;
+		    if (w1 > w2) {
+          var h1 = $(this).height();
+          var h2 = w2 * (h1/w1);
+          $(this).width(w2);
+          $(this).height(h2);		      
+		    }
+		  });
+		}
+		
     /// EVENTS (which trigger TRANSITIONS) ///
     
     // Init
     
-    addTocChildren();
     addInternalHeadersToToc();
     
     	device_type = getDeviceType();
@@ -263,6 +272,7 @@ Drupal.behaviors.shantiEssaysWhole = {
 				}
     	}
     	else { 
+    	  adjustImages();
     		$('#reader').addClass('mobile');
     		$('#toc-collapse-toggle').hide();
       $('#toc-adjust-width').hide();
@@ -292,7 +302,8 @@ Drupal.behaviors.shantiEssaysWhole = {
       }
     });
    
-    /*
+    /* THIS CONFLICTS WITH THE ABOVE
+     * PLUS HEADERS ARE NOT CONTAINERS!
     // Show visible internal headers on TOC
     $('.field-item > h1, .field-item > h2, .field-item > h3', context).bind('inview', function(event, isInView, visiblePartX, visiblePartY) {
       var toc_target = "#toc a[href='#"+ $(this).prev('a').attr('id') +"']";
@@ -311,7 +322,6 @@ Drupal.behaviors.shantiEssaysWhole = {
     });
         
     // Collapse vertical menu on non-mobiles on window width shrink
-    
     $(window).resize(function(e){
     	  if (state == 'open_v_r') {
 				if (window.innerWidth <= dims.wbreak) {
@@ -322,25 +332,32 @@ Drupal.behaviors.shantiEssaysWhole = {
 				}
 			} 
 			else if (state == 'closed_v_r') {
-          //tocOpenVertRight();
+        if (window.innerWidth > dims.wbreak) {
+          tocOpenVertRight();
+        } 
+        else {
+          //adjustTocWidth();
+        }
 			}
     });
     
   	  // Close menu after clicking on link when in mobile mode
-  	  
     $('#toc .level-0 a').click(function(e){
 			e.preventDefault(); 
       	var target = $(this).attr('href');
 			var y = $(target).position().top;
 			window.scrollTo(0, y);
-			if (device_type == 'mobile') {
+			if (device_type == 'mobile'){
         tocCloseHoriz();			  
+			} 
+			else if (window.innerWidth <= dims.wbreak) {
+			  tocCloseVertRight();
 			}
+			return true;
 	  });
      		   
 		
 		// Home-made resize functions (bc JQuery is buggy on divs with absolute pos)   
-		
 		$('#toc-bar').mousedown(function(e){
 			e.preventDefault();
 			$(document).mousemove(function(e){
@@ -348,6 +365,7 @@ Drupal.behaviors.shantiEssaysWhole = {
 			});
 		});
 		
+		// Part of above function
 		$(document).mouseup(function(e){	
 		  			
 			$(document).unbind('mousemove');
