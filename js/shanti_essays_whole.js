@@ -8,64 +8,63 @@ var dims = {
   toc_open_w:   300, 
   toc_close_w:  20
 };
-  
+    
 var colors = {
-  toc_bg:         'rgba(50,50,50,.85)',
-  toc_btn_open:   'rgba(200,200,200,1)', // #c8c8c8
-  toc_btn_close:  'rgba(169,169,169,1)', // #a9a9a9 darkgray
+	toc_bg:         'rgba(50,50,50,.85)',
+	toc_btn_open:   'rgba(200,200,200,1)', // #c8c8c8
+	toc_btn_close:  'rgba(169,169,169,1)', // #a9a9a9 darkgray
+	toc_menu_bg:    'rgba(0,0,0,1)' // black
 };
-
+    
 var device_type = '';
 var state = ''; 
     
 Drupal.behaviors.shantiEssaysWhole = {
   
-  attach: function (context, settings) {
-  
-  
-  	
+	attach: function (context, settings) {
+      
   /// STATES (for #toc and #book-content) ///
   /// *_v_r = vertical right (non-mobile), *_h = horizontal (mobile)
   /// open_* = TOC is open, closed_* = TOC is closed
     
   var states = {
-    
-      '#toc': {
-        'open_v_r': {
-  				  'position':				'fixed', 
-          'top':						  '0px',
-          'right':					  '0px',
-  				  'bottom':					'0px',
-  				  'left':						'auto',
-          'width':            dims.toc_open_w + 'px',
-          'height':           '100%',
-          'padding':   			 '0em .5em 0em 0em',
-          'margin':					 '0px',
-          'background-color': colors.toc_bg
-        },
-        'closed_v_r': {
-          'position':				 'fixed', 
-          'top':						   '0px',
-          'right':					   '0px',
-  				  'bottom':					 '0px',
-          'left':						 'auto',
-          'width':            dims.toc_close_w + 'px',
-          'height':           '100%',
-          'padding':   			  '1em .5em 0 .5em',
-          'margin':					  '0px',
-  				  'background-color': colors.toc_bg
-        },
-        'closed_h': {
-          'top':            '0px',
-					'left':						'0px',
-					'right':					  '0px',
-					'bottom':					'0px',
-          'width':          '100%',
-          'height':         '20px',
-					'padding':				 '.5em',
-          'margin':					'0px',
-          'background-color': colors.toc_bg
-        },
+		
+		'#toc': {
+		  'open_v_r': {
+        		'position':       'fixed', 
+      			'top':	            '0px',
+      			'right':					  '0px',
+        		'bottom':					'0px',
+        		'left':						'auto',
+      			'width':           dims.toc_open_w + 'px',
+      			'height':          '100%',
+      			'padding':   			 '0em .5em 0em 0em',
+      			'margin':					 '0px',
+      			'background-color': colors.toc_bg
+		    },
+		    'closed_v_r': {
+      			'position':				 'fixed', 
+      			'top':						   '0px',
+      			'right':					   '0px',
+        		'bottom':					 '0px',
+      			'left':						 'auto',
+      			'width':            dims.toc_close_w + 'px',
+      			'height':           '100%',
+      			'padding':   			  '1em .5em 0 .5em',
+      			'margin':					  '0px',
+        		'background-color': colors.toc_bg
+		    },
+		    'closed_h': {
+      			'top':            '0px',
+      			'left':						'0px',
+      			'right':					  '0px',
+      			'bottom':					'0px',
+      			'width':          '100%',
+      			'height':         '20px',
+      			'padding':				 '.5em',
+      			'margin':					'0px',
+      			'background-color': colors.toc_bg
+		    },
         'open_h': {
           'top':            '0px',
 					'left':						'0px',
@@ -142,7 +141,7 @@ Drupal.behaviors.shantiEssaysWhole = {
         		'top': '0px',
         		'right': '0px',
         		'padding': '.5em 0 0 1em',
-        		'background-color': 'black'
+        		'background-color': colors.toc_menu_bg // 'black'
         	},
         	'closed_v_r': {
         		'position': 'relative',

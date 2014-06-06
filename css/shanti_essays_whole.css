@@ -17,7 +17,7 @@
 	position:fixed!important; 
 	overflow:auto; 
 	z-index: 10;
-	box-shadow: 0px 0px 10px gray; 
+	box-shadow: 0px 0px 10px gray;
 }
 
 #book-content { 
@@ -45,25 +45,21 @@
 	margin: 0 .5em 0 0;
 }
 
-#toc-menu {}
+#toc-menu {
+}
 
 #toc-menu .toc-action {
-	display:inline-block;
-	text-align: right;
-	padding: 0 .5em .5em 0; 
+  display:inline-block;  
+	padding: 0 .5em .5em 0;
 	color: #c8c8c8;
 }
 
 #reader.mobile #toc-menu .toc-action {
-	padding: 0 1em;
+	padding: 0 1em 1em 0;
 }
 
 #toc-menu .toc-action a {
 	color: #c8c8c8;
-}
-
-#toc-menu .toc-action {
-	cursor:hand;
 }
 
 #reader.mobile #toc-adjust-width {
@@ -74,7 +70,7 @@ a {
 	text-decoration:none;
 }
 
-#toc li a:hover {
+#toc ul > li > a:hover {
 	border-bottom:1px solid #c8c8c8;
 } 
 
@@ -219,10 +215,12 @@ div.field-name-field-book-content p {
 	text-align:justify;
 }
 
+/*
 #reader.mobile div.field-name-field-book-content p {
 	font-size:18pt;
 	text-align:justify;
 }
+*/
 
 aside, .bourdieu {
 	font-family: "Baskerville","Garamond","Times New Roman",sans-serif;

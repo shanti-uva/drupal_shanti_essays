@@ -206,7 +206,8 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css');
   $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
   drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
-  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole.js', 'file');
+  //drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole.js', 'file');
+  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole_2.js', 'file');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.transit.min.js', 'file');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.inview.min.js', 'file');
 }
@@ -389,7 +390,7 @@ function shanti_essays_preprocess_node(&$vars) {
       );
       $vars['content']['links']['book']['#links']['shanti_essays_view_pubreader'] = array(
         'title'       => 'View in PubReader',
-        'href'        => "shanti_essays/pubreader/$bid",
+        'href'        => "book_pubreader/$bid",
         'attributes'  => array('title' => 'View book in NIH PubReader')
       );
       
