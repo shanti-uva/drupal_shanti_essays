@@ -3,8 +3,9 @@
 	<div id="toc-bar"></div>
   
   <div id='toc-menu'>
-    <!--
+
     <span class="toc-action openonly" id="toc-adjust-width"><i class="fa fa-caret-square-o-left fa-lg"></i></span>
+    <!--
     <span class="toc-action" id="toc-collapse-toggle"><i class="fa fa-chevron-left fa-lg"></i></span>
     -->
     <span class="toc-action" id="toc-collapse-toggle-h"><i class="fa fa-bars fa-lg"></i></span>
