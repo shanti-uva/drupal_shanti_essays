@@ -265,6 +265,7 @@ Drupal.behaviors.shantiEssaysWhole = {
       b = dims.page_width + 48; // Add back the padding      
       $('#toc').css('left',b);
       $('#toc').css('right',0);
+      $('#toc').css('width','auto'); // Key!
       $('#toc-adjust-width').hide();
     }
 	}
@@ -273,9 +274,9 @@ Drupal.behaviors.shantiEssaysWhole = {
 	  if (state == 'wide' || window.innerWidth > dims.wbreak) {
 	    a = window.innerWidth;
 	    b = $('#book-content').outerWidth();
-	    c = a - b; // Margin
-      $('#toc').width(c);
+      $('#toc').css('left',b);
       $('#toc').css('right',0);
+      $('#toc').css('width','auto'); // Not sure if needed here, but what the hey
     }
 	}
 		
@@ -392,7 +393,7 @@ Drupal.behaviors.shantiEssaysWhole = {
 		$(document).mousemove(function(e){
 			var a = e.clientX;
 			var b = window.innerWidth - a;
-			var c = a - 48; // 48px = 3em (not sure why needed)
+			var c = a - 48; // 48px = 3em (padding)
       $('#toc').width(b);
       $('#toc').css('left',a);
 			$('#toc').css('right',0);
