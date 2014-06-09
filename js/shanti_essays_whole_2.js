@@ -36,10 +36,10 @@ Drupal.behaviors.shantiEssaysWhole = {
       'wide': {
         'position':           'fixed', 
         'top':                '0px',
-        'left':               'auto', // This is changed on resize
+        //'left':               'auto', // This is changed on resize
         'right':              '0px',
         'bottom':             '0px',
-        'width':              '300px', //dims.toc_open_w + 'px', // This is changed on resize
+        //'width':              '300px', //dims.toc_open_w + 'px', // This is changed on resize
         'height':             '100%',
         'padding':            '0em 1em 0em 0em',
         'margin':             '0px',
@@ -75,6 +75,8 @@ Drupal.behaviors.shantiEssaysWhole = {
       'wide': {
         'position':       'relative', 
         'top':            '0px',
+        'left':           '0px',
+        'right':          dims.page_width,
         'bottom':         '0px',
         'width':          dims.page_width, // An initial value
         'height':         '100%',
@@ -254,14 +256,13 @@ Drupal.behaviors.shantiEssaysWhole = {
  		  return 'not mobile';
  		} 
 	}
-			
+	
+	// May not need this -- could just alter left and right for #toc in states 
+	// and then goWide()
 	function snapToTocWidth(){
-   if (state == 'wide'|| window.innerWidth > dims.wbreak) {
-      $('#book-content').css('width',dims.page_width);
-      a = window.innerWidth;
-      b = $('#book-content').outerWidth();
-      c = a - b; // Margin
-      $('#toc').width(c);
+   if (state == 'wide'|| window.innerWidth > dims.wbreak) {      
+      $('#book-content').width(dims.page_width);
+      b = dims.page_width + 48; // Add back the padding      
       $('#toc').css('left',b);
       $('#toc').css('right',0);
       $('#toc-adjust-width').hide();
@@ -358,7 +359,6 @@ Drupal.behaviors.shantiEssaysWhole = {
 			else {
 				adjustTocWidth();
 			}
-			up0o
 		} 
 		else if (state == 'narrow_toc_close') {
       if (window.innerWidth > dims.wbreak) {
