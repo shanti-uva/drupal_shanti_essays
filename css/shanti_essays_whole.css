@@ -1,3 +1,4 @@
+@import url(http://fonts.googleapis.com/css?family=Muli:300,400,400italic,300italic|Archivo+Narrow:400,700,700italic,400italic|Shanti);
 
 /* Not sure if these settings are necessary */
 #reader {
@@ -26,7 +27,7 @@
 	overflow:auto; 
 	z-index: 1;
 	width:6in;
-	max-width:7in;
+	max-width:7.5in;
 	min-width:2.5in;
 }
 
@@ -78,10 +79,12 @@ a {
 #toc li a, 
 #toc li {
 	color: #c8c8c8; /* black;  */
-	line-height: 1.4;
-	padding: 0  0 .25em 0;
+	line-height: 16pt;
+	padding: 0 0 0 0;
+	margin-bottom: .5em;
 	font-size: 14pt;
-	font-family: Helvetica, Universal, Arial, sans-serif;
+	_font-family: Bitter, Helvetica, Universal, Arial, sans-serif;
+	font-family: 'Archivo Narrow', sans-serif;
 }
 
 #toc li a:visited {
@@ -90,7 +93,7 @@ a {
 
 #reader.mobile #toc li a {
 	font-size:16pt;
-	font-family: sans-serif;
+	font-family: 'Archivo Narrow', sans-serif;
 }
 
 #toc ul {
@@ -136,6 +139,10 @@ a {
 
 #reader.mobile h1.book-heading {}
 
+h1,h2,h3,h4,h5,h6,h7 {
+	_font-family: Bitter;
+	font-family: 'Archivo Narrow', sans-serif;
+}
 /* Book Title */
 div.section-1 > h1 {
 	font-size:18pt;
@@ -183,11 +190,16 @@ button.action {
 	display:block;
 }
 
-.book-edit-menu a {
-	float: right;
-	position: absolute;
-	top: 0px;
-	right: 0px;
+.book-edit-menu {
+	_position: relative;
+	_top:0;
+	_right:0;
+	float:right;
+	_margin-top: -2em;
+}
+
+.book-edit-menu .page-menu-action a {
+	color: gray;
 }
 
 /* Headers within book contents */
@@ -212,7 +224,20 @@ div.field-name-field-book-content h6 {}
 div.field-name-field-book-content h7 {}
 
 div.field-name-field-book-content * {
+	_font-family: 'Shanti', sans-serif;
+	font-weight: light;
 	font-family: "Baskerville","Garamond","Times New Roman",sans-serif;
+}
+
+.field-name-field-book-content h1,
+.field-name-field-book-content h2,
+.field-name-field-book-content h3,
+.field-name-field-book-content h4,
+.field-name-field-book-content h5,
+.field-name-field-book-content h6,
+.field-name-field-book-content h7
+{
+	font-family: 'Shanti', sans-serif;
 }
 
 div.field-name-field-book-content p {
@@ -229,6 +254,7 @@ div.field-name-field-book-content p {
 */
 
 aside, .bourdieu {
+	_font-family: 'Shanti', sans-serif;
 	font-family: "Baskerville","Garamond","Times New Roman",sans-serif;
 	font-size:13pt;
 	line-height: 18pt;

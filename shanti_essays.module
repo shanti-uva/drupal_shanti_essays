@@ -162,6 +162,7 @@ function shanti_essays_whole_node($node, $children = '') {
  * Generates a table of contents for use one the Whole page. Seemed
  * more efficient to roll your own here, but I am open to working 
  * with an existing render array to do this. Or something.
+ * At some point, convert this to a render array like a good boy.
  */
 function shanti_essays_whole_toc($node, $children = '') {
     $output = '';
@@ -202,6 +203,17 @@ function template_preprocess_shanti_essays_reader_node_html(&$vars) {
 }
 
 function template_preprocess_shanti_essays_whole_html(&$vars) {
+        
+	$vars['toc_menu']['links'] = array(
+		'toc-reorder' => array(
+		  '#markup' => l(
+		    '<i class="fa fa-edit fa-lg"></i>',
+		    "admin/content/book/{$vars['book_id']}", 
+		    array('query' => array('destination' => "/shanti_essays/whole/{$vars['book_id']}"),'html' => TRUE)
+      ),
+  	),
+  );
+  	
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css');
   $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
@@ -213,6 +225,36 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
 }
 
 function template_preprocess_shanti_essays_whole_node_html(&$vars) {
+/*
+  <div class="book-edit-menu">
+    <span class="page-menu-action" id="toc-edit-page">
+			<a title="Edit this page" href="/node/<?php print $node->nid; ?>/edit?destination=shanti_essays/whole/<?php print $node->book['bid']?>#node-<?php print $node->nid; ?>">
+				<i class="fa fa-edit fa-lg"></i>
+			</a>
+		</span>
+  	<span class="page-menu-action" id="toc-add-child-page">
+  		<a title="Add a child page" href="/node/add/book?parent=<?php print $node->nid; ?>?destination=shanti_essays/whole/<?php print $node->book['bid']?>#node-<?php print $node->nid; ?>">
+  			<i class="fa fa-plus fa-lg"></i>
+  		</a>
+  	</span>
+  </div>
+*/
+	$vars['book_edit_menu']['links'] = array(
+		'toc-edit-page' => array(
+	    '#type' 		=> 'link',
+  	  '#title' 		=> '<i class="fa fa-edit fa-lg"></i>',
+    	'#href' 		=> "node/{$vars['node']->nid}/edit",
+			'#options' 	=> array('html' => TRUE, 'title' => 'Edit book page'),
+  	),
+  	'toc-add-child-page' => array(
+	    '#type' 		=> 'link',
+  	  '#title' 		=> '<i class="fa fa-plus fa-lg"></i>',
+    	'#href' 		=> "node/add/book",
+    	'#query'		=> array('parent',$vars['node']->nid),
+			'#options' 	=> array('html' => TRUE, 'title' => 'Add child page'),  	
+  	)
+  );
+  
   $vars['depth']    = $vars['node']->book['depth'];
   $vars['title']    = check_plain($vars['node']->title);
   $vars['content']  = $vars['node']->rendered;
@@ -300,6 +342,11 @@ function shanti_essays_theme($existing, $type, $theme, $path) {
       'variables' => array('node' => NULL, 'children' => NULL),
       'template' => 'templates/shanti-essays-whole-node-html',
       'path' => SHANTI_ESSAYS_PATH,
+    ),
+    'shanti_essays_whole_toc_menu' => array(
+    	'variables' => array('links' => NULL, 'foo' => NULL),
+    	'template' => 'templates/shanti-essays-whole-toc-menu',
+    	'path' => SHANTI_ESSAYS_PATH,
     ),
   );
 }
@@ -399,11 +446,11 @@ function shanti_essays_preprocess_node(&$vars) {
         unset($vars['content']['links']['book']['#links']['book_made_simple_book']);
         $vars['content']['links']['book']['#links']['shanti_essays_add_page_top']['title'] = "Add Essay page";
       }
-    }    
+    }
     
     // What the hell is all this for?
     $book_node = node_load($bid);   
-    $book_menu_name = book_menu_name($bid);
+    	$book_menu_name = book_menu_name($bid);
     $book_links = menu_load_links($book_menu_name);
     $vars['shanti_essays']['top_mlid']   = $top_mlid;
     $vars['shanti_essays']['book_title'] = $book_node->title;

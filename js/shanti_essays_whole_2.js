@@ -51,7 +51,7 @@ Drupal.behaviors.shantiEssaysWhole = {
         'left':               '0px',
         'right':              '0px',
         'bottom':             '0px',
-        'width':              '100%',
+        //'width':              '100%',
         'height':             '20px',
         'padding':            '.5em',
         'margin':             '0px',
@@ -63,7 +63,7 @@ Drupal.behaviors.shantiEssaysWhole = {
         'left':               '0px',
         'right':              '0px',
         'bottom':             '0px',
-        'width':              '100%',
+        //'width':              '100%',
         'height':             '100%',
         'padding':            '.5em',
         'margin':             '0px',
@@ -78,7 +78,7 @@ Drupal.behaviors.shantiEssaysWhole = {
         'left':           '0px',
         'right':          dims.page_width,
         'bottom':         '0px',
-        'width':          dims.page_width, // An initial value
+        //'width':          dims.page_width, // An initial value
         'height':         '100%',
         'padding':        '0 2em 0 1em',
         'margin':         '0px'
@@ -214,7 +214,8 @@ Drupal.behaviors.shantiEssaysWhole = {
     $('#toc-adjust-width').hide();
     $('#toc-collapse-toggle').hide();
     $('#toc-collapse-toggle-h').hide();
-    $('#toc-edit').show();
+    $('#toc-edit').hide(); // May remove button
+    $('#toc-reorder').show();
     $('#toc-go-home').show();
   }
   
@@ -231,6 +232,7 @@ Drupal.behaviors.shantiEssaysWhole = {
     $('#toc-collapse-toggle-h').show();
     $('#toc-collapse-toggle-h i').removeClass( "fa-chevron-up" ).addClass( "fa-bars" ).transition({ color: colors.toc_btn_close }, 'slow'); 
     $('#toc-edit').hide();
+		$('#toc-reorder').hide();
     $('#toc-go-home').show();
   }
     
@@ -245,6 +247,7 @@ Drupal.behaviors.shantiEssaysWhole = {
     $('#toc-collapse-toggle-h').show();
     $('#toc-collapse-toggle-h i').removeClass( "fa-bars" ).addClass( "fa-chevron-up" ).transition({ color: colors.toc_btn_open }, 'slow'); 
     $('#toc-edit').hide();
+    $('#toc-reorder').hide();
     $('#toc-go-home').show();
   }
             
@@ -300,6 +303,7 @@ Drupal.behaviors.shantiEssaysWhole = {
 	// Make sure images are not too wide for mobile
 	function adjustImages(){
 	  $('#book-content img', context).each(function(){
+	  	//$(this).load(); 
 	    var w1 = $(this).width();
 	    var w2 = window.innerWidth;
 	    if (w1 > w2) {
@@ -307,7 +311,7 @@ Drupal.behaviors.shantiEssaysWhole = {
         var h2 = w2 * (h1/w1);
         $(this).width(w2);
         $(this).height(h2);		      
-	    }
+      }
 	  });
 	}
 		
@@ -356,6 +360,7 @@ Drupal.behaviors.shantiEssaysWhole = {
   	  if (state == 'wide') {
 			if (window.innerWidth <= dims.wbreak) {
 				goNarrowCloseToc();
+				adjustImages();
 			} 
 			else {
 				adjustTocWidth();

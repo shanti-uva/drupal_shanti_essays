@@ -2,6 +2,7 @@
 <?php //kpr($book); ?>
 <?php //kpr($shanti_essays); ?>
 <?php //kpr($content['links']['book']); ?>
+<?php kpr($content); ?>
 
 <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
 <div id="shanti-essay-page-content">
