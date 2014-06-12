@@ -343,11 +343,6 @@ function shanti_essays_theme($existing, $type, $theme, $path) {
       'template' => 'templates/shanti-essays-whole-node-html',
       'path' => SHANTI_ESSAYS_PATH,
     ),
-    'shanti_essays_whole_toc_menu' => array(
-    	'variables' => array('links' => NULL, 'foo' => NULL),
-    	'template' => 'templates/shanti-essays-whole-toc-menu',
-    	'path' => SHANTI_ESSAYS_PATH,
-    ),
   );
 }
 

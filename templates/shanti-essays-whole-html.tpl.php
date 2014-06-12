@@ -2,7 +2,6 @@
   
 	<div id="toc-bar"></div>
   
-	<?php //print render($toc_menu); ?>
   <div id='toc-menu'>
     <span class="toc-action openonly" id="toc-adjust-width">
     	<i class="fa fa-caret-square-o-left fa-lg"></i>
