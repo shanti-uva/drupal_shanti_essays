@@ -10,7 +10,7 @@
     <span class="toc-action" id="toc-collapse-toggle"><i class="fa fa-chevron-left fa-lg"></i></span>
   -->
     <span class="toc-action" id="toc-collapse-toggle-h"><i class="fa fa-bars fa-lg"></i></span>
-    <span class="toc-action" id="toc-reorder"><?php print render($toc_menu['links']['toc-reorder']); ?></span>
+    <span class="toc-action" id="toc-reorder"><?php print drupal_render($toc_menu['links']['toc-reorder']); ?></span>
     <span class="toc-action" id="toc-go-home"><a href="/"><i class="fa fa-home fa-lg"></i></a></span>
   </div>
 

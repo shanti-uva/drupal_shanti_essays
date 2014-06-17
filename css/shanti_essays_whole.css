@@ -1,5 +1,9 @@
 @import url(http://fonts.googleapis.com/css?family=Muli:300,400,400italic,300italic|Archivo+Narrow:400,700,700italic,400italic|Shanti);
 
+
+/* Should remove this in preprocess or alter function somewhere */
+#admin-menu {display:none;}
+
 /* Not sure if these settings are necessary */
 #reader {
 	display:fixed;

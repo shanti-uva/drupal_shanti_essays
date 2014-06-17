@@ -42,7 +42,7 @@ Drupal.behaviors.shantiEssaysWhole = {
         //'width':              '300px', //dims.toc_open_w + 'px', // This is changed on resize
         'height':             '100%',
         'padding':            '0em 1em 0em 0em',
-        'margin':             '0px',
+        'margin':             '0 0 0 1em',
         'background-color':   colors.toc_bg       
       },
       'narrow_toc_close': {
@@ -80,7 +80,7 @@ Drupal.behaviors.shantiEssaysWhole = {
         'bottom':         '0px',
         //'width':          dims.page_width, // An initial value
         'height':         '100%',
-        'padding':        '0 2em 0 1em',
+        'padding':        '0 2em 0 2em',
         'margin':         '0px'
       },
       'narrow_toc_close': {
@@ -132,7 +132,8 @@ Drupal.behaviors.shantiEssaysWhole = {
         'left': 'auto',
         'width': 'auto',
         'padding': '.5em 1em 0 1em',
-        'background-color': colors.toc_menu_bg_open // 'black'         
+        'background-color': colors.toc_menu_bg_open, // 'black'
+        'margin': 0
       },
       'narrow_toc_close': {
         'position': 'fixed',
@@ -265,7 +266,7 @@ Drupal.behaviors.shantiEssaysWhole = {
 	function snapToTocWidth(){
    if (state == 'wide'|| window.innerWidth > dims.wbreak) {      
       $('#book-content').width(dims.page_width);
-      b = dims.page_width + 48; // Add back the padding      
+      b = dims.page_width + 60; // Add back the padding for #book-content  
       $('#toc').css('left',b);
       $('#toc').css('right',0);
       $('#toc').css('width','auto'); // Key!
@@ -398,10 +399,10 @@ Drupal.behaviors.shantiEssaysWhole = {
 		$(document).mousemove(function(e){
 			var a = e.clientX;
 			var b = window.innerWidth - a;
-			var c = a - 48; // 48px = 3em (padding)
-      $('#toc').width(b);
+			var c = a - 60; // 60px = 4em (padding)
       $('#toc').css('left',a);
 			$('#toc').css('right',0);
+			$('#toc').css('width','auto');
       $('#book-content').width(c);
       $('#book-content').css('left',0);
       $('#book-content').css('right',b);

@@ -211,8 +211,17 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
 		    "admin/content/book/{$vars['book_id']}", 
 		    array('query' => array('destination' => "/shanti_essays/whole/{$vars['book_id']}"),'html' => TRUE)
       ),
+      '#access' => user_access('administer book outlines')
   	),
   );
+  
+  /*
+   * Create new books
+   * Administer book outlines
+   * Add content and child pages to books
+   * Administer book access
+   * Administer access of own books
+   */
   	
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css');
@@ -225,35 +234,34 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
 }
 
 function template_preprocess_shanti_essays_whole_node_html(&$vars) {
-/*
-  <div class="book-edit-menu">
-    <span class="page-menu-action" id="toc-edit-page">
-			<a title="Edit this page" href="/node/<?php print $node->nid; ?>/edit?destination=shanti_essays/whole/<?php print $node->book['bid']?>#node-<?php print $node->nid; ?>">
-				<i class="fa fa-edit fa-lg"></i>
-			</a>
-		</span>
-  	<span class="page-menu-action" id="toc-add-child-page">
-  		<a title="Add a child page" href="/node/add/book?parent=<?php print $node->nid; ?>?destination=shanti_essays/whole/<?php print $node->book['bid']?>#node-<?php print $node->nid; ?>">
-  			<i class="fa fa-plus fa-lg"></i>
-  		</a>
-  	</span>
-  </div>
-*/
+    
 	$vars['book_edit_menu']['links'] = array(
 		'toc-edit-page' => array(
-	    '#type' 		=> 'link',
-  	  '#title' 		=> '<i class="fa fa-edit fa-lg"></i>',
-    	'#href' 		=> "node/{$vars['node']->nid}/edit",
-			'#options' 	=> array('html' => TRUE, 'title' => 'Edit book page'),
+		  '#markup'   => l(
+		    '<i class="fa fa-edit fa-lg"></i>',
+		    "node/{$vars['node']->nid}/edit",
+        array(
+          'html' => TRUE, 
+          'query' => array('destination' => current_path()),
+          'fragment' => "node-{$vars['node']->nid}" 
+          // Above does not work. May need to define a menu path that calls drupal_goto() 
+        )
+      ),
+		  '#access' => user_access('add content and child pages to books')
   	),
   	'toc-add-child-page' => array(
-	    '#type' 		=> 'link',
-  	  '#title' 		=> '<i class="fa fa-plus fa-lg"></i>',
-    	'#href' 		=> "node/add/book",
-    	'#query'		=> array('parent',$vars['node']->nid),
-			'#options' 	=> array('html' => TRUE, 'title' => 'Add child page'),  	
+  	  '#markup' => l(
+        '<i class="fa fa-plus fa-lg"></i>',
+        "node/add/book",
+        array(
+          'html' => TRUE,
+          'query' => array('parent',$vars['node']->nid)
+        )
+       ),
+  	  '#access' => user_access('add content and child pages to books')
   	)
   );
+    
   
   $vars['depth']    = $vars['node']->book['depth'];
   $vars['title']    = check_plain($vars['node']->title);
