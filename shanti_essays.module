@@ -10,18 +10,6 @@ function shanti_essays_menu() {
       'type' => MENU_CALLBACK,
       'access arguments' => array('access content'),
     ),
-    'shanti_essays/reader' => array(
-      'page callback' => 'shanti_essays_default',
-      'type' => MENU_CALLBACK,
-      'access arguments' => array('access content'),
-    ),
-    'shanti_essays/reader/%' => array(
-      'page callback' => 'shanti_essays_reader',
-      'page arguments' => array(2),
-      'type' => MENU_CALLBACK,
-      'delivery callback' => 'shanti_essays_reader_callback',
-      'access arguments' => array('access content'),
-    ),
     'shanti_essays/whole' => array(
       'page callback' => 'shanti_essays_default',
       'type' => MENU_CALLBACK,
@@ -35,63 +23,11 @@ function shanti_essays_menu() {
     ),
   );
 }
-
-function shanti_essays_reader_callback($page_callback_result) {
-  drupal_page_header();
-  if (isset($page_callback_result) && is_null(drupal_get_http_header('Content-Type'))) {
-    drupal_add_http_header('Content-Type', 'text/html; charset=utf-8');
-    $content = is_string($page_callback_result) ? $page_callback_result : drupal_render($page_callback_result);
-    $html = "<!DOCTYPE html>\n";
-    $html .= "<html>\n";
-    $html .= "<head>\n";
-    $html .= "<title>SHANTI Essay Reader</title>\n";
-    $html .= "<meta name=\"viewport\" content=\"width=device-width, user-scalable=no\" />\n";
-    $html .= drupal_get_css(); // Altered
-    $html .= drupal_get_js(); // Altered
-    $html .= "</head>\n";
-    $html .= "<body>\n";
-    $html .= $content;
-    $html .= "</body>\n";
-    $html .= "</html>\n";
-    print $html;
-  }
-  drupal_page_footer();  
-}
   
 function shanti_essays_default(){
   drupal_goto("");
 }
 
-/**
- * The function creates a single page out of all the nodes that compose a
- * book. It also generates a table of contents and then passes these to
- * two templates, very much as the default book print function works.
- */
-function shanti_essays_reader($nid) {
-  $node = node_load($nid);
-  if (!$node) {
-    return MENU_NOT_FOUND;
-  }
-  if (!node_access('view', $node)) {
-    return MENU_ACCESS_DENIED;
-  }
-  if (user_access('access content')) {
-    if (isset($node->book)) {
-      $tree         = book_menu_subtree_data($node->book);
-      $contents     = book_export_traverse($tree, 'shanti_essays_reader_node');            
-      $toc_block    = book_export_traverse($tree, 'shanti_essays_whole_toc');
-      $book_id      = $node->book['bid'];
-      // May want to load INDEX and other tabs here ...
-      return theme('shanti_essays_reader_html', array('title' => $node->title, 'book_id' => $book_id, 'contents' => $contents, 'toc_block' => $toc_block, 'depth' => $node->book['depth']));
-    } 
-    else {
-      drupal_not_found();
-    }
-  } 
-  else {
-    drupal_access_denied();
-  }
-}
      
 /**
  * The function creates a single page out of all the nodes that compose a
@@ -135,19 +71,6 @@ function shanti_essays_entity_info_alter(&$info) {
     ),
   );
 }
-
-/**
- * I believe this is where you need to intervene in order to make changes to how
- * node content, specifically each field, is to be rendered in the Reader.
- */
-function shanti_essays_reader_node($node, $children = '') {
-  $build = node_view($node, 'whole'); 
-  unset($build['#theme']); 
-  hide($build['group_content_access']);
-  hide($build['links']);
-  $node->rendered = drupal_render($build);
-  return theme('shanti_essays_reader_node_html', array('node' => $node, 'children' => $children));
-}
  
 function shanti_essays_whole_node($node, $children = '') {
   $build = node_view($node, 'whole'); 
@@ -184,24 +107,6 @@ function shanti_essays_whole_toc($node, $children = '') {
     return $output;
 }
 
-function template_preprocess_shanti_essays_reader_html(&$vars) {
-  drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_reader.css');
-  $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
-  drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
-  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_reader.js', 'file');
-  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.transit.min.js', 'file');
-  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.inview.min.js', 'file');
-}
-
-function template_preprocess_shanti_essays_reader_node_html(&$vars) {
-  // Create a rendered array of links here and add to theme definition as well.
-  // Something like:
-  // $vars['links'] = drupal_render($node_links);
-  $vars['depth']    = $vars['node']->book['depth'];
-  $vars['title']    = check_plain($vars['node']->title);
-  $vars['content']  = $vars['node']->rendered;
-}
-
 function template_preprocess_shanti_essays_whole_html(&$vars) {
         
 	$vars['toc_menu']['links'] = array(
@@ -214,20 +119,11 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
       '#access' => user_access('administer book outlines')
   	),
   );
-  
-  /*
-   * Create new books
-   * Administer book outlines
-   * Add content and child pages to books
-   * Administer book access
-   * Administer access of own books
-   */
-  	
+    	
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css');
   $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
   drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
-  //drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole.js', 'file');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole_2.js', 'file');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.transit.min.js', 'file');
   drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.inview.min.js', 'file');
@@ -331,16 +227,6 @@ function shanti_essays_theme($existing, $type, $theme, $path) {
       'template' => 'templates/html--book',
       'path' => SHANTI_ESSAYS_PATH,
     ),
-    'shanti_essays_reader_html' => array(
-      'variables' => array('title' => NULL, 'contents' => NULL, 'depth' => NULL),
-      'template' => 'templates/shanti-essays-reader-html',
-      'path' => SHANTI_ESSAYS_PATH,
-    ),
-    'shanti_essays_reader_node_html' => array(
-      'variables' => array('node' => NULL, 'children' => NULL),
-      'template' => 'templates/shanti-essays-reader-node-html',
-      'path' => SHANTI_ESSAYS_PATH,
-    ),
     'shanti_essays_whole_html' => array(
       'variables' => array('title' => NULL, 'contents' => NULL, 'depth' => NULL),
       'template' => 'templates/shanti-essays-whole-html',
@@ -377,24 +263,6 @@ function shanti_essays_css_alter (&$css) {
         unset($css[$k]);
       }
     }
-  }
-  elseif (preg_match("/^shanti_essays\/reader/", SHANTI_ESSAYS_Q)) {
-    $css_ok = array('shanti_essays_reader\.css','jquery');
-    $css_pat = implode('|',$css_ok);
-    foreach ($css as $k => $v) {
-      if (!preg_match("/$css_pat/", $k)) unset($css[$k]);
-    }
-  }
-}
-
-// Seems incredibly inefficient
-function shanti_essays_js_alter (&$js) {
-  if (preg_match("/^shanti_essays\/reader/", SHANTI_ESSAYS_Q)) {
-    $js_ok = array('shanti_essays_reader','misc');
-    $js_pat = implode('|',$js_ok);
-    foreach ($js as $k => $v) {
-      if (!preg_match("/$js_pat/", $k)) unset($js[$k]);
-    }    
   }
 }
 
