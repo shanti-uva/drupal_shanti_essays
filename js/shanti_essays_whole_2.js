@@ -170,7 +170,7 @@ Drupal.behaviors.shantiEssaysWhole = {
   }
   
   // NOT USED YET
-  function copyState(mystate,type) {
+  function cloneState(mystate,type) {
     type = typeof type !== 'undefined' ? type : 'deep';
     newstate = {};
     if (type == 'deep') {
@@ -276,11 +276,11 @@ Drupal.behaviors.shantiEssaysWhole = {
 	
 	function adjustTocWidth() {
 	  if (state == 'wide' || window.innerWidth > dims.wbreak) {
-	    a = window.innerWidth;
+	    //a = window.innerWidth;
 	    b = $('#book-content').outerWidth();
       $('#toc').css('left',b);
       $('#toc').css('right',0);
-      $('#toc').css('width','auto'); // Not sure if needed here, but what the hey
+      $('#toc').css('width','auto');
     }
 	}
 		
@@ -399,7 +399,7 @@ Drupal.behaviors.shantiEssaysWhole = {
 		$(document).mousemove(function(e){
 			var a = e.clientX;
 			var b = window.innerWidth - a;
-			var c = a - 60; // 60px = 4em (padding)
+			var c = a - 60; // 60px = 4em (padding)-- could got read from state if paddings are broken out
       $('#toc').css('left',a);
 			$('#toc').css('right',0);
 			$('#toc').css('width','auto');
@@ -410,7 +410,7 @@ Drupal.behaviors.shantiEssaysWhole = {
 		return true;
 	});
 		
-	// Part of above function
+	// Reset from above function
 	$(document).mouseup(function(e){	
 	  			
 		$(document).unbind('mousemove');
