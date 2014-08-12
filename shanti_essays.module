@@ -21,6 +21,17 @@ function shanti_essays_menu() {
       'type' => MENU_CALLBACK,
       'access arguments' => array('access content'),
     ),
+    'shanti_essays/api' => array(
+      'page callback' => 'shanti_essays_default',
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access content'),
+    ),
+    'shanti_essays/api/%' => array(
+      'page callback' => 'shanti_essays_api',
+      'page arguments' => array(2),
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access content'),
+    ),
   );
 }
   
@@ -59,6 +70,39 @@ function shanti_essays_whole($nid) {
   }
 }
 
+function shanti_essays_api($nid) {
+  $node = node_load($nid);
+  if (!$node) {
+    return MENU_NOT_FOUND;
+  }
+  if (!node_access('view', $node)) {
+    return MENU_ACCESS_DENIED;
+  }
+  if (user_access('access content')) {
+    if (isset($node->book)) {
+      $book_id      = $node->book['bid'];      
+      $tree         = book_menu_subtree_data($node->book);
+      $contents     = book_export_traverse($tree, 'shanti_essays_whole_node');            
+      $toc_block    = book_export_traverse($tree, 'shanti_essays_whole_toc');
+      #print "<html>\n";
+      #print "<head><title></title></head>\n";
+      #print "<body>\n";
+      print "<div id='shanti-essay-api-result'>\n";
+      print "<ul id='shanti-essay-toc'>\n$toc_block\n</ul>\n";
+      print "<div id='shanti-essay-content'>\n$contents\n</div>\n";
+      print "</div>\n";
+      #print "</body>\n";
+      #print "</html>\n";
+    } 
+    else {
+      drupal_not_found();
+    }
+  } 
+  else {
+    drupal_access_denied();
+  }
+}
+
 /**
  * This exists to conform to the model of how the book print function works.
  * Not sure if it is necceary to specify a new view mode but what the heck.
@@ -82,18 +126,14 @@ function shanti_essays_whole_node($node, $children = '') {
 }
 
 /**
- * Generates a table of contents for use one the Whole page. Seemed
- * more efficient to roll your own here, but I am open to working 
- * with an existing render array to do this. Or something.
- * At some point, convert this to a render array like a good boy.
+ * Generates a table of contents for use on the Whole page.
  */
 function shanti_essays_whole_toc($node, $children = '') {
     $output = '';
     $nid = $node->nid;
     $title = check_plain($node->title);
     $depth = $node->book['depth'];
-    $prev = book_prev($node->book);
-    if (isset($prev)) {
+    if ($prev = book_prev($node->book)) {
       $x = $depth - $prev['depth'];
       if ($x > 0) $output .= "<ul class='level-{$prev['depth']}'>\n"; // $x should never be > 1
       elseif ($x < 0) {
@@ -103,23 +143,31 @@ function shanti_essays_whole_toc($node, $children = '') {
       }
     }
     $output .= "<li id='toc-item-node-$nid'><a href='#node-$nid'>$title</a></li>\n";
+    if ($next = book_next($node->book)) {
+    	// Do nothing
+    } else {
+    	// Clean up ..
+    	for ($i = 0; $i < ($depth - 1); $i++) {
+	    	$output .= "</ul>\n";        	
+    	}
+    }
     $output .= $children;
     return $output;
 }
 
 function template_preprocess_shanti_essays_whole_html(&$vars) {
         
-	$vars['toc_menu']['links'] = array(
-		'toc-reorder' => array(
-		  '#markup' => l(
-		    '<i class="fa fa-edit fa-lg"></i>',
-		    "admin/content/book/{$vars['book_id']}", 
-		    array('query' => array('destination' => "/shanti_essays/whole/{$vars['book_id']}"),'html' => TRUE)
+  $vars['toc_menu']['links'] = array(
+    'toc-reorder' => array(
+      '#markup' => l(
+        '<i class="fa fa-edit fa-lg"></i>',
+        "admin/content/book/{$vars['book_id']}", 
+        array('query' => array('destination' => "/shanti_essays/whole/{$vars['book_id']}"),'html' => TRUE)
       ),
       '#access' => user_access('administer book outlines')
-  	),
+    ),
   );
-    	
+      
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css');
   $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
@@ -131,11 +179,11 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
 
 function template_preprocess_shanti_essays_whole_node_html(&$vars) {
     
-	$vars['book_edit_menu']['links'] = array(
-		'toc-edit-page' => array(
-		  '#markup'   => l(
-		    '<i class="fa fa-edit fa-lg"></i>',
-		    "node/{$vars['node']->nid}/edit",
+  $vars['book_edit_menu']['links'] = array(
+    'toc-edit-page' => array(
+      '#markup'   => l(
+        '<i class="fa fa-edit fa-lg"></i>',
+        "node/{$vars['node']->nid}/edit",
         array(
           'html' => TRUE, 
           'query' => array('destination' => current_path()),
@@ -143,10 +191,10 @@ function template_preprocess_shanti_essays_whole_node_html(&$vars) {
           // Above does not work. May need to define a menu path that calls drupal_goto() 
         )
       ),
-		  '#access' => user_access('add content and child pages to books')
-  	),
-  	'toc-add-child-page' => array(
-  	  '#markup' => l(
+      '#access' => user_access('add content and child pages to books')
+    ),
+    'toc-add-child-page' => array(
+      '#markup' => l(
         '<i class="fa fa-plus fa-lg"></i>',
         "node/add/book",
         array(
@@ -154,8 +202,8 @@ function template_preprocess_shanti_essays_whole_node_html(&$vars) {
           'query' => array('parent',$vars['node']->nid)
         )
        ),
-  	  '#access' => user_access('add content and child pages to books')
-  	)
+      '#access' => user_access('add content and child pages to books')
+    )
   );
     
   
@@ -171,12 +219,12 @@ function shanti_essays_help($path, $arg) {
 }
 
 function shanti_essays_filter_info() {
-	return array(
-		'shanti_essays_pullquote' => array(
-    	'title'             => t('Pull Quotes'),
-    	'description'       => t('Makes a copy of the selection and puts it into a pull quote.'),
-    	'process callback'  => '_shanti_essays_pullquote_filter_process',
-    	'tips callback'     => '_shanti_essays_pullquote_filter_tips',
+  return array(
+    'shanti_essays_pullquote' => array(
+      'title'             => t('Pull Quotes'),
+      'description'       => t('Makes a copy of the selection and puts it into a pull quote.'),
+      'process callback'  => '_shanti_essays_pullquote_filter_process',
+      'tips callback'     => '_shanti_essays_pullquote_filter_tips',
     )
   );
 }
@@ -303,7 +351,7 @@ function shanti_essays_preprocess_node(&$vars) {
       $vars['content']['links']['book']['#links']['shanti_essays_view_whole'] = array(
         'title'       => 'View in Reader',
         'href'        => "shanti_essays/whole/$bid",
-        'fragment'		  => "node-$nid",
+        'fragment'      => "node-$nid",
         'attributes'  => array('title' => 'View book in experimental Reader')
       );
       $vars['content']['links']['book']['#links']['shanti_essays_view_pubreader'] = array(
@@ -321,7 +369,7 @@ function shanti_essays_preprocess_node(&$vars) {
     
     // What the hell is all this for?
     $book_node = node_load($bid);   
-    	$book_menu_name = book_menu_name($bid);
+    $book_menu_name = book_menu_name($bid);
     $book_links = menu_load_links($book_menu_name);
     $vars['shanti_essays']['top_mlid']   = $top_mlid;
     $vars['shanti_essays']['book_title'] = $book_node->title;
