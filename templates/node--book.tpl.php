@@ -2,14 +2,17 @@
 <?php //kpr($book); ?>
 <?php //kpr($shanti_essays); ?>
 <?php //kpr($content['links']['book']); ?>
-<?php kpr($content); ?>
+<?php //kpr($content); ?>
 
 <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
 <div id="shanti-essay-page-content">
   <div id="shanti-essay-page-content-body-header">
-    <div id="shanti-essay-page-navigation"><?php print render($content['book_navigation']); ?></div>    
+    <div class="shanti-essay-page-navigation">
+    	<?php print render($content['book_navigation']); ?>
+    </div>    
     <!-- <div id="shanti-essay-page-links"><?php print render($content['links']); ?></div> -->
   </div>
+  
   <div id="shanti-essay-page-content-body">
     <?php
       if (isset($content['field_book_content'])) {
@@ -19,7 +22,12 @@
       } 
     ?>
   </div>
+
   <div id="shanti-essay-page-content-body-footer">
+    <div class="shanti-essay-page-navigation">
+    	<?php print render($content['book_navigation']); ?>
+    </div>    
+
     <div id="shanti-essay-page-extra">
   <?php
     // Remove the "Add new comment" link on the teaser page or if the comment
@@ -52,6 +60,7 @@
   <?php print "<a class='book-outline-title' href='". $shanti_essays['book_url'] ."'>" . $shanti_essays['book_title'] . "</a>"; // Should be put in a render array, I know. ?>
   <?php print render(book_explorer_block_view()); ?>
   <?php print render($content['links']['book']); ?>
+  <?php print render(field_view_field('node',$node,'field_kmap_term','default')); ?>
 </div>
 
 <div>

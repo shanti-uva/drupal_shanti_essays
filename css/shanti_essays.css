@@ -27,7 +27,7 @@ shanti-essay-page-content
     shanti-essay-page-navigation
 */
 
-#shanti-essay-page-navigation .book-navigation .page-links {
+.shanti-essay-page-navigation .book-navigation .page-links {
 	border:0;
 	_border-bottom:1px solid gray;
 }
@@ -68,16 +68,12 @@ shanti-essay-page-content
 #shanti-essay-page-content-body-footer,
 #shanti-essay-page-content-body-header {
 	width: 100%;
+	font-family:sans-serif;
 }
 
 #shanti-essay-page-content-body-header {
 	position: absolute;
 	background-color:rgba(255,255,255,.8);
-	_background-color:#FAFAFA;
-	_border: 1px solid gray;
-	_border-right: 1px solid gray;
-	_border-radius: 5px;
-	font-family:sans-serif;
 }
 
 /*

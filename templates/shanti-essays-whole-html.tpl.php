@@ -1,6 +1,6 @@
 <div name='toc' id='toc' class='open'>
-  
-	<div id="toc-bar"></div>
+
+  <div id="toc-bar"></div>
   
   <div id='toc-menu'>
     <span class="toc-action openonly" id="toc-adjust-width">

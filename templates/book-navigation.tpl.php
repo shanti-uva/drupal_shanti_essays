@@ -36,7 +36,7 @@ $prev_title_clean = preg_replace('/"/',"''",$prev_title);
 $next_title_clean = preg_replace('/"/',"''",$next_title);
 ?>
 <?php if ($tree || $has_links): ?>
-  <div id="book-navigation-<?php print $book_id; ?>" class="book-navigation">
+  <div class="book-navigation">
     <?php //print $tree; ?>
     <?php if ($has_links): ?>
     <div class="page-links clearfix">

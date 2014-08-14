@@ -21,8 +21,8 @@ Drupal.behaviors.shantiEssays = {
     var h1 = bookToc.height();
     */
 
-    var x = 0; 
-    if ($('#admin-menu').length) x = $('#admin-menu').height();
+    var x = $('#admin-menu').height();
+    console.log(x);
     //$('#shanti-essay-page-content-body').css("margin-top",h+10);   
 
     $(window).scroll(function() {
