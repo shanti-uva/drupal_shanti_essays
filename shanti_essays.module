@@ -3,18 +3,12 @@
 define('SHANTI_ESSAYS_PATH',drupal_get_path('module','shanti_essays'));
 define('SHANTI_ESSAYS_Q', $GLOBALS['_GET']['q']);
 
-/**
- * Add your help info here.
- */
 function shanti_essays_help($path, $arg) {
   if ($path == "admin/help#shanti_essays") {
     return '<p>' . t('SHANTI Essays, my friend.') . '</p>';
   }
 }
   
-/**
-* This gets called when the module is enabled. 
-*/
 function shanti_essays_enable() {
   drupal_set_message($message = t('SHANTI Essays activated.'), $type = 'status');
   drupal_theme_rebuild();
@@ -72,6 +66,7 @@ function shanti_essays_voyant($nid) {
 /**
  * Generates an HTML fragment for embedding elsewhere. We simply print here,
  * by-passing the need to override the html and page templates.
+ * Note the dependency on shanti_essays_whole
  */
 function shanti_essays_api($nid) {
   $node = node_load($nid);

@@ -97,3 +97,4 @@
 <div id="reader">
 <?php print render($page['content']); ?>
 </div>
+
