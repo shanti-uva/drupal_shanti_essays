@@ -73,7 +73,7 @@ shanti-essay-page-content
 
 #shanti-essay-page-content-body-header {
 	position: absolute;
-	background-color:rgba(255,255,255,.8);
+	_background-color:rgba(255,255,255,.8);
 }
 
 /*
