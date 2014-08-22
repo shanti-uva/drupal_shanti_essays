@@ -3,7 +3,6 @@ description = Drupal Books modded for long-form blogging
 package = SHANTI
 core = 7.x
 
-files[] = shanti_essays.whole.inc
 files[] = shanti_essays.filters.inc
 
 dependencies[] = book
