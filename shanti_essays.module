@@ -119,15 +119,12 @@ function shanti_essays_theme_registry_alter(&$theme_registry) {
   //$theme_registry['page__book']['path']           = SHANTI_ESSAYS_PATH;
 
   // These are not -- not sure why preprocess_node does not need to define them too 
-  //$theme_registry['page__shanti_essays__whole']['render element'] = 'page';
-  $theme_registry['page__shanti_essays__whole']['template']       = 'templates/page--shanti-essays--whole';
-  $theme_registry['page__shanti_essays__whole']['path']           = SHANTI_ESSAYS_PATH;  
-  //$theme_registry['node__book']['render element']       = 'node';
-  $theme_registry['node__book']['template']             = 'templates/node--book';
-  $theme_registry['node__book']['path']                 = SHANTI_ESSAYS_PATH;
-  //$theme_registry['book_navigation']['render element']  = 'book_navigation';
-  $theme_registry['book_navigation']['template']        = 'templates/book-navigation';
-  $theme_registry['book_navigation']['path']            = SHANTI_ESSAYS_PATH;
+  $theme_registry['page__shanti_essays__whole']['template']	= 'templates/page--shanti-essays--whole';
+  $theme_registry['page__shanti_essays__whole']['path']     = SHANTI_ESSAYS_PATH;  
+  $theme_registry['node__book']['template']             		= 'templates/node--book';
+  $theme_registry['node__book']['path']                 		= SHANTI_ESSAYS_PATH;
+  $theme_registry['book_navigation']['template']        		= 'templates/book-navigation';
+  $theme_registry['book_navigation']['path']            		= SHANTI_ESSAYS_PATH;
 
 }
 
@@ -140,9 +137,12 @@ function shanti_essays_theme_registry_alter(&$theme_registry) {
  */
 
 function shanti_essays_preprocess_node(&$vars) {
-  
+  dpm($vars);
   // You may want to make the type configurable from an admin page
   if ($vars['type'] == 'book') {    
+  
+  	// Add template suggestion here?
+  	
     $nid      = $vars['nid'];
     $bid      = $vars['book']['bid'];
     $top_mlid = $vars['book']['p1'];
@@ -150,49 +150,51 @@ function shanti_essays_preprocess_node(&$vars) {
     if (user_access('add content to books')) {
       // Fix BMS link
       if(isset($vars['content']['links'][0]['#links']['book_made_simple_book'])) {
-        $vars['content']['links']['book']['#links']['book_made_simple_book'] = $vars['content']['links'][0]['#links']['book_made_simple_book'];
-        $vars['content']['links']['book']['#links']['book_made_simple_book']['title'] = 'Add Essay page below this page';
+        $vars['content']['links']['book']['edit']['#links']['book_made_simple_book'] = $vars['content']['links'][0]['#links']['book_made_simple_book'];
+        $vars['content']['links']['book']['edit']['#links']['book_made_simple_book']['title'] = 'Add Essay page below this page';
         unset($vars['content']['links'][0]);      
       }
       // Add another link to add a page to the top          
-      $vars['content']['links']['book']['#links']['shanti_essays_add_page_top'] = array(
+      $vars['content']['links']['book']['edit']['#links']['shanti_essays_add_page_top'] = array(
         'title'       => t('Add Essay page below top page'),
         'href'        => 'node/add/book',
         'query'       => array('parent' => $top_mlid),
         'attributes'  => array('title' => 'Add Essay page below <em>top</em> page')
       );
-      $vars['content']['links']['book']['#links']['shanti_essays_view_whole'] = array(
-        'title'       => t('View in SHANTI Reader'),
-        'href'        => "shanti_essays/whole/$bid",
-        'fragment'    => "node-$nid",
-        'attributes'  => array('title' => "View book in SHANTI's Reader")
-      );
-      $vars['content']['links']['book']['#links']['shanti_essays_view_pubreader'] = array(
-        'title'       => t('View in PubReader'),
-        'href'        => "book_pubreader/$bid",
-        'attributes'  => array('title' => 'View book in NIH PubReader')
-      );
-      $vars['content']['links']['book']['#links']['shanti_essays_view_voyant'] = array(
-        'title'       => t('View in Voyant'),
-        'href'        => "shanti_essays/voyant/$bid",
-        'attributes'  => array('title' => 'View book in Voyant tools', 'target' => '_blank')
-      );
       
       // And modify the existing one
       if ($bid == $nid) {
         unset($vars['content']['links']['book']['#links']['book_made_simple_book']);
-        $vars['content']['links']['book']['#links']['shanti_essays_add_page_top']['title'] = "Add Essay page";
+        $vars['content']['links']['book']['edit']['#links']['shanti_essays_add_page_top']['title'] = "Add Essay page";
       }
     }
     
+    
+		$vars['content']['links']['book']['view']['#links']['shanti_essays_view_whole'] = array(
+			'title'       => t('View in SHANTI Reader'),
+			'href'        => "shanti_essays/whole/$bid",
+			'fragment'    => "node-$nid",
+			'attributes'  => array('title' => "View book in SHANTI's Reader")
+		);
+		$vars['content']['links']['book']['view']['#links']['shanti_essays_view_pubreader'] = array(
+			'title'       => t('View in PubReader'),
+			'href'        => "book_pubreader/$bid",
+			'attributes'  => array('title' => 'View book in NIH PubReader')
+		);
+		$vars['content']['links']['book']['view']['#links']['shanti_essays_view_voyant'] = array(
+			'title'       => t('View in Voyant'),
+			'href'        => "shanti_essays/voyant/$bid",
+			'attributes'  => array('title' => 'View book in Voyant tools', 'target' => '_blank')
+		);
+
     // What the hell is all this for?
     $book_node = node_load($bid);   
     $book_menu_name = book_menu_name($bid);
     $book_links = menu_load_links($book_menu_name);
     
-    //$vars['shanti_essays']['top_mlid']   = $top_mlid;
-    //$vars['shanti_essays']['book_title'] = $book_node->title;
-    //$vars['shanti_essays']['book_url']   = drupal_get_path_alias('/node/' . $bid);
+    $vars['shanti_essays']['top_mlid']   = $top_mlid;
+    $vars['shanti_essays']['book_title'] = $book_node->title;
+    $vars['shanti_essays']['book_url']   = drupal_get_path_alias('/node/' . $bid);
     
     // Add CSS and JS
 
@@ -217,16 +219,12 @@ function shanti_essays_preprocess_node(&$vars) {
 /**
  * This is necessary to have the local templates apply
  */
-function shanti_essays_preprocess_html(&$vars) {
-	dpm($vars);
-}
+function shanti_essays_preprocess_html(&$vars) {}
 
 /**
  * This is necessary to have the local templates apply
  */
-function shanti_essays_preprocess_page(&$vars, $hook) {
-	dpm($vars);
-}
+function shanti_essays_preprocess_page(&$vars, $hook) {}
 
 ////////// SHANTI Viewer ("Whole") Functions //////////
 
