@@ -1,188 +1,141 @@
-/* shanti_essays.css */
-
-body .node-book {
-	position: relative;	/* This fixes the IE7 overflow hidden bug */
-	clear: both;
-	float: left;
-	width: 100%;	/* width of whole page */
-	height: 100%; /* NEED TO VARY BY SCREEN */
-	overflow: hidden;	/* This chops off any overhanging divs */
-	box-sizing: border-box;
+#shanti-essays-container {
+  _position:relative;
+  _width: 100%;
+  _height: auto;
+  height:660px;
+  margin:-1em 0 0 -2em;
 }
 
-#edit-field-book-content textarea p {
-	font-size:12pt;
-	font-family:serif;
+#shanti-essays-body {
+  _position:absolute;
+  _top: 0;
+  _left: 0;
+  _width: 700px;
+  position:relative;
+  float:left;
+  height: 100%;
+  width: 50%;
+  min-width:300px;
+  padding: 0 2em;
+  overflow: scroll;
+  background-color: white;
 }
 
-/* MODEL:
-shanti-essay-page-toc
-shanti-essay-page-content
-  shanti-essay-page-content-body-header
-    shanti-essay-page-links
-    shanti-essay-page-navigation
-  shanti-essay-page-content-body
-  shanti-essay-page-content-body-footer
-    shanti-essay-page-links
-    shanti-essay-page-navigation
-*/
-
-.shanti-essay-page-navigation .book-navigation .page-links {
-	border:0;
-	_border-bottom:1px solid gray;
+#shanti-essays-sidebar {
+  _position:absolute;
+  _top: 0;
+  _left: 700px;
+  position:relative;
+  float:left;
+  width:40%;
+  padding: 0 1em;
 }
 
-#shanti-essay-page-toc, 
-#shanti-essay-page-content {
-	float: left;
-	width: 100%;
-	height: 100%;
-	position: relative;
-	box-sizing: border-box;
+#shanti-essays-toc {
+  position: relative;
 }
 
-#shanti-essay-page-content {
-	width: 70%;
-	text-align:justify;
+#shanti-essays-toc ul {
+  margin-top: 0;
+  padding-top: 0;
 }
 
-#shanti-essay-page-toc {
-	padding-left:1em;
-	width: 30%;
+#shanti-essays-toc > ul:first-of-type {
+  margin-left: 0;
+  padding-left: 0;
 }
 
-#shanti-essay-page-toc .book-outline-title {
-	font-weight:bold;
+#shanti-essays-toc li {
+  font-size: 12pt;
+  font-family:"museo-sans-500","Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif;
 }
 
-#shanti-essay-page-toc {
-	font-family: sans-serif;
+#shanti-essays-links {}
+
+#shanti-essays-meta {}
+
+#shanti-essays-body p {
+  font-size: 14pt;
 }
 
-#shanti-essay-page-content-body {
-	font-size: 14pt;
-	height: 100%;
-	margin-top: 35px;
+.bourdieu {
+  font-size: 12pt; 
+  font-family: sans-serif;
+  border-top: 1px solid gray; 
+  border-bottom: 1px solid gray; 
+  padding: 1em 0; margin: 1em 0;
 }
 
-#shanti-essay-page-content-body-footer,
-#shanti-essay-page-content-body-header {
-	width: 100%;
-	font-family:sans-serif;
+#shanti-essays-toc li, #shanti-essays-links .links li {
+  list-style-type: none;
 }
 
-#shanti-essay-page-content-body-header {
-	position: absolute;
-	_background-color:rgba(255,255,255,.8);
+h1.book-heading {
+  font-size:14pt;
+  border-top:1px solid gray;
+  padding-top:1em;
+  font-weight: bold;
 }
 
-/*
-#shanti-essay-page-toc:only-child,
-#shanti-essay-page-content:only-child,
-#shanti-essay-page-content-body:only-child,
-#shanti-essay-page-content-body-footer:only-child {
-	width: 100%;
-}
-*/
 
-#shanti-essay-page-content-body img {
-	_border:1px solid gray;
-	_padding:3px;
+/* HACKY */
+
+.content-section {
+  padding-bottom: 0!important;  
 }
 
-#shanti-essay-page-content-body img.left {
-	float: left;
-	margin-right: 1em;
+#shanti-essays-sidebar.ui-widget-content {
+  border:none!important;
 }
 
-#shanti-essay-page-content-body img.right {
-	float: right;
-	margin-left: 1em;
-	
+#shanti-essays-sidebar .ui-widget-header {
+  background:none!important;
+  border: none;
+  margin-top: 1em;
+  margin-left: 1.7em;
 }
 
-#shanti-essay-page-content-body blockquote {
-	font-size:13pt;
-	background:none;
-	border:none;
-	padding:0!important;
-	margin:0 1em!important;
-	font-style:normal;
+#shanti-essays-sidebar .ui-state-active, 
+#shanti-essays-sidebar .ui-widget-content .ui-state-active, 
+#shanti-essays-sidebar .ui-widget-header .ui-state-active {
+  border:1px solid gray;
+  border-radius:0;
 }
 
-#shanti-essay-page-content-body blockquote:before,
-#shanti-essay-page-content-body blockquote:after {
-	content: '';
+#shanti-essays-sidebar .ui-state-default, 
+#shanti-essays-sidebar .ui-widget-content .ui-state-default, 
+#shanti-essays-sidebar .ui-widget-header .ui-state-default {
+  border:1px solid gray;
+  border-radius:0;
+}
+       
+#shanti-essays-sidebar.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+  margin-bottom: 0!important;
+  padding-bottom: 0!important; 
 }
 
-#shant-essay-page-extra {
-	display:block;	
-	clear:both;
+
+/* field field-name-field-kmap-term field-type-shanti-kmaps-fields-default field-label-hidden */
+
+#shanti-essays-sidebar .field {
+  display:block;
+  border-bottom: 1px solid gray;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
 }
 
-#shanti-essay-page-content-body { font-size:16pt; font-family:Garamond; padding: 0 .5em 0 0; }
-#shanti-essay-page-content-body p { margin:.5em 0; padding:0; }
+#shanti-essays-sidebar .field-items {}
 
+#shanti-essays-sidebar .field-item {}
 
-#shanti-essay-page-toc ul.links {
-	display:block;
-	margin-top:1em;
-	padding-top:1em;
-	border-top:1px solid gray;	
-	padding-bottom:1em;
-	border-bottom:1px solid gray;	
+#shanti-essays-sidebar .field-name-field-kmap-term .field-item {
+  display:inline;
+  _border: 1px solid gray;
+  _text-align:center;
+  _padding:.25em .5em;
+  margin: 0 .25em;
+  _border-radius:3px;
+  _background-color:white;
+  _width:auto;
 }
 
-#shanti-essay-page-toc ul.links li {
-	display:block;
-	text-align:left;
-	_padding-left:2em;
-}
-
-#shanti-essay-page-toc ul.links li:before {
-	content: "\00BB";
-	margin-right: 6px;
-	font-size:12pt;
-}
-
-#shanti-essay-page-toc ul.links li a {
-	font-size:10.5pt;
-}
-
-/* FILTERS */
-
-.shanti-essays-pullquote-right {
-	width:40%;
-	font-family:sans-serif;
-	text-align:left;
-	font-size: 16pt;
-	font-weight:bold;
-	float:right;
-	border-top: 5px solid black;
-	border-bottom: 5px solid black;
-	padding:.5em 0;
-	margin-top: .5em;
-	margin-left: .5em;
-	margin-bottom:.5em;
-}
-
-.shanti-essays-pullquote-left {
-	width:40%;
-	font-family:sans-serif;
-	text-align:left;
-	font-size: 16pt;
-	font-weight:bold;
-	float:left;
-	border-top: 5px solid black;
-	border-bottom: 5px solid black;
-	padding:.5em 0;
-	margin-top: .5em;
-	margin-right: .5em;
-	margin-bottom:.5em;
-}
-
-.submitted {
-	border-top:1px solid gray;
-	margin-top:1em;
-	padding-top:1em;
-}

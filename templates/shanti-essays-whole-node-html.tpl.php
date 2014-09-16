@@ -1,4 +1,4 @@
-<div id="node-<?php print $node->nid; ?>" class="book-section section-<?php print $depth; ?>">
+<div id="book-node-<?php print $node->nid; ?>" class="book-section section-<?php print $depth; ?>">
   <h1 class="book-heading"><?php print $title; ?></h1>  
   <div class="book-edit-menu">
     <span class="page-menu-action" id="toc-edit-page">
