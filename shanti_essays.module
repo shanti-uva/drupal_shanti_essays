@@ -49,6 +49,18 @@ function shanti_essays_menu() {
       'type' => MENU_CALLBACK,
       'access arguments' => array('access content'),
     ),
+    'shanti_essays/node_ajax/%' => array(
+      'page callback' => 'shanti_essays_node_ajax',
+      'page arguments' => array(2),
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access content'),    
+    ),
+    'shanti_essays/node_json/%' => array(
+      'page callback' => 'shanti_essays_node_json',
+      'page arguments' => array(2),
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access content'),    
+    ),
   );
 }
 
@@ -86,6 +98,45 @@ function shanti_essays_api($nid) {
   } 
   else { drupal_access_denied(); }
 }
+
+function shanti_essays_node_ajax($nid) {
+  $node = node_load($nid);
+  if (!$node) { return MENU_NOT_FOUND; }
+  if (!node_access('view', $node)) { return MENU_ACCESS_DENIED; }
+  if (user_access('access content')) { // This is already specified in the menu item
+    if (isset($node->book)) {
+      $book_id      = $node->book['bid'];      
+      $tree         = book_menu_subtree_data($node->book);
+      $contents     = book_export_traverse($tree, 'shanti_essays_whole_node');            
+      $toc_block    = book_export_traverse($tree, 'shanti_essays_whole_toc');
+      print "<div id='shanti-essay'>\n";
+      print "<ul id='shanti-essay-toc'>\n$toc_block\n</ul>\n";
+      print "<div id='shanti-essay-content'>\n$contents\n</div>\n";
+      print "</div>\n";
+    } 
+    else { drupal_not_found(); }
+  } 
+  else { drupal_access_denied(); }
+}
+
+function shanti_essays_node_json($nid) {
+  $node = node_load($nid);
+  if (!$node) { return MENU_NOT_FOUND; }
+  if (!node_access('view', $node)) { return MENU_ACCESS_DENIED; }
+  if (user_access('access content')) { // This is already specified in the menu item
+    if (isset($node->book)) {
+      $book_id      = $node->book['bid'];      
+      $tree         = book_menu_subtree_data($node->book);
+      $content    	= book_export_traverse($tree, 'shanti_essays_whole_node');
+      print "<pre>";
+      print_r($tree);
+      print "</pre>";
+    } 
+    else { drupal_not_found(); }
+  } 
+  else { drupal_access_denied(); }
+}
+
 
 /**
  * We define some of our own templates, which may be overridden by others.
@@ -167,7 +218,6 @@ function shanti_essays_preprocess_node(&$vars) {
 
 function shanti_essays_preprocess_node(&$vars) {
     
-  // Make big changes for how books are viewed
   if ($vars['type'] == 'book' && $vars['teaser'] == FALSE) { 
   
   	// Get some info ... If not top of book, go to top
@@ -182,8 +232,8 @@ function shanti_essays_preprocess_node(&$vars) {
     // Both of these are already rendered
     $book = $vars['book'];
     $tree = book_menu_subtree_data($book);
-    $vars['content']['shanti_essays']['toc'] 		= book_export_traverse($tree, 'shanti_essays_whole_toc');
     $vars['content']['shanti_essays']['body']  	= book_export_traverse($tree, 'shanti_essays_whole_node');            
+    $vars['content']['shanti_essays']['toc']    = book_export_traverse($tree, 'shanti_essays_whole_toc');
 
 		// Create the Meta element
 		$build = node_view($vars['node'], 'metadata');
@@ -258,18 +308,19 @@ function shanti_essays_preprocess_node(&$vars) {
 
     $js_settings = array(
       'book' => $vars['book'],
-      'book_title' 	=> $vars['shanti_essays']['book_title'],
+      'book_title' 	=> $vars['content']['shanti_essays']['book_title'],
       //'toc_content' => $vars['content']['shanti_essays']['toc'],
     );
     drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
     drupal_add_library('system', 'ui.tabs');
     drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays.js', 'file');
-	  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.localscroll.min.js', 'file');
+	drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.localscroll.min.js', 'file');
   	drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.scrollTo.min.js', 'file');
   	
   }
 }
 
+// Is this necessary? Is it even being used?
 function shanti_essays_library_alter(&$libraries, $module) {
   $libraries['ui']['css']               = array();
   $libraries['ui.accordion']['css']     = array();
@@ -289,9 +340,6 @@ function shanti_essays_library_alter(&$libraries, $module) {
   $libraries['ui.tabs']['css']          = array();
   $libraries['ui']['css'][SHANTI_ESSAYS_PATH . '/jquery-ui/jquery-ui.css'] = array();
 }
-
-//function shanti_essays_preprocess_html(&$vars) {}
-//function shanti_essays_preprocess_page(&$vars, $hook) {}
 
 ////////// SHANTI Viewer ("Whole") Functions //////////
 
@@ -343,7 +391,7 @@ function shanti_essays_whole_node($node, $children = '') {
 	// This returns a render array (RA) for the view mode defined in shanti_essays_entity_info_alter()
   $build = node_view($node, 'whole');
   
-  // We remove the theme option that may be have been set in the Render Array
+  // We remove the theme option that may be have been set in the RA
   unset($build['#theme']); 
   
   // We hide a few things, include all fields but the content 
@@ -395,6 +443,7 @@ function shanti_essays_whole_toc($node, $children = '') {
     $output .= $children;
     return $output;
 }
+
 
 /**
  * We prepare variables for dispay of the SHANTI Reader page.
@@ -476,11 +525,13 @@ function template_preprocess_shanti_essays_whole_node_html(&$vars) {
   //$vars['metadata'] = array();
 }
 
+/*
 function shanti_essays_node_view($node, $view_mode, $langcode) {
 	if ($view_node == 'whole' && $node->type == 'book') {
 
 	}
 }
+*/
 
 /** 
  * Here we attempt to remove any theme-specific CSS files from our viewer, 
@@ -489,7 +540,7 @@ function shanti_essays_node_view($node, $view_mode, $langcode) {
  * May want to add this in the callback itself
  * Also: Seems incredibly inefficient 
  */
-function shanti_essays_css_alter (&$css) {
+function shanti_essays_css_alter(&$css) {
   if (preg_match("/^shanti_essays\/whole/", SHANTI_ESSAYS_Q)) {
     global $theme_key;
     foreach ($css as $k => $v) {
@@ -500,3 +551,12 @@ function shanti_essays_css_alter (&$css) {
   }
 }
 
+/* THIS WILL BE HANDLED BY THE SITE
+function shanti_essays_views_api() {
+	return array(
+		'api' => 3,
+		'path' => SHANTI_ESSAYS_PATH . '/includes/views',
+		'template path' => SHANTI_ESSAYS_PATH . '/templates',
+	);
+}
+*/

@@ -1,34 +1,37 @@
+/* 
+content-section col-xs-12
+row row-offcanvas row-offcanvas-right
+*/
+
 #shanti-essays-container {
-  _position:relative;
-  _width: 100%;
-  _height: auto;
-  height:660px;
-  margin:-1em 0 0 -2em;
+  position:relative;
+  height:670px;
+  margin:0;
+  padding:0;
+  _margin:-1em 0 0 -2em;
 }
 
 #shanti-essays-body {
-  _position:absolute;
-  _top: 0;
-  _left: 0;
-  _width: 700px;
   position:relative;
   float:left;
   height: 100%;
   width: 50%;
-  min-width:300px;
+  min-width:480px;
   padding: 0 2em;
+  margin: 0 0 10px 0;
   overflow: scroll;
   background-color: white;
+  _border:1px solid gray;
+  _box-shadow:5px 5px 20px gray;
 }
 
 #shanti-essays-sidebar {
-  _position:absolute;
-  _top: 0;
-  _left: 700px;
   position:relative;
   float:left;
   width:40%;
   padding: 0 1em;
+  height:100%;
+  overflow: scroll;
 }
 
 #shanti-essays-toc {
@@ -77,11 +80,16 @@ h1.book-heading {
   font-weight: bold;
 }
 
-
 /* HACKY */
 
-.content-section {
-  padding-bottom: 0!important;  
+.node-type-book section.content-section {
+  padding:0;
+  margin:0;  
+}
+
+.node-type-book .content-section {
+  padding-bottom:0;
+  margin:0;  
 }
 
 #shanti-essays-sidebar.ui-widget-content {
@@ -95,24 +103,23 @@ h1.book-heading {
   margin-left: 1.7em;
 }
 
-#shanti-essays-sidebar .ui-state-active, 
-#shanti-essays-sidebar .ui-widget-content .ui-state-active, 
-#shanti-essays-sidebar .ui-widget-header .ui-state-active {
-  border:1px solid gray;
-  border-radius:0;
-}
-
 #shanti-essays-sidebar .ui-state-default, 
 #shanti-essays-sidebar .ui-widget-content .ui-state-default, 
 #shanti-essays-sidebar .ui-widget-header .ui-state-default {
   border:1px solid gray;
   border-radius:0;
 }
-       
+
 #shanti-essays-sidebar.ui-tabs .ui-tabs-nav li.ui-tabs-active {
   margin-bottom: 0!important;
   padding-bottom: 0!important; 
 }
+
+#shanti-essays-sidebar .ui-tabs a {
+  text-transform: capitalize;
+  font-family: "museo-sans-700","Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif;  
+}
+
 
 
 /* field field-name-field-kmap-term field-type-shanti-kmaps-fields-default field-label-hidden */
@@ -130,12 +137,6 @@ h1.book-heading {
 
 #shanti-essays-sidebar .field-name-field-kmap-term .field-item {
   display:inline;
-  _border: 1px solid gray;
-  _text-align:center;
-  _padding:.25em .5em;
   margin: 0 .25em;
-  _border-radius:3px;
-  _background-color:white;
-  _width:auto;
 }
 

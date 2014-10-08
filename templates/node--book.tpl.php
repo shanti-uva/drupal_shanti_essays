@@ -7,14 +7,14 @@
     <div id="shanti-essays-sidebar">
       <ul style="width:100%;">
         <li><a href="#shanti-essays-toc">Contents</a></li>
-        <li><a href="#shanti-essays-meta">Metadata</a></li>
-        <li><a href="#shanti-essays-links">Actions</a></li>
+        <li><a href="#shanti-essays-meta">Description</a></li>
+        <li><a href="#shanti-essays-links">Views</a></li>
       </ul>
       <div id="shanti-essays-meta">
         <?php print render($content['shanti_essays']['meta']); ?>
       </div>
       <div id="shanti-essays-toc">
-        <h4 class="shanti-essays-toc-label">Contents</h4>
+        <!-- <h4 class="shanti-essays-toc-label">Contents</h4> -->
         <?php print $content['shanti_essays']['toc']; ?>
       </div>
       <div id="shanti-essays-links">
