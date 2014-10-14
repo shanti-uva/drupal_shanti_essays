@@ -26,6 +26,7 @@ row row-offcanvas row-offcanvas-right
 }
 
 #shanti-essays-sidebar {
+  display:none; /* INITIAL CONDITION */
   position:relative;
   float:left;
   width:40%;

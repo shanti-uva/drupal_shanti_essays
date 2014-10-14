@@ -4,9 +4,9 @@ package = SHANTI
 core = 7.x
 
 files[] = shanti_essays.filters.inc
-files[] = includes/views/shanti_essays.views_default.inc
 
-dependencies[] = book
-dependencies[] = book_made_simple
-dependencies[] = book_explorer
-dependencies[] = fontawesome
+dependencies[]  = book
+dependencies[]  = book_made_simple
+dependencies[]  = book_explorer
+dependencies[]  = fontawesome
+dependencies[]  = shanti_kmaps_fields

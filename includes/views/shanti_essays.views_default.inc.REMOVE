@@ -1,0 +1,165 @@
+<?php
+
+function shanti_essays_views_default_views() {
+  $views = array();
+  
+	$view               = new view();
+	$view->name         = 'all_texts';
+	$view->description  = 'A view to search all texts';
+	$view->tag          = 'default';
+	$view->base_table   = 'node';
+	$view->human_name   = 'All Texts';
+	$view->core         = 7;
+	$view->api_version  = '3.0';
+	$view->disabled     = TRUE; /* Edit this to true to make a default view disabled initially */
+
+	/* Display: Master */
+	$handler = $view->new_display('default', 'Master', 'default');
+	$handler->display->display_options['title'] = 'Text View';
+	$handler->display->display_options['use_ajax'] = TRUE;
+	$handler->display->display_options['use_more_always'] = FALSE;
+	$handler->display->display_options['access']['type'] = 'perm';
+	$handler->display->display_options['cache']['type'] = 'none';
+	$handler->display->display_options['query']['type'] = 'views_query';
+	$handler->display->display_options['exposed_form']['type'] = 'better_exposed_filters';
+	$handler->display->display_options['exposed_form']['options']['submit_button'] = 'Search';
+	$handler->display->display_options['exposed_form']['options']['autosubmit'] = TRUE;
+	$handler->display->display_options['exposed_form']['options']['bef'] = array(
+		'general' => array(
+			'allow_secondary' => 0,
+			'secondary_label' => 'Advanced options',
+		),
+		'title' => array(
+			'bef_format' => 'default',
+			'more_options' => array(
+				'is_secondary' => 0,
+				'any_label' => '',
+				'bef_filter_description' => '',
+				'tokens' => array(
+					'available' => array(
+						0 => 'global_types',
+					),
+				),
+				'rewrite' => array(
+					'filter_rewrite_values' => '',
+				),
+			),
+		),
+	);
+	$handler->display->display_options['exposed_form']['options']['input_required'] = 0;
+	$handler->display->display_options['exposed_form']['options']['text_input_required_format'] = 'ckeditor_full';
+	$handler->display->display_options['pager']['type'] = 'infinite_scroll';
+	$handler->display->display_options['pager']['options']['items_per_page'] = '10';
+	$handler->display->display_options['pager']['options']['offset'] = '0';
+	$handler->display->display_options['pager']['options']['id'] = '0';
+	$handler->display->display_options['pager']['options']['quantity'] = '9';
+	$handler->display->display_options['style_plugin'] = 'default';
+	$handler->display->display_options['style_options']['row_class'] = 'book-view-card';
+	$handler->display->display_options['style_options']['default_row_class'] = FALSE;
+	$handler->display->display_options['style_options']['row_class_special'] = FALSE;
+	$handler->display->display_options['row_plugin'] = 'fields';
+	/* Field: Content: Featured image */
+	$handler->display->display_options['fields']['field_general_featured_image']['id'] = 'field_general_featured_image';
+	$handler->display->display_options['fields']['field_general_featured_image']['table'] = 'field_data_field_general_featured_image';
+	$handler->display->display_options['fields']['field_general_featured_image']['field'] = 'field_general_featured_image';
+	$handler->display->display_options['fields']['field_general_featured_image']['label'] = '';
+	$handler->display->display_options['fields']['field_general_featured_image']['element_label_colon'] = FALSE;
+	$handler->display->display_options['fields']['field_general_featured_image']['click_sort_column'] = 'fid';
+	$handler->display->display_options['fields']['field_general_featured_image']['settings'] = array(
+		'image_style' => 'card_square', // EXTERNAL DEPENDENCY
+		'image_link' => 'content',
+	);
+	/* Field: Content: Title */
+	$handler->display->display_options['fields']['title']['id'] = 'title';
+	$handler->display->display_options['fields']['title']['table'] = 'node';
+	$handler->display->display_options['fields']['title']['field'] = 'title';
+	$handler->display->display_options['fields']['title']['label'] = '';
+	$handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+	$handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+	$handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
+	$handler->display->display_options['fields']['title']['element_wrapper_class'] = 'book-view-card-title';
+	/* Field: Content: Written by */
+	$handler->display->display_options['fields']['field_dc_creator_author_1']['id'] = 'field_dc_creator_author_1';
+	$handler->display->display_options['fields']['field_dc_creator_author_1']['table'] = 'field_data_field_dc_creator_author';
+	$handler->display->display_options['fields']['field_dc_creator_author_1']['field'] = 'field_dc_creator_author';
+	$handler->display->display_options['fields']['field_dc_creator_author_1']['label'] = '';
+	$handler->display->display_options['fields']['field_dc_creator_author_1']['element_label_colon'] = FALSE;
+	$handler->display->display_options['fields']['field_dc_creator_author_1']['type'] = 'node_reference_plain';
+	$handler->display->display_options['fields']['field_dc_creator_author_1']['delta_offset'] = '0';
+	/* Field: Content: Description */
+	$handler->display->display_options['fields']['field_dc_description']['id'] = 'field_dc_description';
+	$handler->display->display_options['fields']['field_dc_description']['table'] = 'field_data_field_dc_description';
+	$handler->display->display_options['fields']['field_dc_description']['field'] = 'field_dc_description';
+	$handler->display->display_options['fields']['field_dc_description']['label'] = '';
+	$handler->display->display_options['fields']['field_dc_description']['element_label_colon'] = FALSE;
+	$handler->display->display_options['fields']['field_dc_description']['element_wrapper_class'] = 'book-view-card-desc';
+	$handler->display->display_options['fields']['field_dc_description']['type'] = 'text_summary_or_trimmed';
+	$handler->display->display_options['fields']['field_dc_description']['settings'] = array(
+		'trim_length' => '600',
+	);
+	/* Sort criterion: Content: Title */
+	$handler->display->display_options['sorts']['title']['id'] = 'title';
+	$handler->display->display_options['sorts']['title']['table'] = 'node';
+	$handler->display->display_options['sorts']['title']['field'] = 'title';
+	/* Filter criterion: Content: Published */
+	$handler->display->display_options['filters']['status']['id'] = 'status';
+	$handler->display->display_options['filters']['status']['table'] = 'node';
+	$handler->display->display_options['filters']['status']['field'] = 'status';
+	$handler->display->display_options['filters']['status']['value'] = 1;
+	$handler->display->display_options['filters']['status']['group'] = 1;
+	$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+	/* Filter criterion: Content: Type */
+	$handler->display->display_options['filters']['type']['id'] = 'type';
+	$handler->display->display_options['filters']['type']['table'] = 'node';
+	$handler->display->display_options['filters']['type']['field'] = 'type';
+	$handler->display->display_options['filters']['type']['value'] = array(
+		'book' => 'book',
+	);
+	/* Filter criterion: Book: Depth */
+	$handler->display->display_options['filters']['depth']['id'] = 'depth';
+	$handler->display->display_options['filters']['depth']['table'] = 'book_menu_links';
+	$handler->display->display_options['filters']['depth']['field'] = 'depth';
+	$handler->display->display_options['filters']['depth']['value']['value'] = '1';
+	/* Filter criterion: Content: Title */
+	$handler->display->display_options['filters']['title']['id'] = 'title';
+	$handler->display->display_options['filters']['title']['table'] = 'node';
+	$handler->display->display_options['filters']['title']['field'] = 'title';
+	$handler->display->display_options['filters']['title']['operator'] = 'contains';
+	$handler->display->display_options['filters']['title']['exposed'] = TRUE;
+	$handler->display->display_options['filters']['title']['expose']['operator_id'] = 'title_op';
+	$handler->display->display_options['filters']['title']['expose']['label'] = 'Title';
+	$handler->display->display_options['filters']['title']['expose']['operator'] = 'title_op';
+	$handler->display->display_options['filters']['title']['expose']['identifier'] = 'title';
+	$handler->display->display_options['filters']['title']['expose']['remember_roles'] = array(
+		2 => '2',
+		1 => 0,
+		3 => 0,
+	);
+
+	/* Display: Content pane */
+	$handler = $view->new_display('panel_pane', 'Content pane', 'panel_pane_1');
+	$handler->display->display_options['pane_description'] = 'View All Texts';
+	$handler->display->display_options['allow']['use_pager'] = 'use_pager';
+	$handler->display->display_options['allow']['items_per_page'] = 'items_per_page';
+	$handler->display->display_options['allow']['offset'] = 0;
+	$handler->display->display_options['allow']['link_to_view'] = 0;
+	$handler->display->display_options['allow']['more_link'] = 0;
+	$handler->display->display_options['allow']['path_override'] = 0;
+	$handler->display->display_options['allow']['title_override'] = 'title_override';
+	$handler->display->display_options['allow']['exposed_form'] = 0;
+	$handler->display->display_options['allow']['fields_override'] = 0;
+	$handler->display->display_options['argument_input'] = array(
+		'nid' => array(
+			'type' => 'context',
+			'context' => 'entity:node.nid',
+			'context_optional' => 0,
+			'panel' => '0',
+			'fixed' => '',
+			'label' => 'Content: Nid',
+		),
+	);
+	
+	$views['all_texts'] = $view;
+	
+  return $views;
+}
