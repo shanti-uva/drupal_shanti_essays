@@ -1,6 +1,14 @@
 /* May want to change this name */
 /* shanti_essays_page_all_texts */
 
+.views-exposed-form #edit-title-wrapper label {
+  font-size: 14px;
+  font-family: 'museo-sans-700',Helvetica,Arial,sans-serif;
+  text-transform: uppercase;
+  vertical-align: middle;
+  padding: 5px;
+}
+
 .views-row {
   float:left;
   width: 100%;
@@ -54,3 +62,7 @@ ul#view-all-text-switcher li {
 label, .views-widget, .form-item, input {
   display: inline; 
 }
+
+#shanti-essays-mega-search-results li {
+  font-family: "museo-sans-500","Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif;
+} 

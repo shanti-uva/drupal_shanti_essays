@@ -4,13 +4,25 @@ Drupal.behaviors.shantiEssaysMegaSearch = {
   
   attach: function (context, settings) {
     
-    var text_list = $("<ul></ul>");
+    var textList = $("<ul></ul>");
+    var searchBox = $('.shanti-essays-mega-search-box');
+    var searchForm = $("<div id='shanti-essays-mega-search-box-form'></div>");
+    searchBox.append(searchForm);
+    searchForm.append("<input type='text'></input>");
+    searchForm.append("<input type='radio'>full text</input>");
+    searchForm.append("<input type='radio'>by title</input>");
+    searchForm.append("<button>Search</button>");
+    
+    $('#shanti-essays-mega-search-box-form button').live('click', function(){
+      var inputValue = $('#shanti-essays-mega-search-box-form input').val();
+      console.log("On!: " + inputValue);
+    });
     
     $.getJSON('/shanti_essays/mega_search/0/0', function(data){
       for (var nid in data) {
-        text_list.append("<li><a class='shanti-essays-mega-search-link' href='/node/"+nid+"' data-nid='" + nid + "'>" + data[nid].link_title + "</a></li>");
+        textList.append("<li><a class='shanti-essays-mega-search-link' href='/node/"+nid+"' data-nid='" + nid + "'>" + data[nid].link_title + "</a></li>");
       }
-      $('.shanti-essays-mega-search-box').append(text_list); 
+      $('.shanti-essays-mega-search-box').append(textList);
     });
     
     /*

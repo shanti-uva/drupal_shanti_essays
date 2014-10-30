@@ -18,7 +18,8 @@ row row-offcanvas row-offcanvas-right
   width: 50%;
   min-width:480px;
   padding: 0 2em;
-  margin: 0 0 10px 0;
+  _margin: 0 0 10px 0;
+  margin: 0;
   overflow: scroll;
   background-color: white;
   _border:1px solid gray;
@@ -28,8 +29,8 @@ row row-offcanvas row-offcanvas-right
 #shanti-essays-sidebar {
   display:none; /* INITIAL CONDITION */
   position:relative;
-  float:left;
-  width:40%;
+  _float:left;
+  _width:40%;
   padding: 0 1em;
   height:100%;
   overflow: scroll;
@@ -37,6 +38,21 @@ row row-offcanvas row-offcanvas-right
 
 #shanti-essays-toc {
   position: relative;
+}
+
+#shanti-essays-toc > li.toc-item-node {
+  font-weight: bold;
+  font-size: 110%;
+  margin-bottom: 1em;
+}
+
+#shanti-essays-meta  > .book-title,
+#shanti-essays-links > .book-title
+{
+  font-family:"museo-sans-500","Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif;
+  font-weight: bold;
+  font-size: 110%;
+  margin-bottom: 1em;
 }
 
 #shanti-essays-toc ul {
@@ -79,6 +95,29 @@ h1.book-heading {
   border-top:1px solid gray;
   padding-top:1em;
   font-weight: bold;
+}
+
+.section-1 > h1.book-heading {
+  font-size:18pt;  
+}
+
+.book-edit-menu {
+  background: #AAA;
+  width: 60px;
+  text-align:center;
+  padding:5px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.book-edit-menu a {
+  margin: 0 5px;
+}
+
+.book-edit-menu a,
+.book-edit-menu a:visited
+{
+  color: white;
 }
 
 /* HACKY */
@@ -138,6 +177,6 @@ h1.book-heading {
 
 #shanti-essays-sidebar .field-name-field-kmap-term .field-item {
   display:inline;
-  margin: 0 .25em;
+  _margin: 0 .25em;
 }
 

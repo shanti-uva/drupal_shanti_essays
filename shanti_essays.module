@@ -177,7 +177,15 @@ function shanti_essays_theme($existing, $type, $theme, $path) {
       'template' => 'templates/shanti-essays-whole-node-html',
       'path' => SHANTI_ESSAYS_PATH,
     ),
+    'shanti_essays_whole_book' => array(
+      'variables' => array('children' => NULL),
+    )
   );
+}
+
+function theme_shanti_essays_whole_book($vars) {
+  kpr ($vars);
+  return "<p>Testing</p>";
 }
 
 /**
@@ -194,7 +202,7 @@ function shanti_essays_theme_registry_alter(&$theme_registry) {
 
 function shanti_essays_block_info() {
   $blocks = array();
-  $blocks['shanti_essays_mega_search'] = array(
+  $blocks['mega_search'] = array(
     'info' => t('SHANTI Texts Mega Search'),
     'cache' => DRUPAL_NO_CACHE,
   );
@@ -202,22 +210,95 @@ function shanti_essays_block_info() {
 }
 
 function shanti_essays_block_view($delta = '') {
+
   $block = array();
-  if ($delta == 'shanti_essays_mega_search') {
+  if ($delta == 'mega_search') {
     $block['subject'] = t('Mega Search');
     if (user_access('access content')) {
-      $block['content'] = array(
-        '#markup'   => "<div class='shanti-essays-mega-search-box'></div>",
-        '#attached' => array(
-          'js'  => array(SHANTI_ESSAYS_PATH . '/js/shanti_essays_mega_search.js'),
-          'css' => array(SHANTI_ESSAYS_PATH . '/css/shanti_essays_mega_search.css'),  
-        ),
-      );
+      drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_mega_search.css');      
+      $items = array();
+      foreach(book_get_books() as $book) { 
+        $items[] = l($book['link_title'], $book['link_path']); // Add use-ajax
+      }
+      $block['content']['mega_search_form'] = drupal_get_form('shanti_essays_mega_search_form');
+			$block['content']['mega_search_results'] = array(
+        '#theme'      => 'item_list',
+        '#type'       => 'ol',
+        '#attributes' => array('id' => 'shanti-essays-mega-search-results'),
+        '#items'      => $items,
+			);      
     }   
   }
   return $block;
 }
 
+function shanti_essays_mega_search_form($form, &$form_state) {
+	$form = array();
+	$form['mega_search_string'] = array(
+		'#type'       => 'textfield',
+		'#size'       => 60,
+		'#maxlength'  => 128,
+		'#required'   => TRUE,
+	);
+	$form['mega_search_submit'] = array(
+		'#type' 	=> 'submit',
+		'#value' 	=> 'Search',
+		'#ajax' 	=> array(
+			'callback' 	=> 'shanti_essays_mega_search_form_callback',
+			'wrapper' 	=> 'shanti-essays-mega-search-results',
+			'method' 		=> 'replace',
+			'effect' 		=> 'fade'
+		),
+	);
+	return $form;
+}
+
+function shanti_essays_mega_search_form_validate($form, &$form_state) {
+	if ($form_state['values']['mega_search_string'] == '') {
+		form_set_error('mega_search_string',"Enter a search string.");
+	}
+}
+
+function shanti_essays_mega_search_form_submit($form, &$form_state) {}
+
+function _shanti_essays_mega_search_query($search_str) {
+  $results = array();
+  if (!$search_str) {
+    // Or show everything?
+    $results[] = "<b>You did not enter a search string.</b>"; 
+  } 
+  else {
+    $sql = "SELECT b.bid, n.nid, p.title as 'parent', n.title "
+      . "FROM {field_data_field_book_content} c "
+      . "JOIN {node} n ON (c.entity_id = n.nid) "
+      . "JOIN {book} b ON (b.nid = n.nid) "
+      . "JOIN {node} p ON (b.bid = p.nid) "
+      . "WHERE {field_book_content_value} RLIKE :search_str "
+      . "ORDER BY p.title, n.title "
+      ;
+    $rs = db_query($sql, array(':search_str' => $search_str));
+    $results = array();
+    while ($r = $rs->fetchAssoc()) {
+      $results[] = $r['parent'] .': ' . l($r['title'], "node/".$r['bid'], array('fragment' => 'book-node-' . $r['nid'], 'attributes' => array('class' => array(''))));
+    }    
+  }
+  return $results;  
+}
+
+// Note that we don't pass $form_state by reference (i.e. no & prefix)
+function shanti_essays_mega_search_form_callback($form, $form_state) {
+  $search_str = $form_state['values']['mega_search_string'];
+  $items      = _shanti_essays_mega_search_query($search_str);
+  watchdog_array('SHANTI','items in callback',$items);
+  return array(
+    '#theme'      => 'item_list',
+    '#type'       => 'ol',
+    '#attributes' => array('id' => 'shanti-essays-mega-search-results'),
+    '#items'      => $items,
+  );
+}
+
+// GET RID OF THIS ... AND THE JS FILE TOO
 // To be called by AJAX within a JS file
 function shanti_essays_mega_search($mode, $str) {
   // $mode : title, fields, full content, anywhere ... Or perhaps field name?
@@ -228,18 +309,6 @@ function shanti_essays_mega_search($mode, $str) {
   	print "{'msg':'no dice'}";
   }
 }
-
-/*
-function shanti_essays_preprocess(&$var, $hook) {
-	kpr($hook);
-	kpr($var);
-}
-*/	
-
-/*
-function shanti_essays_node_view_alter(&$build) {
-}
-*/
 
 function shanti_essays_preprocess_node(&$vars) {
     
@@ -254,9 +323,9 @@ function shanti_essays_preprocess_node(&$vars) {
     // Create the TOC and combined body
     $book = $vars['book'];
     $tree = book_menu_subtree_data($book);
-    $book_body_rendered  	= book_export_traverse($tree, 'shanti_essays_whole_node');            
+    $book_body_rendered  	= book_export_traverse($tree, 'shanti_essays_whole_node');   
     $book_toc_rendered    = book_export_traverse($tree, 'shanti_essays_whole_toc');
-
+    
 		// Create the Meta element
 		// ANOTHER DEPENDENCY: KMaps Fields .... Will be better when you create your own Content Type
 		// $kmap_terms = $vars['field_kmap_term'][$vars['language']]; // This does not honor the field display settings
@@ -268,26 +337,22 @@ function shanti_essays_preprocess_node(&$vars) {
 		hide($build['field_general_featured_image']); // CCK dependency
 		hide($build['field_book_content']); // CCK dependency
 		$kmap_terms_rendered = render($build);
-        
-    $book_menu_name = book_menu_name($bid);
-    $book_links = menu_load_links($book_menu_name);    
-    $vars['content']['shanti_essays']['bid']        = $bid;
-    $vars['content']['shanti_essays']['top_mlid']   = $top_mlid;
-    $vars['content']['shanti_essays']['book_title'] = $book['title'];
-    $vars['content']['shanti_essays']['book_url']   = drupal_get_path_alias('/node/' . $bid);
     
-    // Create a render array in $content instead of crazy ass template
+    // Create a massive render array in $content instead of crazy ass template
     
     $vars['content']['shanti_essays_container'] = array(
     	'#type' => 'container',
+    	'#theme' => 'book', // <-- CHANGE THIS TO LOCAL THEME? shanti_essays_whole_book
     	'#attributes' => array('id' => 'shanti-essays-container'),
-  	);
+    );
     $vars['content']['shanti_essays_container']['body'] = array(
     	'#type' => 'markup',
     	'#prefix' => '<div id="shanti-essays-body">',
     	'#markup' => $book_body_rendered,
     	'#suffix' => '</div>',
     );
+		//$vars['content']['shanti_essays_container']['sidebar']['links']['#theme'] = 'links__node__book'; // Override?
+
     $vars['content']['shanti_essays_container']['sidebar'] = array(
 			'#type' => 'container',
 			'#attributes' => array('id' => 'shanti-essays-sidebar'), // Set to hidden in CSS 
@@ -303,7 +368,7 @@ function shanti_essays_preprocess_node(&$vars) {
     );
     $vars['content']['shanti_essays_container']['sidebar']['meta'] = array(
     	'#type' 	=> 'markup',
-    	'#prefix' => '<div id="shanti-essays-meta">',
+    	'#prefix' => '<div id="shanti-essays-meta"><div class="book-title">' . $book['title'] . '</div>',
     	'#markup' => $kmap_terms_rendered,
     	'#suffix' => '</div>',
     );
@@ -315,35 +380,25 @@ function shanti_essays_preprocess_node(&$vars) {
     );
     $vars['content']['shanti_essays_container']['sidebar']['links'] = array(
     	'#type' => 'container',
+    	'#attributes' => array('id' => 'shanti-essays-links', 'class' => array('links')),
+    );
+    $vars['content']['shanti_essays_container']['sidebar']['links']['title'] = array(
+			'#markup' => '<div class="book-title">' . $book['title'] . '</div>',
+		);
+    $vars['content']['shanti_essays_container']['sidebar']['links']['list'] = array(
+    	'#theme' => 'item_list',
+    	'#type' => 'ul',
+    	'#items' => array(
+    		l(t('View in SHANTI Reader'),	"shanti_essays/whole/$bid",		array('fragment' => "nid-$nid", 'attributes' => array('class' => array(), 'title' => "View book in SHANTI's Reader"))),
+    		l(t('View in PubReader'),			"book_pubreader/$bid",				array('attributes' => array('class' => array(), 'title' => 'View book in NIH PubReader'))),
+    		l(t('View in Voyant'),				"shanti_essays/voyant/$bid",	array('attributes'  => array('class' => array(), 'title' => 'View book in Voyant tools', 'target' => '_blank'))),
+    	),
     );
     
-    $vars['content']['shanti_essays_container']['sidebar']['links']['#theme'] = 'links__node__book'; // Override?
-    $vars['content']['shanti_essays_container']['sidebar']['links']['#attributes'] = array('id' => 'shanti-essays-links', 'class' => array('links',''));
-    $vars['content']['shanti_essays_container']['sidebar']['links']['#links'] = array(
-      'shanti_essays_view_whole' => array(
-        'title'       => t('View in SHANTI Reader'),
-        'href'        => "shanti_essays/whole/$bid",
-        'fragment'    => "node-$nid",
-        'attributes'  => array('class' => array(), 'title' => "View book in SHANTI's Reader")       
-      ),
-      'shanti_essays_view_pubreader' => array(
-        'title'       => t('View in PubReader'),
-        'href'        => "book_pubreader/$bid",
-        'attributes'  => array('class' => array(), 'title' => 'View book in NIH PubReader')
-      ),
-      'shanti_essays_view_voyant' => array(
-        'title'       => t('View in Voyant'),
-        'href'        => "shanti_essays/voyant/$bid",
-        'attributes'  => array('class' => array(), 'title' => 'View book in Voyant tools', 'target' => '_blank')        
-      ),
-    );
     if (user_access('access printer-friendly version')) {
-      $vars['content']['shanti_essays_container']['sidebar']['links']['#links']['book_printer'] = $vars['content']['links']['book']['#links']['book_printer'];          
-      $vars['content']['shanti_essays_container']['sidebar']['links']['#links']['book_printer']['title'] = 'View for printing';         
-      $vars['content']['shanti_essays_container']['sidebar']['links']['#links']['book_printer']['attributes'] = array('class' => array());          
+	    $vars['content']['shanti_essays_container']['sidebar']['links']['list']['#items'][] = l(t('View for printing'),	$vars['content']['links']['book']['#links']['book_printer'],	array('attributes'  => array('class' => array(), 'title' => 'View book in Voyant tools', 'target' => '_blank')));
     }
     
-        
     // Add CSS and JS
     
     $js_settings = array(
@@ -373,7 +428,7 @@ function shanti_essays_preprocess_node(&$vars) {
       }      
     }
     unset($vars['submitted']); 
-    
+        
   }
 }
 
@@ -546,38 +601,39 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
  */
 function template_preprocess_shanti_essays_whole_node_html(&$vars) {
 
-	//kpr($vars);
-
-  $vars['book_edit_menu']['links'] = array(
+  $vars['book_edit_menu'] = array(
+    '#type' => 'container',
+    '#access' => user_access('add content and child pages to books'),
+    '#attributes' => array('class' => array('book-edit-menu')),
     'toc-edit-page' => array(
       '#markup'   => l(
-        '<i class="fa fa-edit fa-lg"></i>',
+        '<span class="glyphicon glyphicon-edit"></span>',
         "node/{$vars['node']->nid}/edit",
         array(
           'html' => TRUE, 
           'query' => array('destination' => current_path()),
-          'fragment' => "node-{$vars['node']->nid}" 
+          'fragment' => "node-{$vars['node']->nid}",
+          'attributes' => array('title' => t('Edit this page')),
           // Above does not work. May need to define a menu path that calls drupal_goto() 
         )
       ),
-      '#access' => user_access('add content and child pages to books')
     ),
     'toc-add-child-page' => array(
       '#markup' => l(
-        '<i class="fa fa-plus fa-lg"></i>',
+        '<span class="glyphicon glyphicon-plus"></span>',
         "node/add/book",
         array(
           'html' => TRUE,
-          'query' => array('parent' => $vars['node']->book['mlid'])
+          'query' => array('parent' => $vars['node']->book['mlid']),
+          'attributes' => array('title' => t('Add a child page')),
         )
-       ),
-      '#access' => user_access('add content and child pages to books')
+      ),
     )
   );
   $vars['depth']    = $vars['node']->book['depth'];
   $vars['title']    = check_plain($vars['node']->title);
   $vars['content']  = $vars['node']->rendered; // THIS IS CREATED IN *_whole_node()
-  
+  //kpr($vars);
   // NOTE: The Featured image is being hidden from the form for the content type
   // We need a way to programmatically hide fields in a view mode.
   //$vars['content'] = $vars['node']->field_book_content[$vars['node']->language][0]['value'];
