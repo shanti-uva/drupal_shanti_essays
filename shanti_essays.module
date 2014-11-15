@@ -203,14 +203,17 @@ function shanti_essays_theme_registry_alter(&$theme_registry) {
 function shanti_essays_block_info() {
   $blocks = array();
   $blocks['mega_search'] = array(
-    'info' => t('SHANTI Texts Mega Search'),
-    'cache' => DRUPAL_NO_CACHE,
+    'info' 	=> t('SHANTI Texts Mega Search'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+  $blocks['ajax_test'] = array(
+  	'info' 	=> t('Ajax Test'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
   );
   return $blocks;
 }
 
 function shanti_essays_block_view($delta = '') {
-
   $block = array();
   if ($delta == 'mega_search') {
     $block['subject'] = t('Mega Search');
@@ -218,7 +221,7 @@ function shanti_essays_block_view($delta = '') {
       drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_mega_search.css');      
       $items = array();
       foreach(book_get_books() as $book) { 
-        $items[] = l($book['link_title'], $book['link_path']); // Add use-ajax
+        $items[] = l($book['link_title'], $book['link_path']);
       }
       $block['content']['mega_search_form'] = drupal_get_form('shanti_essays_mega_search_form');
 			$block['content']['mega_search_results'] = array(
@@ -228,6 +231,11 @@ function shanti_essays_block_view($delta = '') {
         '#items'      => $items,
 			);      
     }   
+  } 
+  elseif ($delta == 'ajax_test') {
+	  drupal_add_library('system', 'drupal.ajax');
+  	$block['subject'] = t('Ajax Test');
+  	$block['content']['ajax_test_form'] = drupal_get_form('shanti_essays_simple_ajax_form');
   }
   return $block;
 }
@@ -251,6 +259,51 @@ function shanti_essays_mega_search_form($form, &$form_state) {
 		),
 	);
 	return $form;
+}
+
+function shanti_essays_simple_ajax_form($form, &$form_state) {
+  $form = array();
+  $form['changethis'] = array(
+    '#title' 		=> t("Choose something and explain why"),
+    '#type' 		=> 'select',
+    '#options' 	=> array(
+      'one' 			=> 'one',
+      'two' 			=> 'two',
+      'three' 		=> 'three',
+    ),
+    '#ajax' => array(
+      
+      // #ajax has two required keys: callback and wrapper.
+      // 'callback' is a function that will be called when this element changes.
+      'callback' => 'shanti_essays_simple_ajax_callback',
+      
+      // 'wrapper' is the HTML id of the page element that will be replaced.
+      'wrapper' => 'replace_textfield_div',
+      // There are also several optional keys - see ajax_example_autocheckboxes // below for details on 'method', 'effect' and 'speed' and // ajax_example_dependent_dropdown for 'event'.
+    ),
+  );
+
+  // This entire form element will be replaced whenever 'changethis' is updated.
+  $form['replace_textfield'] = array(
+    '#type' 	=> 'textfield',
+    '#title' 	=> t("Why"),
+    
+    // The prefix/suffix provide the div that we're replacing, named by
+    // #ajax['wrapper'] above.
+    '#prefix' => '<div id="replace_textfield_div">',
+    '#suffix' => '</div>',
+  );
+
+  // An AJAX request calls the form builder function for every change.
+  // We can change how we build the form based on $form_state.
+  if (!empty($form_state['values']['changethis'])) {
+    $form['replace_textfield']['#description'] = t("Say why you chose '@value'", array('@value' => $form_state['values']['changethis']));
+  }
+  return $form;
+}
+
+function shanti_essays_simple_ajax_callback ($form, $form_state) {
+  return $form['replace_textfield'];
 }
 
 function shanti_essays_mega_search_form_validate($form, &$form_state) {
@@ -313,12 +366,17 @@ function shanti_essays_mega_search($mode, $str) {
 function shanti_essays_preprocess_node(&$vars) {
     
   if ($vars['type'] == 'book' && $vars['teaser'] == FALSE) {
+  
+  	//kpr($vars);
     
   	// Get some info ... If not top of book, go to top
     $nid  = $vars['nid'];
     $bid  = $vars['book']['bid'];
     if ($bid != $nid) { drupal_goto("node/$bid",array('fragment' => "node-$nid")); }
     $top_mlid = $vars['book']['p1'];
+    
+    // Remove user picture (probably should do this in the theme handler)
+    unset($vars['user_picture']);
     
     // Create the TOC and combined body
     $book = $vars['book'];
@@ -351,41 +409,44 @@ function shanti_essays_preprocess_node(&$vars) {
     	'#markup' => $book_body_rendered,
     	'#suffix' => '</div>',
     );
-		//$vars['content']['shanti_essays_container']['sidebar']['links']['#theme'] = 'links__node__book'; // Override?
-
     $vars['content']['shanti_essays_container']['sidebar'] = array(
 			'#type' => 'container',
-			'#attributes' => array('id' => 'shanti-essays-sidebar'), // Set to hidden in CSS 
+			'#attributes' => array('id' => 'shanti-essays-sidebar', 'role' => 'tabpanel'), // Set to hidden in CSS 
     );
     $vars['content']['shanti_essays_container']['sidebar']['tabs'] = array(
       '#type' => 'ul',  
     	'#theme' => 'item_list',
+    	'#attributes' => array('id' => 'shanti-essays-sidebar-tabs', 'role' => 'tablist', 'class' => array('nav','nav-tabs','nav-justified')),
     	'#items' => array(
-        '<a href="#shanti-essays-toc">Contents</a>',
-        '<a href="#shanti-essays-meta">Description</a>',
-        '<a href="#shanti-essays-links">Views</a>'
+    		array('class' => '', 'role' => 'presentation', 'data' => '<a href="#shanti-essays-toc" role="tab" data-toggle="tab" aria-expanded="true">Contents</a>'),
+    		array('class' => '', 'role' => 'presentation', 'data' => '<a href="#shanti-essays-meta" role="tab" data-toggle="tab">Description</a>'),
+    		array('class' => '', 'role' => 'presentation', 'data' => '<a href="#shanti-essays-links" role="tab" data-toggle="tab">Views</a>'),
       ),
     );
-    $vars['content']['shanti_essays_container']['sidebar']['meta'] = array(
-    	'#type' 	=> 'markup',
-    	'#prefix' => '<div id="shanti-essays-meta"><div class="book-title">' . $book['title'] . '</div>',
-    	'#markup' => $kmap_terms_rendered,
-    	'#suffix' => '</div>',
+    $vars['content']['shanti_essays_container']['sidebar']['tabcontent'] = array(
+    	'#type' => 'container',
+    	'#attributes' => array('class' => array('tab-content')),
     );
-    $vars['content']['shanti_essays_container']['sidebar']['toc'] = array(
+    $vars['content']['shanti_essays_container']['sidebar']['tabcontent']['toc'] = array(
     	'#type' 	=> 'markup',
-    	'#prefix' => '<div id="shanti-essays-toc">',
+    	'#prefix' => '<div role="tabpanel" class="tab-pane" id="shanti-essays-toc">',
     	'#markup' => $book_toc_rendered, 
     	'#suffix' => '</div>',
     );
-    $vars['content']['shanti_essays_container']['sidebar']['links'] = array(
-    	'#type' => 'container',
-    	'#attributes' => array('id' => 'shanti-essays-links', 'class' => array('links')),
+    $vars['content']['shanti_essays_container']['sidebar']['tabcontent']['meta'] = array(
+    	'#type' 	=> 'markup',
+    	'#prefix' => '<div role="tabpanel" class="tab-pane" id="shanti-essays-meta"><div class="book-title">' . $book['title'] . '</div>',
+    	'#markup' => $kmap_terms_rendered,
+    	'#suffix' => '</div>',
     );
-    $vars['content']['shanti_essays_container']['sidebar']['links']['title'] = array(
+    $vars['content']['shanti_essays_container']['sidebar']['tabcontent']['links'] = array(
+    	'#type' => 'container',
+    	'#attributes' => array('id' => 'shanti-essays-links', 'class' => array('links','tab-pane'), 'role' => 'tabpanel'),
+    );
+    $vars['content']['shanti_essays_container']['sidebar']['tabcontent']['links']['title'] = array(
 			'#markup' => '<div class="book-title">' . $book['title'] . '</div>',
 		);
-    $vars['content']['shanti_essays_container']['sidebar']['links']['list'] = array(
+    $vars['content']['shanti_essays_container']['sidebar']['tabcontent']['links']['list'] = array(
     	'#theme' => 'item_list',
     	'#type' => 'ul',
     	'#items' => array(
@@ -417,9 +478,6 @@ function shanti_essays_preprocess_node(&$vars) {
     		SHANTI_ESSAYS_PATH . '/css/shanti_essays.css',
     		SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css',
     	),
-    	'library' => array(
-    		array('system','ui.tabs'),
-    	),
     );
     
     foreach(array_keys($vars['content']) as $k) {
@@ -431,29 +489,6 @@ function shanti_essays_preprocess_node(&$vars) {
         
   }
 }
-
-// Is this necessary? Is it even being used?
-/*
-function shanti_essays_library_alter(&$libraries, $module) {
-  $libraries['ui']['css']               = array();
-  $libraries['ui.accordion']['css']     = array();
-  $libraries['ui.autocomplete']['css']  = array();
-  $libraries['ui.button']['css']        = array();
-  $libraries['ui.datepicker']['css']    = array();
-  $libraries['ui.dialog']['css']        = array();
-  $libraries['ui.draggable']['css']     = array();
-  $libraries['ui.droppable']['css']     = array();
-  $libraries['ui.mouse']['css']         = array();
-  $libraries['ui.position']['css']      = array();
-  $libraries['ui.progressbar']['css']   = array();
-  $libraries['ui.resizable']['css']     = array();
-  $libraries['ui.selectable']['css']    = array();
-  $libraries['ui.slider']['css']        = array();
-  $libraries['ui.sortable']['css']      = array();
-  $libraries['ui.tabs']['css']          = array();
-  //$libraries['ui']['css'][SHANTI_ESSAYS_PATH . '/jquery-ui/jquery-ui.css'] = array();
-}
-*/
 
 ////////// SHANTI Viewer ("Whole") Functions //////////
 
@@ -527,12 +562,13 @@ function shanti_essays_whole_node($node, $children = '') {
 /**
  * Also called by book_export_traverse() to generate a table of contents.
  * This is a hand-made function that might be replaced by something more Drupally.
+ * NEED TO USE NAME SPACED CLASS NAMES
  */
 function shanti_essays_whole_toc($node, $children = '') {
     $output = '';
-    $nid = $node->nid;
-    $title = check_plain($node->title);
-    $depth = $node->book['depth'];
+    $nid 		= $node->nid;
+    $title 	= check_plain($node->title);
+    $depth 	= $node->book['depth'];
     
     if ($prev = book_prev($node->book)) {
       $x = $depth - $prev['depth'];
@@ -554,6 +590,7 @@ function shanti_essays_whole_toc($node, $children = '') {
         $output .= "</ul>\n";         
       }
     }
+    
     $output .= $children;
     return $output;
 }
@@ -603,7 +640,8 @@ function template_preprocess_shanti_essays_whole_node_html(&$vars) {
 
   $vars['book_edit_menu'] = array(
     '#type' => 'container',
-    '#access' => user_access('add content and child pages to books'),
+    //'#access' => user_access('add content and child pages to books'),
+    '#access' => user_access('add content to books'),
     '#attributes' => array('class' => array('book-edit-menu')),
     'toc-edit-page' => array(
       '#markup'   => l(
@@ -640,14 +678,6 @@ function template_preprocess_shanti_essays_whole_node_html(&$vars) {
   //$vars['metadata'] = array();
 }
 
-/*
-function shanti_essays_node_view($node, $view_mode, $langcode) {
-	if ($view_node == 'whole' && $node->type == 'book') {
-
-	}
-}
-*/
-
 /** 
  * Here we attempt to remove any theme-specific CSS files from our viewer, 
  * which we want to be pristine.
@@ -665,13 +695,3 @@ function shanti_essays_css_alter(&$css) {
     }
   }
 }
-
-/* THIS WILL BE HANDLED BY THE SITE
-function shanti_essays_views_api() {
-	return array(
-		'api' => 3,
-		'path' => SHANTI_ESSAYS_PATH . '/includes/views',
-		'template path' => SHANTI_ESSAYS_PATH . '/templates',
-	);
-}
-*/

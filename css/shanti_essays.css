@@ -1,72 +1,105 @@
-/* 
-content-section col-xs-12
-row row-offcanvas row-offcanvas-right
-*/
-
 #shanti-essays-container {
   position:relative;
   height:670px;
   margin:0;
   padding:0;
-  _margin:-1em 0 0 -2em;
 }
 
 #shanti-essays-body {
   position:relative;
   float:left;
-  height: 100%;
-  width: 50%;
+  height:100%;
+  width:50%;
   min-width:480px;
-  padding: 0 2em;
-  _margin: 0 0 10px 0;
-  margin: 0;
-  overflow: scroll;
-  background-color: white;
-  _border:1px solid gray;
-  _box-shadow:5px 5px 20px gray;
+  padding:0 2em;
+  margin:0;
+  overflow:scroll;
+  background-color:white;
 }
 
 #shanti-essays-sidebar {
-  display:none; /* INITIAL CONDITION */
+  display:none; /* INITIAL CONDITION to prevent showing un-tabbed content */
   position:relative;
-  _float:left;
-  _width:40%;
-  padding: 0 1em;
+  padding:0 1em;
   height:100%;
-  overflow: scroll;
+  overflow:scroll;
+}
+
+
+#shanti-essays-sidebar.ui-widget-content {
+  border:none;
+}
+
+#shanti-essays-sidebar .ui-widget-header {
+  background:none;
+  border:none;
+  margin-top:1em;
+  margin-left:1.7em;
+}
+
+/*
+#shanti-essays-sidebar .ui-state-default, 
+#shanti-essays-sidebar .ui-widget-content .ui-state-default, 
+#shanti-essays-sidebar .ui-widget-header .ui-state-default 
+{
+  border:1px solid gray;
+  border-radius:0;
+}
+*/
+/*
+#shanti-essays-sidebar.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+  margin-bottom:0;
+  padding-bottom:0; 
+}
+
+#shanti-essays-sidebar .ui-tabs a {
+  text-transform:capitalize;
+  font-family:"museo-sans-700","Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif;  
+}
+*/
+
+#shanti-essays-sidebar .field {
+  display:block;
+  border-bottom:1px solid gray;
+  padding-bottom:1em;
+  margin-bottom:1em;
+}
+
+#shanti-essays-sidebar .field-name-field-kmap-term .field-item {
+  display:inline;
 }
 
 #shanti-essays-toc {
-  position: relative;
+  position:relative;
 }
 
 #shanti-essays-toc > li.toc-item-node {
-  font-weight: bold;
-  font-size: 110%;
-  margin-bottom: 1em;
+  font-weight:bold;
+  font-size:110%;
+  margin-bottom:1em;
 }
 
 #shanti-essays-meta  > .book-title,
 #shanti-essays-links > .book-title
 {
   font-family:"museo-sans-500","Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif;
-  font-weight: bold;
-  font-size: 110%;
-  margin-bottom: 1em;
+  font-weight:bold;
+  font-size:110%;
+  margin-bottom:1em;
 }
 
 #shanti-essays-toc ul {
-  margin-top: 0;
-  padding-top: 0;
+  margin-top:0;
+  padding-top:0;
 }
 
 #shanti-essays-toc > ul:first-of-type {
-  margin-left: 0;
-  padding-left: 0;
+  margin-left:0;
+  padding-left:0;
 }
 
 #shanti-essays-toc li {
-  font-size: 12pt;
+  font-size:12pt;
   font-family:"museo-sans-500","Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif;
 }
 
@@ -75,26 +108,28 @@ row row-offcanvas row-offcanvas-right
 #shanti-essays-meta {}
 
 #shanti-essays-body p {
-  font-size: 14pt;
+  font-size:14pt;
+}
+
+#shanti-essays-toc li, 
+#shanti-essays-links .links li 
+{
+  list-style-type:none;
 }
 
 .bourdieu {
-  font-size: 12pt; 
-  font-family: sans-serif;
-  border-top: 1px solid gray; 
-  border-bottom: 1px solid gray; 
-  padding: 1em 0; margin: 1em 0;
-}
-
-#shanti-essays-toc li, #shanti-essays-links .links li {
-  list-style-type: none;
+  font-size:12pt; 
+  font-family:sans-serif;
+  border-top:1px solid gray; 
+  border-bottom:1px solid gray; 
+  padding:1em 0; margin:1em 0;
 }
 
 h1.book-heading {
   font-size:14pt;
   border-top:1px solid gray;
   padding-top:1em;
-  font-weight: bold;
+  font-weight:bold;
 }
 
 .section-1 > h1.book-heading {
@@ -102,25 +137,23 @@ h1.book-heading {
 }
 
 .book-edit-menu {
-  background: #AAA;
-  width: 60px;
+  background:#AAA;
+  width:60px;
   text-align:center;
   padding:5px;
-  border-radius: 5px;
-  margin-bottom: 5px;
+  border-radius:5px;
+  margin-bottom:5px;
 }
 
 .book-edit-menu a {
-  margin: 0 5px;
+  margin:0 5px;
 }
 
 .book-edit-menu a,
 .book-edit-menu a:visited
 {
-  color: white;
+  color:white;
 }
-
-/* HACKY */
 
 .node-type-book section.content-section {
   padding:0;
@@ -130,53 +163,5 @@ h1.book-heading {
 .node-type-book .content-section {
   padding-bottom:0;
   margin:0;  
-}
-
-#shanti-essays-sidebar.ui-widget-content {
-  border:none!important;
-}
-
-#shanti-essays-sidebar .ui-widget-header {
-  background:none!important;
-  border: none;
-  margin-top: 1em;
-  margin-left: 1.7em;
-}
-
-#shanti-essays-sidebar .ui-state-default, 
-#shanti-essays-sidebar .ui-widget-content .ui-state-default, 
-#shanti-essays-sidebar .ui-widget-header .ui-state-default {
-  border:1px solid gray;
-  border-radius:0;
-}
-
-#shanti-essays-sidebar.ui-tabs .ui-tabs-nav li.ui-tabs-active {
-  margin-bottom: 0!important;
-  padding-bottom: 0!important; 
-}
-
-#shanti-essays-sidebar .ui-tabs a {
-  text-transform: capitalize;
-  font-family: "museo-sans-700","Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif;  
-}
-
-
-
-/* field field-name-field-kmap-term field-type-shanti-kmaps-fields-default field-label-hidden */
-
-#shanti-essays-sidebar .field {
-  display:block;
-  border-bottom: 1px solid gray;
-  padding-bottom: 1em;
-  margin-bottom: 1em;
-}
-
-#shanti-essays-sidebar .field-items {}
-
-#shanti-essays-sidebar .field-item {}
-
-#shanti-essays-sidebar .field-name-field-kmap-term .field-item {
-  display:inline;
-  _margin: 0 .25em;
 }
 
