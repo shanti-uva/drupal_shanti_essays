@@ -194,7 +194,7 @@ function theme_shanti_essays_whole_book($vars) {
 function shanti_essays_theme_registry_alter(&$theme_registry) {  
   $theme_registry['page__shanti_essays__whole']['template']	= 'templates/page--shanti-essays--whole';
   $theme_registry['page__shanti_essays__whole']['path']     = SHANTI_ESSAYS_PATH;  
-  //$theme_registry['node__book']['template']             		= 'templates/node--book';
+  //$theme_registry['node__book']['template']  	          		= 'templates/node--book';
   //$theme_registry['node__book']['path']                 		= SHANTI_ESSAYS_PATH;
   $theme_registry['book_navigation']['template']        		= 'templates/book-navigation';
   $theme_registry['book_navigation']['path']            		= SHANTI_ESSAYS_PATH;
@@ -204,11 +204,11 @@ function shanti_essays_block_info() {
   $blocks = array();
   $blocks['mega_search'] = array(
     'info' 	=> t('SHANTI Texts Mega Search'),
-    'cache' => DRUPAL_CACHE_GLOBAL,
+    'cache' => DRUPAL_NO_CACHE,
   );
   $blocks['ajax_test'] = array(
   	'info' 	=> t('Ajax Test'),
-    'cache' => DRUPAL_CACHE_GLOBAL,
+    'cache' => DRUPAL_NO_CACHE,
   );
   return $blocks;
 }
@@ -247,6 +247,13 @@ function shanti_essays_mega_search_form($form, &$form_state) {
 		'#size'       => 60,
 		'#maxlength'  => 128,
 		'#required'   => TRUE,
+		'#description' => t('Enter text to search for and press TAB, or press SEARCH'),
+		'#ajax' 	=> array(
+			'callback' 	=> 'shanti_essays_mega_search_form_callback',
+			'wrapper' 	=> 'shanti-essays-mega-search-results',
+			'method' 		=> 'replace',
+			'effect' 		=> 'fade',
+		),
 	);
 	$form['mega_search_submit'] = array(
 		'#type' 	=> 'submit',
@@ -342,7 +349,6 @@ function _shanti_essays_mega_search_query($search_str) {
 function shanti_essays_mega_search_form_callback($form, $form_state) {
   $search_str = $form_state['values']['mega_search_string'];
   $items      = _shanti_essays_mega_search_query($search_str);
-  watchdog_array('SHANTI','items in callback',$items);
   return array(
     '#theme'      => 'item_list',
     '#type'       => 'ol',
@@ -396,8 +402,8 @@ function shanti_essays_preprocess_node(&$vars) {
 		hide($build['field_book_content']); // CCK dependency
 		$kmap_terms_rendered = render($build);
     
-    // Create a massive render array in $content instead of crazy ass template
-    
+    // Create a render array in $content instead of custom template
+    // SHOULD PUT THIS INTO SARVAKA ... OR, REPLACE A JQUERY UI VERSION
     $vars['content']['shanti_essays_container'] = array(
     	'#type' => 'container',
     	'#theme' => 'book', // <-- CHANGE THIS TO LOCAL THEME? shanti_essays_whole_book
@@ -457,7 +463,7 @@ function shanti_essays_preprocess_node(&$vars) {
     );
     
     if (user_access('access printer-friendly version')) {
-	    $vars['content']['shanti_essays_container']['sidebar']['links']['list']['#items'][] = l(t('View for printing'),	$vars['content']['links']['book']['#links']['book_printer'],	array('attributes'  => array('class' => array(), 'title' => 'View book in Voyant tools', 'target' => '_blank')));
+	    $vars['content']['shanti_essays_container']['sidebar']['tabcontent']['links']['list']['#items'][] = l(t('View for printing'),	$vars['content']['links']['book']['#links']['book_printer'],	array('attributes'  => array('class' => array(), 'title' => 'View book in Voyant tools', 'target' => '_blank')));
     }
     
     // Add CSS and JS
