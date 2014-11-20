@@ -5,3 +5,15 @@
 .block ol {
   padding-left: 2em;
 } 
+
+
+.shanti-essays-mega-search-kwic {
+  background-color:white;
+  padding:5px;
+  margin:5px 0;
+}
+
+.shanti-essays-search-hit {
+  font-weight:bold;
+  color:red;
+}

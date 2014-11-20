@@ -328,7 +328,7 @@ function _shanti_essays_mega_search_query($search_str) {
     $results[] = "<b>You did not enter a search string.</b>"; 
   } 
   else {
-    $sql = "SELECT b.bid, n.nid, p.title as 'parent', n.title "
+    $sql = "SELECT b.bid, n.nid, p.title as 'parent', n.title, c.field_book_content_value as 'content' "
       . "FROM {field_data_field_book_content} c "
       . "JOIN {node} n ON (c.entity_id = n.nid) "
       . "JOIN {book} b ON (b.nid = n.nid) "
@@ -337,12 +337,22 @@ function _shanti_essays_mega_search_query($search_str) {
       . "ORDER BY p.title, n.title "
       ;
     $rs = db_query($sql, array(':search_str' => $search_str));
-    $results = array();
+    $items = array();
+		$pattern = "([.?!;,\]\)]|\"|')\s+";
     while ($r = $rs->fetchAssoc()) {
-      $results[] = $r['parent'] .': ' . l($r['title'], "node/".$r['bid'], array('fragment' => 'book-node-' . $r['nid'], 'attributes' => array('class' => array(''))));
-    }    
+    	$content = strip_tags($r['content']);
+    	$content_array = preg_split("/$pattern/i", $content);
+    	$kwic_array = array();
+    	foreach($content_array as $line) {
+    		if (preg_match("/$search_str/i",$line)) {
+    			$kwic_array[] = preg_replace("/($search_str)/i","<b>$1</b>",$line);
+    		}
+    	}
+    	$kwic = "<div class='shanti-essays-mega-search-kwic'>".implode("</div><div class='shanti-essays-mega-search-kwic'>",$kwic_array)."</div>";
+    	$items[] = l($r['parent'] .': '. $r['title'], "node/".$r['bid'], array('fragment' => 'book-node-' . $r['nid'], 'attributes' => array('class' => array(''))))  . $kwic; // , 'query' => array('s' => $search_str)
+    } 
   }
-  return $results;  
+  return $items;  
 }
 
 // Note that we don't pass $form_state by reference (i.e. no & prefix)
@@ -373,8 +383,6 @@ function shanti_essays_preprocess_node(&$vars) {
     
   if ($vars['type'] == 'book' && $vars['teaser'] == FALSE) {
   
-  	//kpr($vars);
-    
   	// Get some info ... If not top of book, go to top
     $nid  = $vars['nid'];
     $bid  = $vars['book']['bid'];
@@ -389,6 +397,13 @@ function shanti_essays_preprocess_node(&$vars) {
     $tree = book_menu_subtree_data($book);
     $book_body_rendered  	= book_export_traverse($tree, 'shanti_essays_whole_node');   
     $book_toc_rendered    = book_export_traverse($tree, 'shanti_essays_whole_toc');
+    
+    // This is hacky and expensive
+    // Create a menu of these will you're at it? Or do this in JQuery ...
+    if (isset($_GET['s'])) {
+    	$s = $_GET['s'];
+    	$book_body_rendered = preg_replace("/$s/","<span class='shanti-essays-search-hit'>$s</span>",$book_body_rendered);
+    }
     
 		// Create the Meta element
 		// ANOTHER DEPENDENCY: KMaps Fields .... Will be better when you create your own Content Type
@@ -544,12 +559,12 @@ function shanti_essays_entity_info_alter(&$info) {
  */ 
 function shanti_essays_whole_node($node, $children = '') {
 	// This returns a render array (RA) for the view mode defined in shanti_essays_entity_info_alter()
-  $build = node_view($node, 'whole');
+  $build = node_view($node, 'whole'); // DEPENDENCY
   
   // We remove the theme option that may be have been set in the RA
   unset($build['#theme']); 
   
-  // We hide a few things, include all fields but the content 
+  // We hide all fields but the content -- not sure if this is working, though
   hide($build['group_content_access']);
   hide($build['links']);
   foreach($build as $key => $val) { // Hide all fields but the content
@@ -557,11 +572,13 @@ function shanti_essays_whole_node($node, $children = '') {
   		hide($build[$key]);
   	}
   }
-  
   // Now we render it
-  $node->rendered = drupal_render($build); // THIS IS WHERE IT IS!!!!
+  //kpr($build);
+  unset($build['field_general_featured_image']);
+  //kpr($build);
+  $node->rendered = drupal_render($build);
   
-  // And we send the node and children to our theme
+  // And then we send the node (with its rendered element) and children to our theme
   return theme('shanti_essays_whole_node_html', array('node' => $node, 'children' => $children));
 }
 
@@ -646,7 +663,6 @@ function template_preprocess_shanti_essays_whole_node_html(&$vars) {
 
   $vars['book_edit_menu'] = array(
     '#type' => 'container',
-    //'#access' => user_access('add content and child pages to books'),
     '#access' => user_access('add content to books'),
     '#attributes' => array('class' => array('book-edit-menu')),
     'toc-edit-page' => array(
@@ -677,7 +693,6 @@ function template_preprocess_shanti_essays_whole_node_html(&$vars) {
   $vars['depth']    = $vars['node']->book['depth'];
   $vars['title']    = check_plain($vars['node']->title);
   $vars['content']  = $vars['node']->rendered; // THIS IS CREATED IN *_whole_node()
-  //kpr($vars);
   // NOTE: The Featured image is being hidden from the form for the content type
   // We need a way to programmatically hide fields in a view mode.
   //$vars['content'] = $vars['node']->field_book_content[$vars['node']->language][0]['value'];
