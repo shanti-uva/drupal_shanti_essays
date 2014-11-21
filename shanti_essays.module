@@ -219,24 +219,9 @@ function shanti_essays_block_view($delta = '') {
     $block['subject'] = t('Mega Search');
     if (user_access('access content')) {
       drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_mega_search.css');      
-      $items = array();
-      foreach(book_get_books() as $book) { 
-        $items[] = l($book['link_title'], $book['link_path']);
-      }
       $block['content']['mega_search_form'] = drupal_get_form('shanti_essays_mega_search_form');
-			$block['content']['mega_search_results'] = array(
-        '#theme'      => 'item_list',
-        '#type'       => 'ol',
-        '#attributes' => array('id' => 'shanti-essays-mega-search-results'),
-        '#items'      => $items,
-			);      
     }   
   } 
-  elseif ($delta == 'ajax_test') {
-	  drupal_add_library('system', 'drupal.ajax');
-  	$block['subject'] = t('Ajax Test');
-  	$block['content']['ajax_test_form'] = drupal_get_form('shanti_essays_simple_ajax_form');
-  }
   return $block;
 }
 
@@ -246,7 +231,7 @@ function shanti_essays_mega_search_form($form, &$form_state) {
 		'#type'       => 'textfield',
 		'#size'       => 60,
 		'#maxlength'  => 128,
-		'#required'   => TRUE,
+		'#required'   => FALSE, //TRUE, // Because validation does not work 
 		'#description' => t('Enter text to search for and press TAB, or press SEARCH'),
 		'#ajax' 	=> array(
 			'callback' 	=> 'shanti_essays_mega_search_form_callback',
@@ -265,106 +250,77 @@ function shanti_essays_mega_search_form($form, &$form_state) {
 			'effect' 		=> 'fade'
 		),
 	);
+	$items = array();
+	if (empty($form_state['values']['mega_search_string'])) {
+		foreach(book_get_books() as $book) { 
+    	$items[] = l($book['link_title'], $book['link_path']);
+    }
+	} else {
+		$items = _shanti_essays_mega_search_query($form_state['values']['mega_search_string']);
+	}
+	$form['mega_search_results'] = array(
+		'#theme'      => 'item_list',
+		'#type'       => 'ol',
+		'#prefix'			=> "<div id='shanti-essays-mega-search-results'>",
+		'#suffix'			=> "</div>",
+		'#items'      => $items // NEEDS TO BE A FUNCTION?
+	);
 	return $form;
 }
 
-function shanti_essays_simple_ajax_form($form, &$form_state) {
-  $form = array();
-  $form['changethis'] = array(
-    '#title' 		=> t("Choose something and explain why"),
-    '#type' 		=> 'select',
-    '#options' 	=> array(
-      'one' 			=> 'one',
-      'two' 			=> 'two',
-      'three' 		=> 'three',
-    ),
-    '#ajax' => array(
-      
-      // #ajax has two required keys: callback and wrapper.
-      // 'callback' is a function that will be called when this element changes.
-      'callback' => 'shanti_essays_simple_ajax_callback',
-      
-      // 'wrapper' is the HTML id of the page element that will be replaced.
-      'wrapper' => 'replace_textfield_div',
-      // There are also several optional keys - see ajax_example_autocheckboxes // below for details on 'method', 'effect' and 'speed' and // ajax_example_dependent_dropdown for 'event'.
-    ),
-  );
-
-  // This entire form element will be replaced whenever 'changethis' is updated.
-  $form['replace_textfield'] = array(
-    '#type' 	=> 'textfield',
-    '#title' 	=> t("Why"),
-    
-    // The prefix/suffix provide the div that we're replacing, named by
-    // #ajax['wrapper'] above.
-    '#prefix' => '<div id="replace_textfield_div">',
-    '#suffix' => '</div>',
-  );
-
-  // An AJAX request calls the form builder function for every change.
-  // We can change how we build the form based on $form_state.
-  if (!empty($form_state['values']['changethis'])) {
-    $form['replace_textfield']['#description'] = t("Say why you chose '@value'", array('@value' => $form_state['values']['changethis']));
-  }
-  return $form;
-}
-
-function shanti_essays_simple_ajax_callback ($form, $form_state) {
-  return $form['replace_textfield'];
-}
-
 function shanti_essays_mega_search_form_validate($form, &$form_state) {
-	if ($form_state['values']['mega_search_string'] == '') {
-		form_set_error('mega_search_string',"Enter a search string.");
+	if (preg_match("/^\s*$/", $form_state['values']['mega_search_string'])) {
+		form_set_error('mega_search_string', t('Enter a search string.'));
 	}
 }
 
 function shanti_essays_mega_search_form_submit($form, &$form_state) {}
 
-function _shanti_essays_mega_search_query($search_str) {
-  $results = array();
-  if (!$search_str) {
-    // Or show everything?
-    $results[] = "<b>You did not enter a search string.</b>"; 
-  } 
-  else {
-    $sql = "SELECT b.bid, n.nid, p.title as 'parent', n.title, c.field_book_content_value as 'content' "
-      . "FROM {field_data_field_book_content} c "
-      . "JOIN {node} n ON (c.entity_id = n.nid) "
-      . "JOIN {book} b ON (b.nid = n.nid) "
-      . "JOIN {node} p ON (b.bid = p.nid) "
-      . "WHERE {field_book_content_value} RLIKE :search_str "
-      . "ORDER BY p.title, n.title "
-      ;
-    $rs = db_query($sql, array(':search_str' => $search_str));
-    $items = array();
-		$pattern = "([.?!;,\]\)]|\"|')\s+";
-    while ($r = $rs->fetchAssoc()) {
-    	$content = strip_tags($r['content']);
-    	$content_array = preg_split("/$pattern/i", $content);
-    	$kwic_array = array();
-    	foreach($content_array as $line) {
-    		if (preg_match("/$search_str/i",$line)) {
-    			$kwic_array[] = preg_replace("/($search_str)/i","<b>$1</b>",$line);
-    		}
-    	}
-    	$kwic = "<div class='shanti-essays-mega-search-kwic'>".implode("</div><div class='shanti-essays-mega-search-kwic'>",$kwic_array)."</div>";
-    	$items[] = l($r['parent'] .': '. $r['title'], "node/".$r['bid'], array('fragment' => 'book-node-' . $r['nid'], 'attributes' => array('class' => array(''))))  . $kwic; // , 'query' => array('s' => $search_str)
-    } 
-  }
-  return $items;  
+function _shanti_essays_mega_search_query($search_str = '') {
+  $items = array();
+	$sql = "SELECT b.bid, n.nid, p.title as 'parent', n.title, c.field_book_content_value as 'content' "
+		. "FROM {field_data_field_book_content} c "
+		. "JOIN {node} n ON (c.entity_id = n.nid) "
+		. "JOIN {book} b ON (b.nid = n.nid) "
+		. "JOIN {node} p ON (b.bid = p.nid) "
+		. "WHERE {field_book_content_value} RLIKE :search_str "
+		. "ORDER BY p.title, n.title "
+		;
+	if ($search_str) {
+		$rs = db_query($sql, array(':search_str' => $search_str));
+		if ($rs) {
+			$n = $rs->rowCount(); 
+			drupal_set_message("got $n rows back.");
+			if ($n) {
+				$pattern = "([.?!;,\]\)]|\"|')\s+";
+				foreach($rs as $r) {
+					$content = strip_tags($r->content);
+					$content_array = preg_split("/$pattern/i", $content);
+					$kwic_array = array();
+					foreach($content_array as $line) {
+						if (preg_match("/$search_str/i",$line)) {
+							$kwic_array[] = preg_replace("/($search_str)/i","<b>$1</b>",$line);
+						}
+					}
+					$kwic = "<div class='shanti-essays-mega-search-kwic'>".implode("</div><div class='shanti-essays-mega-search-kwic'>",$kwic_array)."</div>";
+					$items[] = l($r->parent .': '. $r->title, "node/".$r->bid, array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str), 'attributes' => array('class' => array(''))))  . $kwic; 
+				} 	
+			} else {
+				watchdog('SHANTI',"No results for $search_str",array(),WATCHDOG_DEBUG);
+				drupal_set_message("Got no results.");	
+			}	
+		} else {
+			drupal_set_message("Bad things must have happened.");	
+		}	
+	} else {
+		drupal_set_message("Please enter a search string");
+	}
+	return $items;
 }
 
 // Note that we don't pass $form_state by reference (i.e. no & prefix)
 function shanti_essays_mega_search_form_callback($form, $form_state) {
-  $search_str = $form_state['values']['mega_search_string'];
-  $items      = _shanti_essays_mega_search_query($search_str);
-  return array(
-    '#theme'      => 'item_list',
-    '#type'       => 'ol',
-    '#attributes' => array('id' => 'shanti-essays-mega-search-results'),
-    '#items'      => $items,
-  );
+	return $form['mega_search_results'];
 }
 
 // GET RID OF THIS ... AND THE JS FILE TOO
@@ -482,10 +438,9 @@ function shanti_essays_preprocess_node(&$vars) {
     }
     
     // Add CSS and JS
-    
     $js_settings = array(
       'book' 				=> $vars['book'],
-      'book_title' 	=> $vars['content']['shanti_essays']['book_title'],
+      'book_title' 	=> $vars['book']['link_title'],
     );
     
     $vars['content']['shanti_essays_container']['#attached'] = array(
