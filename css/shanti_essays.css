@@ -37,27 +37,6 @@
   margin-left:1.7em;
 }
 
-/*
-#shanti-essays-sidebar .ui-state-default, 
-#shanti-essays-sidebar .ui-widget-content .ui-state-default, 
-#shanti-essays-sidebar .ui-widget-header .ui-state-default 
-{
-  border:1px solid gray;
-  border-radius:0;
-}
-*/
-/*
-#shanti-essays-sidebar.ui-tabs .ui-tabs-nav li.ui-tabs-active {
-  margin-bottom:0;
-  padding-bottom:0; 
-}
-
-#shanti-essays-sidebar .ui-tabs a {
-  text-transform:capitalize;
-  font-family:"museo-sans-700","Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif;  
-}
-*/
-
 #shanti-essays-sidebar .field {
   display:block;
   border-bottom:1px solid gray;
@@ -65,7 +44,8 @@
   margin-bottom:1em;
 }
 
-#shanti-essays-sidebar .field-name-field-kmap-term .field-item {
+/* THIS SHOULD BE IN THE THEME */
+#shanti-essays-sidebar .field-type-shanti-kmaps-fields-default .field-item {
   display:inline;
 }
 

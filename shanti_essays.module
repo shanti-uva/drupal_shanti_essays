@@ -194,8 +194,6 @@ function theme_shanti_essays_whole_book($vars) {
 function shanti_essays_theme_registry_alter(&$theme_registry) {  
   $theme_registry['page__shanti_essays__whole']['template']	= 'templates/page--shanti-essays--whole';
   $theme_registry['page__shanti_essays__whole']['path']     = SHANTI_ESSAYS_PATH;  
-  //$theme_registry['node__book']['template']  	          		= 'templates/node--book';
-  //$theme_registry['node__book']['path']                 		= SHANTI_ESSAYS_PATH;
   $theme_registry['book_navigation']['template']        		= 'templates/book-navigation';
   $theme_registry['book_navigation']['path']            		= SHANTI_ESSAYS_PATH;
 }
@@ -226,34 +224,39 @@ function shanti_essays_block_view($delta = '') {
 }
 
 function shanti_essays_mega_search_form($form, &$form_state) {
+	watchdog_array('SHANTI','form_state',$form_state);
 	$form = array();
 	$form['mega_search_string'] = array(
 		'#type'       => 'textfield',
 		'#size'       => 60,
 		'#maxlength'  => 128,
-		'#required'   => FALSE, //TRUE, // Because validation does not work 
-		'#description' => t('Enter text to search for and press TAB, or press SEARCH'),
+		'#required'   => TRUE, 
+		'#tree' 			=> TRUE,
+		'#description' => t('Enter text to search for and press enter'),
 		'#ajax' 	=> array(
 			'callback' 	=> 'shanti_essays_mega_search_form_callback',
 			'wrapper' 	=> 'shanti-essays-mega-search-results',
 			'method' 		=> 'replace',
 			'effect' 		=> 'fade',
+			'event'			=> 'change',
+			'keypress'	=> TRUE,
 		),
 	);
 	$form['mega_search_submit'] = array(
-		'#type' 	=> 'submit',
-		'#value' 	=> 'Search',
-		'#ajax' 	=> array(
-			'callback' 	=> 'shanti_essays_mega_search_form_callback',
-			'wrapper' 	=> 'shanti-essays-mega-search-results',
-			'method' 		=> 'replace',
-			'effect' 		=> 'fade'
+		'#type' 			=> 'submit',
+		'#value' 			=> 'Search',
+		'#attributes' => array('class' => array('btn')),
+		'#ajax' 			=> array(
+			'callback' 		=> 'shanti_essays_mega_search_form_callback',
+			'wrapper' 		=> 'shanti-essays-mega-search-results',
+			'method' 			=> 'replace',
+			'effect' 			=> 'fade'
 		),
 	);
 	$items = array();
 	if (empty($form_state['values']['mega_search_string'])) {
 		foreach(book_get_books() as $book) { 
-    	$items[] = l($book['link_title'], $book['link_path']);
+    	$items[] = l($book['link_title'], $book['link_path'], array('absolute' => TRUE	));
     }
 	} else {
 		$items = _shanti_essays_mega_search_query($form_state['values']['mega_search_string']);
@@ -263,7 +266,7 @@ function shanti_essays_mega_search_form($form, &$form_state) {
 		'#type'       => 'ol',
 		'#prefix'			=> "<div id='shanti-essays-mega-search-results'>",
 		'#suffix'			=> "</div>",
-		'#items'      => $items // NEEDS TO BE A FUNCTION?
+		'#items'      => $items
 	);
 	return $form;
 }
@@ -278,36 +281,52 @@ function shanti_essays_mega_search_form_submit($form, &$form_state) {}
 
 function _shanti_essays_mega_search_query($search_str = '') {
   $items = array();
+	$pattern = "([.?!;,\]\)]|\"|')\s+"; // A way to split textarea into sentences
 	$sql = "SELECT b.bid, n.nid, p.title as 'parent', n.title, c.field_book_content_value as 'content' "
 		. "FROM {field_data_field_book_content} c "
 		. "JOIN {node} n ON (c.entity_id = n.nid) "
 		. "JOIN {book} b ON (b.nid = n.nid) "
 		. "JOIN {node} p ON (b.bid = p.nid) "
+		. "JOIN {menu_links} m ON (b.mlid = m.mlid) "
 		. "WHERE {field_book_content_value} RLIKE :search_str "
-		. "ORDER BY p.title, n.title "
-		;
+		. "ORDER BY b.bid, m.depth, m.weight "
+		; // A badass SQL statement
 	if ($search_str) {
 		$rs = db_query($sql, array(':search_str' => $search_str));
 		if ($rs) {
-			$n = $rs->rowCount(); 
-			drupal_set_message("got $n rows back.");
-			if ($n) {
-				$pattern = "([.?!;,\]\)]|\"|')\s+";
+			$k = array(); // Keeps a hit count per book, to properly identify kwic hits
+			$hits = 0; // Hits per node (not book)
+			$viewable = array();
+			if ($rs->rowCount()) {
 				foreach($rs as $r) {
-					$content = strip_tags($r->content);
-					$content_array = preg_split("/$pattern/i", $content);
-					$kwic_array = array();
-					foreach($content_array as $line) {
-						if (preg_match("/$search_str/i",$line)) {
-							$kwic_array[] = preg_replace("/($search_str)/i","<b>$1</b>",$line);
+					if (!isset($viewable[$r->nid])) {
+						$this_node = node_load($r->nid);
+						$viewable[$r->nid] = node_access('view', $this_node);
+					} 
+					if ($viewable[$r->nid]) { // Check if node is viewable
+						$hits++;
+						$k[$r->bid] = $k[$r->bid] ? $k[$r->bid] : 0;
+						$content = strip_tags($r->content);
+						$content_array = preg_split("/$pattern/i", $content);
+						$kwic_array = array();
+						foreach($content_array as $n => $line) {
+							if (preg_match("/$search_str/i",$line)) {
+								$k[$r->bid]++; // We count number of hits per book, not per node, to match hit count on book viewer page
+								$href = url("node/".$r->bid, array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str, 'n' => $k[$r->bid])));
+								$kwic_array[] = preg_replace("/($search_str)/i","<a href='$href' class='shanti-essays-search-hit'>$1</a>",$line);
+							}
 						}
+						$kwic_count = count($kwic_array);
+						$kwic = "<div class='shanti-essays-mega-search-kwic'>".implode("</div><div class='shanti-essays-mega-search-kwic'>",$kwic_array)."</div>";
+						$items[] = l($r->parent .': '. $r->title, "node/".$r->bid, array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str), 'attributes' => array('class' => array(''))))  
+						. "<div>$kwic_count result(s):</div>"
+						. "<div id='kwic-hits-{$r->nid}'>$kwic</div>"; 					
+					} else {
+						//drupal_set_message('Content restricted for node ' . $r->nid);
 					}
-					$kwic = "<div class='shanti-essays-mega-search-kwic'>".implode("</div><div class='shanti-essays-mega-search-kwic'>",$kwic_array)."</div>";
-					$items[] = l($r->parent .': '. $r->title, "node/".$r->bid, array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str), 'attributes' => array('class' => array(''))))  . $kwic; 
 				} 	
 			} else {
-				watchdog('SHANTI',"No results for $search_str",array(),WATCHDOG_DEBUG);
-				drupal_set_message("Got no results.");	
+				//drupal_set_message("Got no results.");	
 			}	
 		} else {
 			drupal_set_message("Bad things must have happened.");	
@@ -315,10 +334,10 @@ function _shanti_essays_mega_search_query($search_str = '') {
 	} else {
 		drupal_set_message("Please enter a search string");
 	}
+	drupal_set_message("$hits pages found with matching content");
 	return $items;
 }
 
-// Note that we don't pass $form_state by reference (i.e. no & prefix)
 function shanti_essays_mega_search_form_callback($form, $form_state) {
 	return $form['mega_search_results'];
 }
@@ -342,7 +361,7 @@ function shanti_essays_preprocess_node(&$vars) {
   	// Get some info ... If not top of book, go to top
     $nid  = $vars['nid'];
     $bid  = $vars['book']['bid'];
-    if ($bid != $nid) { drupal_goto("node/$bid",array('fragment' => "node-$nid")); }
+    if ($bid != $nid) { drupal_goto("node/$bid",array('fragment' => "book-node-$nid")); }
     $top_mlid = $vars['book']['p1'];
     
     // Remove user picture (probably should do this in the theme handler)
@@ -358,8 +377,9 @@ function shanti_essays_preprocess_node(&$vars) {
     // Create a menu of these will you're at it? Or do this in JQuery ...
     if (isset($_GET['s'])) {
     	$s = $_GET['s'];
-    	$book_body_rendered = preg_replace("/$s/","<span class='shanti-essays-search-hit'>$s</span>",$book_body_rendered);
+    	$book_body_rendered = preg_replace_callback("/($s)/i",function($match) use (&$count) {$count++; return "<span id='shanti-essays-search-hit-{$count}' class='shanti-essays-search-hit'>$match[1]</span>";},$book_body_rendered,-1,$count);
     }
+    
     
 		// Create the Meta element
 		// ANOTHER DEPENDENCY: KMaps Fields .... Will be better when you create your own Content Type
@@ -441,6 +461,7 @@ function shanti_essays_preprocess_node(&$vars) {
     $js_settings = array(
       'book' 				=> $vars['book'],
       'book_title' 	=> $vars['book']['link_title'],
+      'kwic_n'			=> isset($_GET['n']) ? $_GET['n'] : 0,
     );
     
     $vars['content']['shanti_essays_container']['#attached'] = array(
