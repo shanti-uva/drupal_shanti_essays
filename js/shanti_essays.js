@@ -15,7 +15,7 @@ Drupal.behaviors.shantiEssays = {
     
     $('#shanti-essays-sidebar-tabs li.first a').tab('show'); // Bootstrap
     
-    $('#shanti-essays-sidebar').css('display','block');      
+    //$('#shanti-essays-sidebar').css('display','block');   
 
     $('.toc-item-node', context).localScroll({
       target:'#shanti-essays-body',

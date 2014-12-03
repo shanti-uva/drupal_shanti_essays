@@ -75,7 +75,36 @@ function shanti_essays_menu() {
       'type' => MENU_CALLBACK,
       'access arguments' => array('access content'),
     ),
+    'shanti_essays_mega_search/node/%/%' => array(
+    	'page callback' => 'shanti_essays_mega_search_node',
+    	'page_arguments' => array(2,3),
+    	'delivery callback' => 'ajax_deliver', // <--- KEY
+	    'access callback' => 'user_access',
+  	  'access arguments' => array('access content'),
+    	'type' => MENU_CALLBACK,
+    ),
   );
+}
+
+function shanti_essays_mega_search_node($nid, $type = 'ajax') {
+	$args = arg(); // Not sure why I have to do this 
+	$nid = $args[2]; // Also get frag and query args
+  if ($type == 'ajax') {
+  	$node 		= node_load($nid);
+    $view 		= node_view($node,'whole');
+		$html 		= drupal_render($view);
+		$selector = '.region-content .content';
+    $commands = array(
+    	ajax_command_html($selector, $html),
+    	ajax_command_invoke('#shanti-essays-toc', 'addClass', array('active')),
+    	ajax_command_invoke('#shanti-essays-sidebar-tabs > li.first', 'addClass', array('active')),
+    );
+    $ajax = array('#type' => 'ajax', '#commands' => $commands);
+    return $ajax;
+  }
+  else {
+  	drupal_goto("node/$nid"); // Actually, add frag and args here ...
+  }	
 }
 	
 function shanti_essays_node_ajax_local($nid) {
@@ -129,6 +158,7 @@ function shanti_essays_node_ajax($nid) {
   if (!node_access('view', $node)) { return MENU_ACCESS_DENIED; }
   if (user_access('access content')) { // This is already specified in the menu item
     if (isset($node->book)) {
+    	/*
       $book_id      = $node->book['bid'];      
       $tree         = book_menu_subtree_data($node->book);
       $contents     = book_export_traverse($tree, 'shanti_essays_whole_node');            
@@ -137,6 +167,9 @@ function shanti_essays_node_ajax($nid) {
       print "<ul id='shanti-essay-toc'>\n$toc_block\n</ul>\n";
       print "<div id='shanti-essay-content'>\n$contents\n</div>\n";
       print "</div>\n";
+      */
+      // Attach stylesheets and JS ...
+      print drupal_render(node_view($node,'whole'));
     } 
     else { drupal_not_found(); }
   } 
@@ -183,6 +216,7 @@ function shanti_essays_theme($existing, $type, $theme, $path) {
   );
 }
 
+
 function theme_shanti_essays_whole_book($vars) {
   kpr ($vars);
   return "<p>Testing</p>";
@@ -204,11 +238,11 @@ function shanti_essays_block_info() {
     'info' 	=> t('SHANTI Texts Mega Search'),
     'cache' => DRUPAL_NO_CACHE,
   );
-  $blocks['ajax_test'] = array(
-  	'info' 	=> t('Ajax Test'),
-    'cache' => DRUPAL_NO_CACHE,
-  );
   return $blocks;
+}
+
+function shanti_essays_block_view_alter(&$data, $block) {
+
 }
 
 function shanti_essays_block_view($delta = '') {
@@ -216,7 +250,6 @@ function shanti_essays_block_view($delta = '') {
   if ($delta == 'mega_search') {
     $block['subject'] = t('Mega Search');
     if (user_access('access content')) {
-      drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_mega_search.css');      
       $block['content']['mega_search_form'] = drupal_get_form('shanti_essays_mega_search_form');
     }   
   } 
@@ -224,14 +257,14 @@ function shanti_essays_block_view($delta = '') {
 }
 
 function shanti_essays_mega_search_form($form, &$form_state) {
-	watchdog_array('SHANTI','form_state',$form_state);
 	$form = array();
+	$form['#attached'] = array('css' => array(SHANTI_ESSAYS_PATH . '/css/shanti_essays_mega_search.css'));	
+	$form['#tree'] = TRUE;
 	$form['mega_search_string'] = array(
 		'#type'       => 'textfield',
 		'#size'       => 60,
 		'#maxlength'  => 128,
 		'#required'   => TRUE, 
-		'#tree' 			=> TRUE,
 		'#description' => t('Enter text to search for and press enter'),
 		'#ajax' 	=> array(
 			'callback' 	=> 'shanti_essays_mega_search_form_callback',
@@ -250,23 +283,17 @@ function shanti_essays_mega_search_form($form, &$form_state) {
 			'callback' 		=> 'shanti_essays_mega_search_form_callback',
 			'wrapper' 		=> 'shanti-essays-mega-search-results',
 			'method' 			=> 'replace',
-			'effect' 			=> 'fade'
+			'effect' 			=> 'fade',
+			'event'				=> 'change',
+			//'keypress'		=> TRUE,
 		),
 	);
-	$items = array();
-	if (empty($form_state['values']['mega_search_string'])) {
-		foreach(book_get_books() as $book) { 
-    	$items[] = l($book['link_title'], $book['link_path'], array('absolute' => TRUE	));
-    }
-	} else {
-		$items = _shanti_essays_mega_search_query($form_state['values']['mega_search_string']);
-	}
 	$form['mega_search_results'] = array(
 		'#theme'      => 'item_list',
 		'#type'       => 'ol',
 		'#prefix'			=> "<div id='shanti-essays-mega-search-results'>",
 		'#suffix'			=> "</div>",
-		'#items'      => $items
+		'#items'			=> _shanti_essays_mega_search_query($form_state['values']['mega_search_string']),
 	);
 	return $form;
 }
@@ -295,7 +322,6 @@ function _shanti_essays_mega_search_query($search_str = '') {
 		$rs = db_query($sql, array(':search_str' => $search_str));
 		if ($rs) {
 			$k = array(); // Keeps a hit count per book, to properly identify kwic hits
-			$hits = 0; // Hits per node (not book)
 			$viewable = array();
 			if ($rs->rowCount()) {
 				foreach($rs as $r) {
@@ -329,12 +355,24 @@ function _shanti_essays_mega_search_query($search_str = '') {
 				//drupal_set_message("Got no results.");	
 			}	
 		} else {
-			drupal_set_message("Bad things must have happened.");	
+			//drupal_set_message("Bad things must have happened.");	
 		}	
 	} else {
-		drupal_set_message("Please enter a search string");
+		foreach(book_get_books() as $book) {
+			$link = array(
+				'#theme' => 'link',
+				'#path' => 'shanti_essays_mega_search/'.$book['link_path'].'/nojs	',
+				'#text' =>  $book['link_title'], 
+				'#options' => array(
+					'attributes' => array('class' => array('use-ajax')),
+					'html' => FALSE,
+				),
+			);
+			$items[] = drupal_render($link);
+    	//$items[] = l($book['link_title'], $book['link_path'], array('absolute' => FALSE, 'attributes' => array('class' => array())));
+    }
 	}
-	drupal_set_message("$hits pages found with matching content");
+	if ($search_str && count($items)) drupal_set_message(count($items) . " pages found with matching content");
 	return $items;
 }
 
@@ -355,7 +393,6 @@ function shanti_essays_mega_search($mode, $str) {
 }
 
 function shanti_essays_preprocess_node(&$vars) {
-    
   if ($vars['type'] == 'book' && $vars['teaser'] == FALSE) {
   
   	// Get some info ... If not top of book, go to top

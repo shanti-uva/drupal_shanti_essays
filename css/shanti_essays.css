@@ -18,7 +18,7 @@
 }
 
 #shanti-essays-sidebar {
-  display:none; /* INITIAL CONDITION to prevent showing un-tabbed content */
+  /* display:none; */ /* INITIAL CONDITION to prevent showing un-tabbed content */
   position:relative;
   padding:0 1em;
   height:100%;
