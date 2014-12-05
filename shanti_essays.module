@@ -75,10 +75,10 @@ function shanti_essays_menu() {
       'type' => MENU_CALLBACK,
       'access arguments' => array('access content'),
     ),
-    'shanti_essays_mega_search/node/%/%' => array(
+    'shanti_essays_mega_search/node/%' => array(
     	'page callback' => 'shanti_essays_mega_search_node',
-    	'page_arguments' => array(2,3),
-    	'delivery callback' => 'ajax_deliver', // <--- KEY
+    	'page_arguments' => array(2),
+    	//'delivery callback' => 'ajax_deliver',
 	    'access callback' => 'user_access',
   	  'access arguments' => array('access content'),
     	'type' => MENU_CALLBACK,
@@ -89,24 +89,65 @@ function shanti_essays_menu() {
 function shanti_essays_mega_search_node($nid, $type = 'ajax') {
 	$args = arg(); // Not sure why I have to do this 
 	$nid = $args[2]; // Also get frag and query args
+	$node = node_load($nid);
   if ($type == 'ajax') {
-  	$node 		= node_load($nid);
-    $view 		= node_view($node,'whole');
-		$html 		= drupal_render($view);
-		$selector = '.region-content .content';
+		
+		// Hack since no way to get menu local tasks
+		//$foo = '<span class="element-invisible">(active tab)</span>';
+		$tabs_primary = array('view' => 'View', 'edit' => 'Edit','book_access' => 'Book Access','reorder' => 'Reorder the Book','log' => 'Log','devel' => 'Devel');
+		$tabs_primary_links = array();
+		foreach ($tabs_primary as $tab_path => $tab_label) {
+			$path = "node/$nid/$tab_path";
+			if (drupal_valid_path($path,TRUE))  {
+				$tabs_primary_links[] = l($tab_label,$path);
+			}
+		}
+		$tabs_primary_ra = array(
+			'#theme' 	=> 'item_list', 
+			'#type' 	=> 'ul',
+			'#attributes' => array('class' => array('tabs','primary')),
+			'#items' 	=> $tabs_primary_links,
+		);
+		$menu = '';
+		if (count($tabs_primary_links) > 1) {
+	  	$menu = drupal_render($tabs_primary_ra);
+	  }
+
+		global $base_url;
+		$breadcrumbs_ra = array(
+			'#theme' => 'item_list',
+			'#type' => 'ol',
+			'#attributes' => array('class' => array('breadcrumb')),
+			'#items' => array(
+				'<a href="'.$base_url.'">Texts:</a>',
+				'<a href="/">Home</a> <i class="icon shanticon-arrow3-right"></i>',
+				'<a href="#">'.$node->title.'</a> <i class="icon shanticon-arrow3-right"></i>'
+			),
+		);
+		$breadcrumbs = drupal_render($breadcrumbs_ra);
+
+		$html = drupal_render(node_view($node,'whole'));
+  	
     $commands = array(
-    	ajax_command_html($selector, $html),
+    	ajax_command_html('.region-content .content', $html),
     	ajax_command_invoke('#shanti-essays-toc', 'addClass', array('active')),
     	ajax_command_invoke('#shanti-essays-sidebar-tabs > li.first', 'addClass', array('active')),
+    	ajax_command_remove("#node-$nid > h2"),
+    	ajax_command_html('header > div > h1 > span', $node->title),
+    	ajax_command_remove(".tabs.primary"),
+    	ajax_command_after('header.banner > div > h2:first-of-type', $menu),
+    	ajax_command_invoke('.primary.tabs > li:first-child', 'addClass', array('active')),
+    	ajax_command_html('nav.breadwrap',$breadcrumbs),
     );
     $ajax = array('#type' => 'ajax', '#commands' => $commands);
-    return $ajax;
+    
+    print ajax_deliver($ajax);
   }
   else {
-  	drupal_goto("node/$nid"); // Actually, add frag and args here ...
+  	drupal_goto("node/".$node->nid); // Actually, add frag and args here ...
   }	
 }
-	
+
 function shanti_essays_node_ajax_local($nid) {
  	$node = node_load($nid);
   return node_view($node, 'full');
@@ -225,7 +266,7 @@ function theme_shanti_essays_whole_book($vars) {
 /**
  * We alter some templates that have been defined by others.
  */
-function shanti_essays_theme_registry_alter(&$theme_registry) {  
+function shanti_essays_theme_registry_alter(&$theme_registry) {
   $theme_registry['page__shanti_essays__whole']['template']	= 'templates/page--shanti-essays--whole';
   $theme_registry['page__shanti_essays__whole']['path']     = SHANTI_ESSAYS_PATH;  
   $theme_registry['book_navigation']['template']        		= 'templates/book-navigation';
@@ -293,7 +334,7 @@ function shanti_essays_mega_search_form($form, &$form_state) {
 		'#type'       => 'ol',
 		'#prefix'			=> "<div id='shanti-essays-mega-search-results'>",
 		'#suffix'			=> "</div>",
-		'#items'			=> _shanti_essays_mega_search_query($form_state['values']['mega_search_string']),
+		'#items'			=> isset($form_state['values']['mega_search_string']) ? _shanti_essays_mega_search_query($form_state['values']['mega_search_string']) : _shanti_essays_mega_search_query(''),
 	);
 	return $form;
 }
@@ -338,13 +379,16 @@ function _shanti_essays_mega_search_query($search_str = '') {
 						foreach($content_array as $n => $line) {
 							if (preg_match("/$search_str/i",$line)) {
 								$k[$r->bid]++; // We count number of hits per book, not per node, to match hit count on book viewer page
-								$href = url("node/".$r->bid, array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str, 'n' => $k[$r->bid])));
-								$kwic_array[] = preg_replace("/($search_str)/i","<a href='$href' class='shanti-essays-search-hit'>$1</a>",$line);
+								//$href = url("node/".$r->bid, array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str, 'n' => $k[$r->bid])));
+								$href = url("shanti_essays_mega_search/node/".$r->bid.'/nojs/', array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str, 'n' => $k[$r->bid])));
+								//$kwic_array[] = preg_replace("/($search_str)/i","<a href='$href' class='shanti-essays-search-hit'>$1</a>",$line);
+								$kwic_array[] = preg_replace("/($search_str)/i","<a href='$href' class='use-ajax shanti-essays-search-hit'>$1</a>",$line);
 							}
 						}
 						$kwic_count = count($kwic_array);
 						$kwic = "<div class='shanti-essays-mega-search-kwic'>".implode("</div><div class='shanti-essays-mega-search-kwic'>",$kwic_array)."</div>";
-						$items[] = l($r->parent .': '. $r->title, "node/".$r->bid, array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str), 'attributes' => array('class' => array(''))))  
+						//$items[] = l($r->parent .': '. $r->title, "node/".$r->bid, array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str), 'attributes' => array('class' => array(''))))  
+						$items[] = l($r->parent .': '. $r->title, "shanti_essays_mega_search/node/".$r->bid.'/nojs/', array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str), 'attributes' => array('class' => array('use-ajax'))))  
 						. "<div>$kwic_count result(s):</div>"
 						. "<div id='kwic-hits-{$r->nid}'>$kwic</div>"; 					
 					} else {
@@ -361,10 +405,12 @@ function _shanti_essays_mega_search_query($search_str = '') {
 		foreach(book_get_books() as $book) {
 			$link = array(
 				'#theme' => 'link',
-				'#path' => 'shanti_essays_mega_search/'.$book['link_path'].'/nojs	',
+				'#path' => 'shanti_essays_mega_search/'.$book['link_path'].'/nojs/',
+				//'#path' => $book['link_path'],	
 				'#text' =>  $book['link_title'], 
 				'#options' => array(
 					'attributes' => array('class' => array('use-ajax')),
+					//'attributes' => array('class' => array('')),
 					'html' => FALSE,
 				),
 			);
@@ -392,9 +438,33 @@ function shanti_essays_mega_search($mode, $str) {
   }
 }
 
+/*
+function shanti_essays_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+	if (!preg_match('/admin\/reports/',$root_path)) {
+		//watchdog_array('SHANTI','mlta:data', array('data' => $data, 'router_item' => $router_item, 'root_path' => $root_path));
+	}
+}
+*/
+
+/*
+function shanti_essays_preprocess_page(&$vars) {
+	kpr("preprocess page");
+	kpr($_SERVER);
+	kpr($vars);
+	watchdog_array('SHANTI','ppp:server',$_SERVER);
+	watchdog_array('SHANTI','ppp:vars',$vars);
+}
+*/
+
 function shanti_essays_preprocess_node(&$vars) {
+
+	// When called via AJAX
+  if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+  	//watchdog_array('SHANTI','ppn:vars',$vars);
+  }
+
   if ($vars['type'] == 'book' && $vars['teaser'] == FALSE) {
-  
+    
   	// Get some info ... If not top of book, go to top
     $nid  = $vars['nid'];
     $bid  = $vars['book']['bid'];
@@ -416,7 +486,6 @@ function shanti_essays_preprocess_node(&$vars) {
     	$s = $_GET['s'];
     	$book_body_rendered = preg_replace_callback("/($s)/i",function($match) use (&$count) {$count++; return "<span id='shanti-essays-search-hit-{$count}' class='shanti-essays-search-hit'>$match[1]</span>";},$book_body_rendered,-1,$count);
     }
-    
     
 		// Create the Meta element
 		// ANOTHER DEPENDENCY: KMaps Fields .... Will be better when you create your own Content Type
@@ -490,9 +559,12 @@ function shanti_essays_preprocess_node(&$vars) {
     	),
     );
     
+    /* 
+    // Not sure what happened here ... no more book printing?
     if (user_access('access printer-friendly version')) {
 	    $vars['content']['shanti_essays_container']['sidebar']['tabcontent']['links']['list']['#items'][] = l(t('View for printing'),	$vars['content']['links']['book']['#links']['book_printer'],	array('attributes'  => array('class' => array(), 'title' => 'View book in Voyant tools', 'target' => '_blank')));
     }
+    */
     
     // Add CSS and JS
     $js_settings = array(
@@ -657,7 +729,8 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
     	//'#access' => user_access()    
     ),
   );
-      
+    
+  // Try attaching these to the array ...
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
   drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css');
   $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
