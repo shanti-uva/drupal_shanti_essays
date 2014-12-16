@@ -45,6 +45,7 @@ function shanti_essays_menu() {
       'type' => MENU_CALLBACK,
       'access callback' => 'user_access', 
       'access arguments' => array('access content'),
+      //'delivery callback' => array('shanti_essays_node_ajax_delivery'),
     ),
     'shanti_essays/node_json/%' => array(
       'page callback' => 'shanti_essays_node_json',
@@ -79,10 +80,10 @@ function shanti_essays_mega_search_node($nid, $type = 'ajax') {
 			}
 		}
 		$tabs_primary_ra = array(
-			'#theme' 	=> 'item_list', 
-			'#type' 	=> 'ul',
-			'#attributes' => array('class' => array('tabs','primary')),
-			'#items' 	=> $tabs_primary_links,
+			'#theme' 	     => 'item_list', 
+			'#type' 	     => 'ul',
+			'#attributes'  => array('class' => array('tabs','primary')),
+			'#items' 	     => $tabs_primary_links,
 		);
 		
 		$menu = '';
@@ -136,9 +137,21 @@ function shanti_essays_voyant($nid) {
 }
 
 function shanti_essays_node_ajax($nid) {
-  drupal_goto("shanti_essays/whole/$nid");
-  //$node = node_load($nid);
-  //return node_view($node,'');        
+  //drupal_goto("shanti_essays/whole/$nid");
+	drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_embed.css');
+  $node = node_load($nid);
+  $build = node_view($node,'default'); 
+  hide($build['title']);
+  //kpr($build);
+  return $build;
+}
+
+// Doesn't work really ... 
+function shanti_essays_node_ajax_delivery($page_callback_result) {
+  $content = drupal_render($page_callback_result);
+  $html = '<html><head><title></title>' . drupal_get_css() . drupal_get_js() . '</head><body class="jquery-ajax-load">' . $content . '</body></html>';
+  print $html;
+  drupal_page_footer();
 }
 
 function shanti_essays_node_json($nid) {
@@ -153,7 +166,14 @@ function shanti_essays_node_json($nid) {
 function shanti_essays_theme($existing, $type, $theme, $path) {
   return array(
     'shanti_essays_whole_html' => array(
-      'variables' => array('title' => NULL, 'book_id' => NULL, 'contents' => NULL, 'toc_block' => NULL, 'depth' => NULL),
+      'variables' => array(
+        'title'       => NULL, 
+        'book_id'     => NULL, 
+        'contents'    => NULL, 
+        'description' => NULL, 
+        'toc_block'   => NULL, 
+        'depth'       => NULL,
+      ),
       'template' => 'templates/shanti-essays-whole-html',
       'path' => SHANTI_ESSAYS_PATH,
     ),
@@ -342,6 +362,7 @@ function shanti_essays_preprocess_node(&$vars) {
     }
     
 		// Create the Meta element
+		
 		// ANOTHER DEPENDENCY: KMaps Fields .... Will be better when you create your own Content Type
 		// $kmap_terms = $vars['field_kmap_term'][$vars['language']]; // This does not honor the field display settings
 		$terms_build = node_view($vars['node'], 'metadata'); // DEPENDENCY: view_mode 'metadata'
@@ -351,6 +372,7 @@ function shanti_essays_preprocess_node(&$vars) {
 		hide($terms_build['group_content_access']);
 		hide($terms_build['field_general_featured_image']); // CCK dependency
 		hide($terms_build['field_book_content']); // CCK dependency
+		// Try using field_view_field() instead of the above
     
     $vars['content']['shanti_essays_container'] = array(
     	'#type' => 'container',
@@ -383,13 +405,15 @@ function shanti_essays_preprocess_node(&$vars) {
     $vars['content']['shanti_essays_container']['sidebar']['tabcontent']['toc'] = array(
     	'#type' 	=> 'markup',
     	'#prefix' => '<div role="tabpanel" class="tab-pane" id="shanti-essays-toc">',
-    	'#markup' => $book_toc_rendered    = book_export_traverse($tree, 'shanti_essays_whole_toc'), //$book_toc_rendered, 
+    	//'#markup' => $book_toc_rendered = book_export_traverse($tree, 'shanti_essays_whole_toc'), //$book_toc_rendered,
+    	'#markup' => book_export_traverse($tree, 'shanti_essays_whole_toc'), //$book_toc_rendered, 
     	'#suffix' => '</div>',
     );
     $vars['content']['shanti_essays_container']['sidebar']['tabcontent']['meta'] = array(
     	'#type' 	=> 'markup',
     	'#prefix' => '<div role="tabpanel" class="tab-pane" id="shanti-essays-meta"><div class="book-title">' . $book['title'] . '</div>',
-    	'#markup' => $kmap_terms_rendered = render($terms_build), //$kmap_terms_rendered,
+    	//'#markup' => $kmap_terms_rendered = render($terms_build), //$kmap_terms_rendered,
+    	'#markup' => render($terms_build), //$kmap_terms_rendered,
     	'#suffix' => '</div>',
     );
     $vars['content']['shanti_essays_container']['sidebar']['tabcontent']['links'] = array(
@@ -452,17 +476,33 @@ function shanti_essays_whole($nid) {
   if (!node_access('view', $node)) { return MENU_ACCESS_DENIED; }
   if (user_access('access content')) {
     if (isset($node->book)) {
-      $tree         = book_menu_subtree_data($node->book);
+      //kpr($node);
+      $lang = $node->language;
+      $book_meta = array(
+        '#prefix' => '<div id="meta">',
+        '#suffix' => '</div>',
+        '#theme'  => 'item_list',
+        '#type'   => 'ul',
+        '#items'  => array(
+          drupal_render(field_view_field('node',$node,'field_dc_description','default',$lang)),
+          drupal_render(field_view_field('node',$node,'field_dc_publication_year','default',$lang)),
+          drupal_render(field_view_field('node',$node,'field_dc_creator_author','default',$lang)),
+          drupal_render(field_view_field('node',$node,'field_dc_rights_general','default',$lang)),
+          drupal_render(field_view_field('node',$node,'field_dc_rights_creative_commons','default',$lang)),
+        ),
+      );
+      $tree  = book_menu_subtree_data($node->book);
       $build = array(
         'shanti_essays_whole' => array(
-          '#theme'    => 'shanti_essays_whole_html',
-          '#title'     => $node->title, 
-          '#book_id'   => $node->book['bid'], 
-          '#contents'  => book_export_traverse($tree, 'shanti_essays_whole_node'), 
-          '#toc_block' => book_export_traverse($tree, 'shanti_essays_whole_toc'), 
-          '#depth'     => $node->book['depth'],
+          '#theme'       => 'shanti_essays_whole_html',
+          '#title'       => $node->title,
+          '#book_id'     => $node->book['bid'], 
+          '#description' => $book_meta,
+          '#contents'    => book_export_traverse($tree, 'shanti_essays_whole_node'), 
+          '#toc_block'   => book_export_traverse($tree, 'shanti_essays_whole_toc'), 
+          '#depth'       => $node->book['depth'],
         ),
-      );      
+      );  
       return drupal_render($build);
     } 
     else { drupal_not_found(); }
@@ -473,6 +513,8 @@ function shanti_essays_whole($nid) {
 /**
  * This exists to conform to the model of how the book print function works.
  * Not sure if it is necceary to specify a new view mode but what the heck.
+ * 
+ * 
  */
 function shanti_essays_entity_info_alter(&$info) {
   $info['node']['view modes'] += array(
@@ -486,6 +528,21 @@ function shanti_essays_entity_info_alter(&$info) {
     ),
   );
 }
+
+
+function shanti_essays_preprocess_page(&$vars) {
+  if (preg_match("/^shanti_essays\/whole\/\d+/", SHANTI_ESSAYS_Q)) {
+  	kpr($vars);
+    drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
+    drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css');
+    $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
+    drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
+    drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole_2.js', 'file');
+    drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.transit.min.js', 'file');
+    drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.inview.min.js', 'file');  
+  }
+}
+
 
 /**
  * Called by book_export_traverse() above to generate the content of the page.
@@ -547,16 +604,7 @@ function shanti_essays_whole_toc($node, $children = '') {
  * These provide some a book level edit link and a home button.
  * @param array $vars
  */
-function template_preprocess_shanti_essays_whole_html(&$vars) {
-  
-  drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_whole.css');
-  drupal_add_css(SHANTI_ESSAYS_PATH . '/css/shanti_essays_footnotes.css');
-  $js_settings = array('base_path' => SHANTI_ESSAYS_PATH);
-  drupal_add_js(array('shantiEssays' => $js_settings), 'setting');
-  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/shanti_essays_whole_2.js', 'file');
-  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.transit.min.js', 'file');
-  drupal_add_js(SHANTI_ESSAYS_PATH . '/js/jquery.inview.min.js', 'file');
-  
+function template_preprocess_shanti_essays_whole_html(&$vars) {  
   $vars['toc_menu']['links'] = array(
     'toc-reorder' => array(
       '#markup' => l(
@@ -574,7 +622,6 @@ function template_preprocess_shanti_essays_whole_html(&$vars) {
       ),
     ),
   );
-   
 }
 
 /**

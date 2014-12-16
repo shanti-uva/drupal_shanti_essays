@@ -87,12 +87,12 @@ a {
 	padding: 0 0 0 0;
 	margin-bottom: .5em;
 	font-size: 14pt;
-	_font-family: Bitter, Helvetica, Universal, Arial, sans-serif;
+	/* font-family: Bitter, Helvetica, Universal, Arial, sans-serif; */
 	font-family: 'Archivo Narrow', sans-serif;
 }
 
 #toc li a:visited {
-  _color:black!important;
+  /* color:black!important; */
 }
 
 #reader.mobile #toc li a {
@@ -195,11 +195,11 @@ button.action {
 }
 
 .book-edit-menu {
-	_position: relative;
-	_top:0;
-	_right:0;
+	/* position: relative; */
+	/* top:0; */
+	/* right:0; */
 	float:right;
-	_margin-top: -2em;
+	/* margin-top: -2em; */
 }
 
 .book-edit-menu .page-menu-action a {
@@ -228,7 +228,7 @@ div.field-name-field-book-content h6 {}
 div.field-name-field-book-content h7 {}
 
 div.field-name-field-book-content * {
-	_font-family: 'Shanti', sans-serif;
+	/* font-family: 'Shanti', sans-serif; */
 	font-weight: light;
 	font-family: "Baskerville","Garamond","Times New Roman",sans-serif;
 }
@@ -258,7 +258,7 @@ div.field-name-field-book-content p {
 */
 
 aside, .bourdieu {
-	_font-family: 'Shanti', sans-serif;
+	/* font-family: 'Shanti', sans-serif; */
 	font-family: "Baskerville","Garamond","Times New Roman",sans-serif;
 	font-size:13pt;
 	line-height: 18pt;

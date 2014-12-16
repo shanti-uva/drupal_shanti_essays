@@ -16,7 +16,7 @@ var colors = {
 	toc_btn_close:       'rgba(169,169,169,1)', // #a9a9a9 darkgray
 	toc_menu_bg_open:    'rgba(0,0,0,1)', // black
   toc_menu_bg_close:   'rgba(0,0,0,1)', // black
-  toc_item_inview:     'orange'
+  toc_item_inview:     'white'
 };
     
 var device_type = '';

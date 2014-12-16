@@ -1,0 +1,42 @@
+header, 
+article.main-content div.row:first-of-type,
+div.node > h2:first-of-type,
+#search-flyout.extruder.right .flap.on-flap,
+#shanti-essays-sidebar-tabs li.last,
+.footer,
+#admin-menu,
+#admin-menu-wrapper
+{
+  display:none!important;
+}
+
+html #shanti-essays-container {
+  height: 685px;
+}
+
+html #shanti-essays-body {
+  width:70%;
+  padding:0 24px;
+}
+
+html #shanti-essays-sidebar {
+
+}
+
+html main.main-wrapper,
+.main-wrapper
+{
+  height:100%;
+  min-height:unset;
+}
+
+html body.admin-menu { margin-top:0!important; }
+
+html .content-section { padding: 0;}
+
+#shanti-essays-sidebar-tabs {margin-top:0;}
+
+#shanti-essays-sidebar-tabs>li.active a,
+#shanti-essays-sidebar-tabs>li.active a:hover,
+#shanti-essays-sidebar-tabs>li.active a:focus {background:#505050;}
+#shanti-essays-sidebar-tabs>li.active:before {color:#505050;}
