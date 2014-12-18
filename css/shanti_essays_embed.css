@@ -10,17 +10,27 @@ div.node > h2:first-of-type,
   display:none!important;
 }
 
+
+body, .page-wrapper {
+  height:700px;
+}
+
 html #shanti-essays-container {
-  height: 685px;
+  height: 700px;
+  background-color: #EEE;
+  padding-bottom:18px;
 }
 
 html #shanti-essays-body {
   width:70%;
   padding:0 24px;
+  /* box-shadow: 10px 10px 10px gray; */
+  /* border:1px solid #505050; */
+  margin-right:18px;
 }
 
 html #shanti-essays-sidebar {
-
+  background-color: #EEE;
 }
 
 html main.main-wrapper,
