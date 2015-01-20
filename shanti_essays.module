@@ -79,7 +79,7 @@ function shanti_essays_mega_search_node($nid, $type = 'ajax') {
     
 		// Create the primary tabs
 		$tabs_primary = array();
-		$rs = db_query("select title, path from menu_router where path rlike '^node/%/[^/]+$' and path not like '%delete%'");
+		$rs = db_query("select title, path, weight from menu_router where path rlike '^node/%/[^/]+$' and path not like '%delete%' order by weight desc");
     foreach ($rs as $r) { $tabs_primary[$r->path] = $r->title; }
 		$tabs_primary_links = array();
 		foreach ($tabs_primary as $tab_path => $tab_label) {
@@ -162,8 +162,8 @@ function shanti_essays_node_json($nid) {
 }
 
 /**
- * These templates are called by the visit functions used by calls to
- * book_export_traverse() throughout the module
+ * This template is called by the visit function used by
+ * book_export_traverse() use throughout the module
  */
 function shanti_essays_theme($existing, $type, $theme, $path) {
   return array(
@@ -180,7 +180,7 @@ function theme_shanti_essays_whole_node_html($vars) {
   $nid			= $vars['node']->nid;
 	$output = '';
 	$output .= "<div id=\"book-node-$nid\" class=\"book-section section-$depth\">\n";
-  $output .= "<h1 class=\"book-heading\">$title'</h1>\n";  
+  $output .= "<h1 class=\"book-heading\">$title</h1>\n";  
   $output .= drupal_render($vars['editmenu']) . "\n";
   $output .= $content . "\n";
   $output .= $vars['children'] . "\n";
@@ -353,6 +353,7 @@ function shanti_essays_preprocess_node(&$vars) {
   	// Get some info ... If not top of book, go to top
     $nid  = $vars['nid'];
     $bid  = $vars['book']['bid'];
+    watchdog_array("SHANTI",'bid',array('bid'=>$bid,'nid'=>$nid));
     if ($bid != $nid) { drupal_goto("node/$bid",array('fragment' => "book-node-$nid")); }
     $top_mlid = $vars['book']['p1'];
     
@@ -503,6 +504,7 @@ function shanti_essays_node_view_alter(&$build) {
 function shanti_essays_whole_node($node, $children = '') {
   $build = node_view($node, 'whole'); // Depends on view mode define in info_alter hook
   $node->rendered = drupal_render($build['field_book_content']); // DEPENDS ON CONTENT TYPE
+  $nid = $node->nid;
   $editmenu = array(
     '#type' => 'container',
     '#access' => user_access('add content to books'),
@@ -510,11 +512,11 @@ function shanti_essays_whole_node($node, $children = '') {
     'toc-edit-page' => array(
       '#markup'   => l(
         '<span class="glyphicon glyphicon-edit"></span>',
-        "node/{$vars['node']->nid}/edit",
+        "node/$nid/edit",
         array(
           'html' => TRUE, 
           'query' => array('destination' => current_path()),
-          'fragment' => "node-{$vars['node']->nid}",
+          'fragment' => "node-$nid",
           'attributes' => array('title' => t('Edit this page')),
           // Above does not work. May need to define a menu path that calls drupal_goto() 
         )
@@ -526,7 +528,7 @@ function shanti_essays_whole_node($node, $children = '') {
         "node/add/book",
         array(
           'html' => TRUE,
-          'query' => array('parent' => $vars['node']->book['mlid']),
+          'query' => array('parent' => $node->book['mlid']),
           'attributes' => array('title' => t('Add a child page')),
         )
       ),

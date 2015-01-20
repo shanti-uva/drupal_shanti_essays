@@ -1,6 +1,6 @@
 #shanti-essays-container {
   position:relative;
-  height:670px;
+  height:739px;
   margin:0;
   padding:0;
 }
@@ -87,22 +87,29 @@
 
 #shanti-essays-meta {}
 
-#shanti-essays-body p {
-  font-size:14pt;
+#shanti-essays-body .book-section p, 
+#shanti-essays-body .book-section p *, 
+#shanti-essays-body .book-section li, 
+#shanti-essays-body .book-section li *
+{
+  /* font-family: 'droidserif',palatino,'Palatino Linotype',georgia,serif; */
+  font-family: Baskerville, Palatino,'Palatino Linotype',georgia,serif;
+  font-size:16px;
+}
+
+#shanti-essays-body .book-section .bourdieu {
+  font-family: Baskerville, Palatino,'Palatino Linotype',georgia,serif;
+  font-size:14px; 
+  border-top:1px solid gray; 
+  border-bottom:1px solid gray; 
+  padding:1em 1em; 
+  margin:1em 0;
 }
 
 #shanti-essays-toc li, 
 #shanti-essays-links .links li 
 {
   list-style-type:none;
-}
-
-.bourdieu {
-  font-size:12pt; 
-  font-family:sans-serif;
-  border-top:1px solid gray; 
-  border-bottom:1px solid gray; 
-  padding:1em 0; margin:1em 0;
 }
 
 h1.book-heading {
