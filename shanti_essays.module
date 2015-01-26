@@ -122,10 +122,8 @@ function shanti_essays_mega_search_node($nid, $type = 'ajax') {
     	ajax_command_invoke('#shanti-essays-toc', 'addClass', array('active')),
     	ajax_command_invoke('#shanti-essays-sidebar-tabs > li.first', 'addClass', array('active')),
     	ajax_command_remove("#node-$nid > h2"),
-    	ajax_command_html('header > div > h1 > span', $node->title),
-    	ajax_command_remove(".tabs.primary"),
-    	ajax_command_after('header.banner > div > h2:first-of-type', $menu),
-    	ajax_command_invoke('.primary.tabs > li:first-child', 'addClass', array('active')),
+    	ajax_command_html('h1.page-title span.page-title-text', $node->title),
+    	ajax_command_replace('.primary.tabs', $menu),
     	ajax_command_html('nav.breadwrap',$breadcrumbs),
     );
     $ajax = array('#type' => 'ajax', '#commands' => $commands);
@@ -230,6 +228,12 @@ function shanti_essays_mega_search_form($form, &$form_state) {
 			'keypress'	=> TRUE,
 		),
 	);
+	$form['mega_search_type'] = array(
+		'#title' 					=> t('Search type'),
+		'#type'						=> 'radios',
+		'#options' 				=> array(0 => t('Title'), 1 => t('Full Text')),
+    '#default_value' 	=> isset($form_state['values']['mega_search_type']) ? $form_state['values']['mega_search_type'] : 0,
+	);
 	$form['mega_search_submit'] = array(
 		'#type' 			=> 'submit',
 		'#value' 			=> 'Search',
@@ -247,7 +251,7 @@ function shanti_essays_mega_search_form($form, &$form_state) {
 		'#type'       => 'ol',
 		'#prefix'			=> "<div id='shanti-essays-mega-search-results'>",
 		'#suffix'			=> "</div>",
-		'#items'			=> isset($form_state['values']['mega_search_string']) ? _shanti_essays_mega_search_query($form_state['values']['mega_search_string']) : _shanti_essays_mega_search_query(''),
+		'#items'			=> isset($form_state['values']['mega_search_string']) ? _shanti_essays_mega_search_query($form_state['values']['mega_search_string'],$form_state['values']['mega_search_type']) : _shanti_essays_mega_search_query(''),
 	);
 	return $form;
 }
@@ -259,20 +263,21 @@ function shanti_essays_mega_search_form_validate($form, &$form_state) {
 }
 
 // DEPENDS ON FIELD NAME -- although if BODY were used, this would not be a prob
-function _shanti_essays_mega_search_query($search_str = '') {
+function _shanti_essays_mega_search_query($search_str = '', $search_type = 0) {
   $items = array();
-	$pattern = "([.?!;,\]\)]|\"|')\s+"; // A way to split textarea into sentences
-	$sql = "SELECT b.bid, n.nid, p.title as 'parent', n.title"
-		. ", c.field_book_content_value as 'content' "
-		. "FROM {field_data_field_book_content} c "
-		. "JOIN {node} n ON (c.entity_id = n.nid) "
-		. "JOIN {book} b ON (b.nid = n.nid) "
-		. "JOIN {node} p ON (b.bid = p.nid) "
-		. "JOIN {menu_links} m ON (b.mlid = m.mlid) "
-		. "WHERE {field_book_content_value} RLIKE :search_str "
-		. "ORDER BY b.bid, m.depth, m.weight "
-		; // A badass SQL statement
-	if ($search_str) {
+  watchdog_array('SHANTI','search_type',$search_type);
+	if ($search_str && $search_type == 1) {
+		$pattern = "([.?!;,\]\)]|\"|')\s+"; // To split textareas into sentences
+		$sql = "SELECT b.bid, n.nid, p.title as 'parent', n.title"
+			. ", c.field_book_content_value as 'content' "
+			. "FROM {field_data_field_book_content} c "
+			. "JOIN {node} n ON (c.entity_id = n.nid) "
+			. "JOIN {book} b ON (b.nid = n.nid) "
+			. "JOIN {node} p ON (b.bid = p.nid) "
+			. "JOIN {menu_links} m ON (b.mlid = m.mlid) "
+			. "WHERE {field_book_content_value} RLIKE :search_str "
+			. "ORDER BY b.bid, m.depth, m.weight "
+			; // A badass SQL statement
 		$rs = db_query($sql, array(':search_str' => $search_str));
 		if ($rs) {
 			$k = array(); // Keeps a hit count per book, to properly identify kwic hits
@@ -280,11 +285,7 @@ function _shanti_essays_mega_search_query($search_str = '') {
 			if ($rs->rowCount()) {
 				foreach($rs as $r) {
 					$this_node = node_load($r->nid); // Trap this?
-					//watchdog_array('SHANTI','this_node',$this_node);
-					//$lang = $this_node->language;
 					if (!isset($viewable[$r->nid])) {
-						//$this_node = node_load($r->nid); // Trap this
-						//watchdog_array('SHANTI','this_node',$this_node);
 						$viewable[$r->nid] = node_access('view', $this_node);
 					} 
 					$hits = 0;
@@ -293,10 +294,6 @@ function _shanti_essays_mega_search_query($search_str = '') {
 						$k[$r->bid] = isset($k[$r->bid]) ? $k[$r->bid] : 0;
 						$content = strip_tags($r->content);
 						$v = field_view_field('node',$this_node,'field_book_content');
-						watchdog_array('SHANTI','v',$v);
-						//$item = $this_node->field_book_content[$lang][0];
-						//$content = field_view_value('node',$this_node,$item);
-						//$content = strip_tags($content);
 						$content_array = preg_split("/$pattern/i", $content);
 						$kwic_array = array();
 						foreach($content_array as $n => $line) {
@@ -311,17 +308,52 @@ function _shanti_essays_mega_search_query($search_str = '') {
 						$items[] = l($r->parent .': '. $r->title, "shanti_essays_mega_search/node/".$r->bid.'/nojs/', array('fragment' => 'book-node-' . $r->nid, 'query' => array('s' => $search_str), 'attributes' => array('class' => array('use-ajax'))))  
 						. "<div>$kwic_count result(s):</div>"
 						. "<div id='kwic-hits-{$r->nid}'>$kwic</div>"; 					
-					} else {
+					} 
+					else {
 						//drupal_set_message('Content restricted for node ' . $r->nid);
 					}
 				} 	
-			} else {
+			} 
+			else {
 				//drupal_set_message("Got no results.");	
 			}	
-		} else {
+		} 
+		else {
 			//drupal_set_message("Bad things must have happened.");	
 		}	
-	} else {
+	} 
+	elseif ($search_str && $search_type == 0) {
+		$sql = "SELECT n.nid, n.title FROM {node} n JOIN {book} b USING(nid) "
+		. "WHERE b.nid = b.bid AND n.title RLIKE :search_str ORDER BY n.title";
+		$rs = db_query($sql, array(':search_str' => $search_str));
+		if ($rs) {
+			$viewable = array();
+			if ($rs->rowCount()) {
+				foreach($rs as $r) {
+					$this_node = node_load($r->nid); // Trap this?
+					if (!isset($viewable[$r->nid])) {
+						$viewable[$r->nid] = node_access('view', $this_node);
+					} 
+					$hits = 0;
+					if ($viewable[$r->nid]) { // Check if node is viewable
+						$hits++;
+						$k[$r->bid] = isset($k[$r->bid]) ? $k[$r->bid] : 0;
+						$items[] = l(
+							$r->title, "shanti_essays_mega_search/node/".$r->nid.'/nojs/', 
+							array('attributes' => array('class' => array('use-ajax')))
+						); 					
+					} 
+					else {
+						//drupal_set_message('Content restricted for node ' . $r->nid);
+					}
+				} 	
+			} 
+			else {
+				//drupal_set_message("Got no results.");	
+			}	
+		} 
+	}
+	elseif (!$search_str) {
 		foreach(book_get_books() as $book) {
 			$link = array(
 				'#theme' => 'link',
@@ -334,6 +366,9 @@ function _shanti_essays_mega_search_query($search_str = '') {
 			);
 			$items[] = drupal_render($link);
     }
+	}
+	else {
+		// Not sure how we get here
 	}
 	if ($search_str && count($items)) drupal_set_message(count($items) . " pages found with matching content");
 	return $items;
@@ -353,7 +388,6 @@ function shanti_essays_preprocess_node(&$vars) {
   	// Get some info ... If not top of book, go to top
     $nid  = $vars['nid'];
     $bid  = $vars['book']['bid'];
-    watchdog_array("SHANTI",'bid',array('bid'=>$bid,'nid'=>$nid));
     if ($bid != $nid) { drupal_goto("node/$bid",array('fragment' => "book-node-$nid")); }
     $top_mlid = $vars['book']['p1'];
     
